@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.22000.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWinUI>true</UseWinUI>
+    <WindowsPackageType>None</WindowsPackageType>
+    <RootNamespace>HubDisplaySwitch</RootNamespace>
+    <AssemblyName>HubDisplaySwitch</AssemblyName>
+    <Platforms>x64;ARM64</Platforms>
+    <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+    <LangVersion>preview</LangVersion>
+    <Configurations>Debug;Release</Configurations>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Resources\HubDisplaySwitch.ico</ApplicationIcon>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <!-- NuGet packages ────────────────────────────────────────────── -->
+  <ItemGroup>
+    <!-- System.Drawing for runtime tray-icon rendering -->
+    <FrameworkReference Include="Microsoft.WindowsDesktop.App" />
+
+    <!-- WinUI 3 (Windows App SDK) — Fluent Design, Mica, NavigationView -->
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260209005" />
+
+    <!-- Tray right-click menu (H.NotifyIcon.Core.PopupMenu); the icon itself is raw Shell_NotifyIcon -->
+    <PackageReference Include="H.NotifyIcon.WinUI" Version="2.4.1" />
+
+    <!-- MVVM source generators (ObservableProperty, RelayCommand) -->
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+
+    <!-- USB device enumeration + change events (WMI) -->
+    <PackageReference Include="System.Management" Version="10.0.0" />
+
+    <!-- Structured logging -->
+    <PackageReference Include="NLog" Version="6.1.1" />
+  </ItemGroup>
+
+  <!-- Content files to copy to output ────────────────────────────── -->
+  <ItemGroup>
+    <None Remove="NLog.config" />
+    <None Remove="Resources\HubDisplaySwitch.ico" />
+    <None Remove="Resources\HubDisplaySwitch.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\HubDisplaySwitch.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\HubDisplaySwitch.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>

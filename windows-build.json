@@ -1,0 +1,10 @@
+{
+  "project": "HubDisplaySwitch/HubDisplaySwitch.csproj",
+  "package_script": "HubDisplaySwitchMSIX/build-msix.ps1",
+  "package_output": "HubDisplaySwitchMSIX/bin/msix-output",
+  "certificate": ".windows-build/signing.pfx",
+  "version_file": "Directory.Build.props",
+  "dev_identity": "TechnicallyReal.HubDisplaySwitch",
+  "signing": "shared-dev",
+  "trusted_certificate": true
+}

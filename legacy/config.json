@@ -1,0 +1,6 @@
+{
+  "HubIdPrefix": "USB\\VID_1A40&PID_0101",
+  "HubMonitor": "LG TV",
+  "DefaultMonitor": "BenQ RD280UG",
+  "ApplyOnStart": true
+}
