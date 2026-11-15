@@ -146,6 +146,7 @@ public sealed partial class SettingsWindow : Window
         if (args.IsSettingsSelected) { Navigate(typeof(GeneralPage), null); return; }
         if ((args.SelectedItem as NavigationViewItem)?.Tag is not string tag || tag == AddTag) return;
         if (tag == "AboutPage") { Navigate(typeof(AboutPage), null); return; }
+        if (tag == "PromoPage") { Navigate(typeof(TechnicallyReal.Promo.PromotedAppsPage), null); return; }
         Navigate(typeof(SetupPage), tag);
     }
 

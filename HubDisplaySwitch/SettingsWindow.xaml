@@ -29,6 +29,9 @@
                         SelectionChanged="RootNavigation_SelectionChanged"
                         ItemInvoked="RootNavigation_ItemInvoked">
             <NavigationView.FooterMenuItems>
+                <NavigationViewItem Content="Our other apps" Tag="PromoPage">
+                    <NavigationViewItem.Icon><FontIcon Glyph="&#xE719;" /></NavigationViewItem.Icon>
+                </NavigationViewItem>
                 <NavigationViewItem Content="About" Tag="AboutPage">
                     <NavigationViewItem.Icon><FontIcon Glyph="&#xE946;" /></NavigationViewItem.Icon>
                 </NavigationViewItem>

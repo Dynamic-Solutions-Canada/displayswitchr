@@ -33,6 +33,7 @@ Launcher / Repilot conventions (settings window, `SettingsManager`/`UserSettings
 | Default audio device (Core Audio + undocumented `IPolicyConfig`) | `Services/AudioDevices.cs` |
 | Settings | `ViewModels/UserSettings.cs`, `Classes/Settings/SettingsManager.cs` |
 | UI P/Invoke | `Classes/NativeMethods.cs` (use `using static`) |
+| "Our other apps" page | `external/promo` submodule (shared `apps-promo` catalog), imported in the csproj |
 
 ## Conventions / gotchas
 
@@ -60,7 +61,8 @@ Launcher / Repilot conventions (settings window, `SettingsManager`/`UserSettings
 
 Source is authoritative in WSL. Read `.codex/docs/windows-development.md` and use the root npm
 commands (`npm run verify:desktop`, `build:desktop`, `install:desktop`, `package:desktop`). This PC is
-x64: pass `-- --platform x64`. The bridge needs PowerShell 7 (`pwsh.exe`) on the WSL PATH. Never
+x64: pass `-- --platform x64`. Clone with `--recurse-submodules` (or run `git submodule update --init`)
+so `external/promo` is present. The bridge needs PowerShell 7 (`pwsh.exe`) on the WSL PATH. Never
 build directly against WSL source with Windows tools, never uninstall to bypass an update error.
 App icon + MSIX images come from `HubDisplaySwitchMSIX/generate-msix-images.ps1` (committed output).
 
