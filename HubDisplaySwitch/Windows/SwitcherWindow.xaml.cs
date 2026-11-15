@@ -83,12 +83,40 @@ public sealed partial class SwitcherWindow : Window
         int h = (int)Math.Ceiling(WindowRoot.DesiredSize.Height * scale);
         var (left, top) = Placement(anchorX, anchorY, w, h, bounds, work, scale);
 
+        // Move/resize while still cloaked, then reveal only once XAML has drawn at the new size.
+        // Uncloaking straight away shows a frame of bare acrylic with the old layout in the corner.
         SetWindowPos(_hwnd, IntPtr.Zero, left, top, w, h, SWP_NOZORDER | SWP_NOACTIVATE | SWP_SHOWWINDOW);
-        Cloak(_hwnd, false);
-        SetForegroundWindow(_hwnd);
-        SetFocus(_hwnd);
         _isOpen = true;
-        DispatcherQueue.TryEnqueue(() => _isShowing = false);
+        RevealAfterRender();
+    }
+
+    private void RevealAfterRender()
+    {
+        int frames = 0;
+        bool revealed = false;
+        var fallback = DispatcherQueue.CreateTimer();
+
+        void Reveal()
+        {
+            if (revealed) return;
+            revealed = true;
+            Microsoft.UI.Xaml.Media.CompositionTarget.Rendering -= OnRendering;
+            fallback.Stop();
+            if (!_isOpen) { _isShowing = false; return; }   // dismissed before it appeared
+            Cloak(_hwnd, false);
+            SetForegroundWindow(_hwnd);
+            SetFocus(_hwnd);
+            DispatcherQueue.TryEnqueue(() => _isShowing = false);
+        }
+
+        // Two rendered frames: one for layout at the new size, one for it to reach the screen.
+        void OnRendering(object? sender, object e) { if (++frames >= 2) Reveal(); }
+
+        Microsoft.UI.Xaml.Media.CompositionTarget.Rendering += OnRendering;
+        fallback.Interval = TimeSpan.FromMilliseconds(150);   // never leave it invisible
+        fallback.IsRepeating = false;
+        fallback.Tick += (_, _) => Reveal();
+        fallback.Start();
     }
 
     public void Dismiss()
@@ -104,9 +132,10 @@ public sealed partial class SwitcherWindow : Window
     {
         if (_isOpen) return;
         Cloak(_hwnd, true);
-        int w = (int)WidthDip, h = 400;
-        var (x, y) = ParkingSpot(w, h);
-        SetWindowPos(_hwnd, IntPtr.Zero, x, y, w, h, SWP_NOZORDER | SWP_NOACTIVATE | SWP_SHOWWINDOW);
+        // Keep the current (last shown) size so the next open doesn't have to re-layout from scratch.
+        var size = GetAppWindow().Size;
+        var (x, y) = ParkingSpot(Math.Max(size.Width, 1), Math.Max(size.Height, 1));
+        SetWindowPos(_hwnd, IntPtr.Zero, x, y, 0, 0, SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSIZE | SWP_SHOWWINDOW);
     }
 
     /// <summary>Little Launcher's placement rules: beside a side taskbar, above a bottom one, below a top one.</summary>
