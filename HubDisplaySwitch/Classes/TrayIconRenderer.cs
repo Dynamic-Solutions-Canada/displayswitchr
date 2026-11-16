@@ -1,74 +1,51 @@
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.IO;
+using WinUIAppKit.Tray;
 
 namespace HubDisplaySwitch.Classes;
 
 /// <summary>
-/// Renders the tray icon (a monitor) in code: frame follows the taskbar theme, screen is blue when
-/// auto-switching is on and grey when paused. Rendered as a PNG at exactly the pixel size the tray uses
-/// at the current scaling (<see cref="WinUIAppKit.Tray.TrayIcon.IconPixelSize"/>), so Windows doesn't
-/// stretch a nearby size and blur it.
+/// The tray icon's artwork, a monitor: the frame follows the taskbar theme, and the screen is blue when
+/// auto-switching is on and grey when paused. The kit's <see cref="TrayIconRasterizer"/> turns it into a
+/// PNG at exactly the pixel size the tray uses at the current scaling, so Windows doesn't blur it.
 /// </summary>
 internal static class TrayIconRenderer
 {
+    private static readonly Color ActiveScreen = Color.FromArgb(59, 130, 246);
+    private static readonly Color PausedScreen = Color.FromArgb(128, 128, 128);
+
+    /// <summary>Renders the icon as PNG bytes.</summary>
+    /// <param name="paused">Auto-switching is paused (grey screen).</param>
+    /// <param name="darkTaskbar">From <see cref="TrayIcon.TaskbarIsDark"/>; picks the frame colour.</param>
+    /// <param name="size">The icon's pixel size, normally <see cref="TrayIcon.IconPixelSize"/>.</param>
     public static byte[] Render(bool paused, bool darkTaskbar, int size)
     {
-        size = Math.Clamp(size, 16, 256);
-        var frame = darkTaskbar ? Color.White : Color.FromArgb(32, 32, 32);
-        var screen = paused ? Color.FromArgb(128, 128, 128) : Color.FromArgb(59, 130, 246);
-        return Render(size, frame, screen);
+        var frame = TrayIconRasterizer.Ink(darkTaskbar);
+        var screen = paused ? PausedScreen : ActiveScreen;
+        return TrayIconRasterizer.Render(size, (g, side) => DrawMonitor(g, side, frame, screen));
     }
 
-    static byte[] Render(int size, Color frame, Color screen)
+    /// <summary>Draws the monitor on a canvas <paramref name="side"/> pixels square.</summary>
+    private static void DrawMonitor(Graphics g, float side, Color frame, Color screen)
     {
-        // Supersample 4x then shrink once, so small sizes stay crisp.
-        int m = size * 4;
-        using var big = new Bitmap(m, m, PixelFormat.Format32bppArgb);
-        using (var g = Graphics.FromImage(big))
+        // The bezel, then the screen inset inside it.
+        var body = new RectangleF(side * 0.04f, side * 0.14f, side * 0.92f, side * 0.60f);
+        using (var bezel = new SolidBrush(frame))
+        using (var bezelPath = TrayIconRasterizer.RoundedRectangle(body, side * 0.08f))
         {
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            g.Clear(Color.Transparent);
-            float w = m, h = m;
-            var body = new RectangleF(w * 0.04f, h * 0.14f, w * 0.92f, h * 0.60f);
-            using (var b = new SolidBrush(frame))
-            {
-                g.FillPath(b, Rounded(body, w * 0.08f));
-            }
-
-            var inner = RectangleF.Inflate(body, -w * 0.075f, -h * 0.075f);
-            using (var b = new SolidBrush(screen))
-            {
-                g.FillPath(b, Rounded(inner, w * 0.03f));
-            }
-
-            using var stand = new SolidBrush(frame);
-            g.FillRectangle(stand, w * 0.43f, body.Bottom - 1, w * 0.14f, h * 0.12f);
-            g.FillPath(stand, Rounded(new RectangleF(w * 0.24f, body.Bottom + h * 0.10f, w * 0.52f, h * 0.09f), h * 0.045f));
+            g.FillPath(bezel, bezelPath);
         }
-        using var small = new Bitmap(size, size, PixelFormat.Format32bppArgb);
-        using (var g = Graphics.FromImage(small))
+
+        var inner = RectangleF.Inflate(body, -side * 0.075f, -side * 0.075f);
+        using (var display = new SolidBrush(screen))
+        using (var displayPath = TrayIconRasterizer.RoundedRectangle(inner, side * 0.03f))
         {
-            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-            g.Clear(Color.Transparent);
-            g.DrawImage(big, 0, 0, size, size);
+            g.FillPath(display, displayPath);
         }
-        using var png = new MemoryStream();
-        small.Save(png, ImageFormat.Png);
-        return png.ToArray();
-    }
 
-    static GraphicsPath Rounded(RectangleF r, float radius)
-    {
-        var p = new GraphicsPath();
-        float d = Math.Max(0.1f, radius * 2);
-        p.AddArc(r.X, r.Y, d, d, 180, 90);
-        p.AddArc(r.Right - d, r.Y, d, d, 270, 90);
-        p.AddArc(r.Right - d, r.Bottom - d, d, d, 0, 90);
-        p.AddArc(r.X, r.Bottom - d, d, d, 90, 90);
-        p.CloseFigure();
-        return p;
+        // The neck and the foot of the stand.
+        using var stand = new SolidBrush(frame);
+        g.FillRectangle(stand, side * 0.43f, body.Bottom - 1, side * 0.14f, side * 0.12f);
+        using var foot = TrayIconRasterizer.RoundedRectangle(new RectangleF(side * 0.24f, body.Bottom + side * 0.10f, side * 0.52f, side * 0.09f), side * 0.045f);
+        g.FillPath(stand, foot);
     }
 }

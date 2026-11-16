@@ -36,6 +36,21 @@
                     </ComboBox>
                 </StackPanel>
             </Border>
+
+            <TextBlock l10n:Localize.Text="Reset" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="2,16,0,2" />
+            <Border Style="{StaticResource CardBorderStyle}">
+                <StackPanel Spacing="8">
+                    <TextBlock l10n:Localize.Text="Replace every setup and setting with the defaults. Your current settings are kept in a backup file in the logs folder."
+                               Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="Wrap"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    <Button Click="ResetSettings_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon Glyph="&#xE777;" FontSize="14" />
+                            <TextBlock l10n:Localize.Text="Reset settings" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
         </StackPanel>
     </ScrollViewer>
 </Page>

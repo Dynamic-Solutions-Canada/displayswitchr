@@ -2,10 +2,10 @@ using HubDisplaySwitch.Classes;
 using HubDisplaySwitch.Classes.Settings;
 using HubDisplaySwitch.Services;
 using HubDisplaySwitch.Windows;
-using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
-using WinRT.Interop;
 using WinUIAppKit;
+using WinUIAppKit.Hosting;
+using WinUIAppKit.Logging;
 using WinUIAppKit.Localization;
 using WinUIAppKit.Startup;
 using WinUIAppKit.Theming;
@@ -36,9 +36,7 @@ public sealed partial class MainWindow : Window
     public static SwitchEngine Engine { get; private set; } = null!;
     public static MainWindow Instance { get; private set; } = null!;
 
-    private readonly IntPtr _hwnd;
-    private readonly SUBCLASSPROC _wndProcDelegate;   // kept in a field so it isn't garbage-collected
-    private readonly int _wmShowSettings;
+    private readonly HostWindow _host;
     private readonly TrayIcon _tray;
     private readonly SwitcherWindow _switcher;
     private readonly OsdWindow _osd;
@@ -68,12 +66,10 @@ public sealed partial class MainWindow : Window
     {
         InitializeComponent();
         Instance = this;
-        _hwnd = WindowNative.GetWindowHandle(this);
-        HideHostWindow();
 
-        _wmShowSettings = RegisterWindowMessage(ShowSettingsMessageName);
-        _wndProcDelegate = WndProc;
-        SetWindowSubclass(_hwnd, _wndProcDelegate, 0, 0);
+        // The kit's hidden host (TRAY-7): 1x1 off-screen tool window that answers a second launch.
+        _host = new HostWindow(this, HostTitle, ShowSettingsMessageName);
+        _host.ShowRequested += SettingsWindow.ShowInstance;
         RegisterApplicationRestart("--silent", 0);
 
         Engine = new SwitchEngine(DispatcherQueue);
@@ -82,7 +78,7 @@ public sealed partial class MainWindow : Window
         Engine.Popup += (title, subtitle, state) => _osd.Present(title, subtitle, state);
         Engine.StateChanged += () => { UpdateTrayIcon(); _switcher.Refresh(); };
 
-        _tray = new TrayIcon(_hwnd, TrayGuid, "HubDisplaySwitch_TrayCallback");
+        _tray = new TrayIcon(_host.Hwnd, TrayGuid, "HubDisplaySwitch_TrayCallback");
         _tray.Clicked += a => _switcher.Toggle(a.X, a.Y);
         _tray.DoubleClicked += a => _switcher.ShowAt(a.X, a.Y);   // the first click already opened it; keep it open
         _tray.ContextMenuRequested += ShowContextMenu;
@@ -97,6 +93,11 @@ public sealed partial class MainWindow : Window
         UiText.Changed += TechnicallyReal.Promo.PromoLocalization.Refresh;
         _uiSettings.ColorValuesChanged += (_, _) => DispatcherQueue.TryEnqueue(UpdateTrayIcon);
         UpdateTrayIcon();
+
+        // Exit steps run in this order when the user picks Exit (HostWindow.Exit).
+        _host.AddExitStep("save settings", SettingsManager.SaveSettings);
+        _host.AddExitStep("stop the switch engine", Engine.Dispose);
+        _host.AddExitStep("remove the tray icon", _tray.Dispose);
 
         if (SettingsManager.IsFirstRun && SettingsManager.Current.Startup)
         {
@@ -114,16 +115,6 @@ public sealed partial class MainWindow : Window
         {
             SettingsWindow.ShowInstance();
         }
-    }
-
-    private void HideHostWindow()
-    {
-        AddExStyle(_hwnd, WS_EX_TOOLWINDOW);
-        var appWindow = AppWindow.GetFromWindowId(Microsoft.UI.Win32Interop.GetWindowIdFromWindow(_hwnd));
-        appWindow.IsShownInSwitchers = false;
-        appWindow.Move(new global::Windows.Graphics.PointInt32(-9999, -9999));
-        appWindow.Resize(new global::Windows.Graphics.SizeInt32(1, 1));
-        appWindow.Closing += (_, e) => e.Cancel = true;
     }
 
     // ── Tray icon ───────────────────────────────────────────────────────
@@ -154,29 +145,11 @@ public sealed partial class MainWindow : Window
             .Add(UiText.Get("Open logs folder"), OpenLogsFolder)
             .AddSeparator()
             .Add(UiText.Get("Exit"), ExitApp)
-            .Show(_hwnd, x, y);
+            .Show(_host.Hwnd, x, y);
     }
 
-    public static void OpenLogsFolder() => AppEnvironment.OpenFolder(SettingsManager.PhysicalSettingsDir);
+    public static void OpenLogsFolder() => AppLogging.OpenLogsFolder();
 
-    public void ExitApp()
-    {
-        Logger.Info("Exit requested");
-        SettingsManager.SaveSettings();
-        Engine.Dispose();
-        _tray.Dispose();
-        NLog.LogManager.Flush();
-        Environment.Exit(0);
-    }
-
-    // ── Window procedure ────────────────────────────────────────────────
-    private IntPtr WndProc(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam, UIntPtr id, UIntPtr refData)
-    {
-        if (_wmShowSettings != 0 && (int)msg == _wmShowSettings)
-        {
-            DispatcherQueue.TryEnqueue(SettingsWindow.ShowInstance);
-            return IntPtr.Zero;
-        }
-        return DefSubclassProc(hwnd, msg, wParam, lParam);
-    }
+    /// <summary>Exits through the host: the exit steps run in order, the log is flushed, then the process ends.</summary>
+    public void ExitApp() => _host.Exit();
 }

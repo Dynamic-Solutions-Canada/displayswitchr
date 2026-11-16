@@ -105,5 +105,10 @@
   "Waiting for {{display}}…": "Esperando a {{display}}…",
   "no setup": "sin configuración",
   "{{display}} isn't connected or is switched off": "{{display}} no está conectada o está apagada",
-  "{{setup}} (paused)": "{{setup}} (en pausa)"
+  "{{setup}} (paused)": "{{setup}} (en pausa)",
+  "Reset": "Restablecer",
+  "Replace every setup and setting with the defaults. Your current settings are kept in a backup file in the logs folder.": "Sustituye todas las configuraciones y ajustes por los valores predeterminados. Tus ajustes actuales se guardan en un archivo de copia de seguridad en la carpeta de registros.",
+  "Reset settings": "Restablecer ajustes",
+  "Reset all settings?": "¿Restablecer todos los ajustes?",
+  "Your setups are replaced by one default setup for the displays and audio in use now, and the theme and language go back to the defaults. Start with Windows stays as it is.": "Tus configuraciones se sustituyen por una configuración predeterminada con las pantallas y el audio que se usan ahora, y el tema y el idioma vuelven a los valores predeterminados. Iniciar con Windows no cambia."
 }

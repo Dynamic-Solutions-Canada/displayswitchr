@@ -49,6 +49,34 @@ public sealed partial class GeneralPage : Page
         MainWindow.Engine.SetPaused(!AutoSwitch.IsOn);
     }
 
+    /// <summary>
+    /// "Reset settings" (CONF-4): asks first (the kit's dialog defaults to Cancel), then resets and
+    /// lets the engine and the settings window pick up the new setups. The settings window rebuilds its
+    /// menu and opens the new default setup, which also leaves this page and its bindings to the old
+    /// settings object.
+    /// </summary>
+    private async void ResetSettings_Click(object sender, RoutedEventArgs e)
+    {
+        if (SettingsWindow.GetCurrent() is not { } window)
+        {
+            return;
+        }
+
+        bool confirmed = await WinUIAppKit.Windowing.ConfirmDialog.ConfirmAsync(
+            window,
+            UiText.Get("Reset all settings?"),
+            UiText.Get("Your setups are replaced by one default setup for the displays and audio in use now, and the theme and language go back to the defaults. Start with Windows stays as it is."),
+            UiText.Get("Reset"));
+        if (!confirmed)
+        {
+            return;
+        }
+
+        SettingsManager.Reset();
+        MainWindow.Engine.SettingsChanged();
+        window.RebuildSetupItems(null);
+    }
+
     // ── Start with Windows ──────────────────────────────────────────────
     private async void StartupSwitch_Toggled(object sender, RoutedEventArgs e)
     {

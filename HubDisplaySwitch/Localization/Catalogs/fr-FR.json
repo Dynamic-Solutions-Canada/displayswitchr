@@ -105,5 +105,10 @@
   "Waiting for {{display}}…": "En attente de {{display}}…",
   "no setup": "aucune configuration",
   "{{display}} isn't connected or is switched off": "{{display}} n’est pas connecté ou est éteint",
-  "{{setup}} (paused)": "{{setup}} (en pause)"
+  "{{setup}} (paused)": "{{setup}} (en pause)",
+  "Reset": "Réinitialiser",
+  "Replace every setup and setting with the defaults. Your current settings are kept in a backup file in the logs folder.": "Remplace toutes les configurations et tous les paramètres par les valeurs par défaut. Vos paramètres actuels sont conservés dans un fichier de sauvegarde dans le dossier des journaux.",
+  "Reset settings": "Réinitialiser les paramètres",
+  "Reset all settings?": "Réinitialiser tous les paramètres ?",
+  "Your setups are replaced by one default setup for the displays and audio in use now, and the theme and language go back to the defaults. Start with Windows stays as it is.": "Vos configurations sont remplacées par une configuration par défaut avec les écrans et l’audio utilisés maintenant, et le thème et la langue reviennent aux valeurs par défaut. Démarrer avec Windows ne change pas."
 }

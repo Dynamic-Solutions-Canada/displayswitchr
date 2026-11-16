@@ -12,9 +12,6 @@ namespace HubDisplaySwitch.ViewModels;
 /// </summary>
 public partial class UserSettings : ObservableObject
 {
-    /// <summary>Settings file format. 2 = setups.</summary>
-    public int Version { get; set; } = 2;
-
     /// <summary>App theme. Stored as 0 = System default, 1 = Light, 2 = Dark (same numbers as before the kit).</summary>
     [ObservableProperty]
     public partial AppThemeChoice AppTheme { get; set; }

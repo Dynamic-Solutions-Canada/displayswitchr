@@ -15,4 +15,4 @@ Does not prove:
 - Mirrored and multi-display layouts (the engine waits 600 ms on a real thread between the layout and the primary display, so the scenarios use one display per setup), and the "already in place" check for those.
 - Anything on screen: the popup, the flyout, the settings pages or the tray. Those need the installed app; see the manual checks in [docs/development.md](../../docs/development.md).
 
-Run with `npm test`, or alone with `scripts/dotnet run --project tests/HubDisplaySwitch.Policy.Tests`.
+Run with `npm test`, or alone with `external/winui-app-kit/scripts/dotnet run --project tests/HubDisplaySwitch.Policy.Tests`.

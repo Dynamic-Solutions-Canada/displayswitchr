@@ -105,5 +105,10 @@
   "Waiting for {{display}}…": "Waiting for {{display}}…",
   "no setup": "no setup",
   "{{display}} isn't connected or is switched off": "{{display}} isn't connected or is switched off",
-  "{{setup}} (paused)": "{{setup}} (paused)"
+  "{{setup}} (paused)": "{{setup}} (paused)",
+  "Reset": "Reset",
+  "Replace every setup and setting with the defaults. Your current settings are kept in a backup file in the logs folder.": "Replace every setup and setting with the defaults. Your current settings are kept in a backup file in the logs folder.",
+  "Reset settings": "Reset settings",
+  "Reset all settings?": "Reset all settings?",
+  "Your setups are replaced by one default setup for the displays and audio in use now, and the theme and language go back to the defaults. Start with Windows stays as it is.": "Your setups are replaced by one default setup for the displays and audio in use now, and the theme and language go back to the defaults. Start with Windows stays as it is."
 }

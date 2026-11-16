@@ -1,0 +1,14 @@
+<Project>
+  <!-- Central package management (PLAT-5): the family's shared versions come from winui-app-kit and
+       are never overridden here; this app's own packages follow. -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)external/winui-app-kit/build/WinUIAppKit.Packages.props" />
+
+  <ItemGroup>
+    <!-- USB device enumeration and change events (WMI) -->
+    <PackageVersion Include="System.Management" Version="10.0.0" />
+  </ItemGroup>
+</Project>

@@ -1,5 +1,6 @@
 using HubDisplaySwitch.Classes;
 using HubDisplaySwitch.Classes.Settings;
+using WinUIAppKit.Hosting;
 using WinUIAppKit.Localization;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
@@ -21,24 +22,30 @@ public partial class App : Application
     /// <summary>256 px PNG of the app icon for in-app images (scales down sharply; .ico frames get stretched).</summary>
     public static string IconPngPath => Path.Combine(AppContext.BaseDirectory, "Resources", "HubDisplaySwitch.png");
 
-    public App() => InitializeComponent();
+    public App()
+    {
+        // The shared NLog config writes to %AppData%\<data folder>; name it before anything logs.
+        WinUIAppKit.Logging.AppLogging.UseDataFolder(SettingsManager.DataFolderName);
+        InitializeComponent();
+    }
 
+    /// <summary>
+    /// Starts the app through the kit's <see cref="AppBootstrap"/>: crash logging first (LOG-7), then
+    /// <see cref="ClaimInstanceAndRestoreSettings"/>, then the hidden host window.
+    /// </summary>
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
         MainDispatcherQueue = DispatcherQueue.GetForCurrentThread();
+        m_window = AppBootstrap.Launch(this, ClaimInstanceAndRestoreSettings, () => new MainWindow());
+    }
 
-        AppDomain.CurrentDomain.UnhandledException += (s, a) =>
-        {
-            NLog.LogManager.GetCurrentClassLogger().Error(a.ExceptionObject as Exception, "Unhandled exception");
-            NLog.LogManager.Flush();
-        };
-        UnhandledException += (s, e) =>
-        {
-            NLog.LogManager.GetCurrentClassLogger().Error(e.Exception, "Unhandled UI exception");
-            NLog.LogManager.Flush();
-            e.Handled = true;
-        };
-
+    /// <summary>
+    /// The settings step of the launch. The single instance is claimed first, so a second launch hands
+    /// "show settings" to the running copy and exits without touching the settings file (the store
+    /// writes the file it loads).
+    /// </summary>
+    private static void ClaimInstanceAndRestoreSettings()
+    {
         if (!MainWindow.ClaimSingleInstance())
         {
             Environment.Exit(0);
@@ -54,15 +61,14 @@ public partial class App : Application
                 global::Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "";
             }
         }
-        catch { }
+        catch
+        {
+        }
 
         // Configure first: first-run defaults are named in the Windows language. Then apply the saved choice.
         UiText.Configure(typeof(App).Assembly, AppLanguages.CatalogPrefix, AppLanguages.Supported, null);
         SettingsManager.RestoreSettings();
         UiText.SetOverride(SettingsManager.Current.Language);
-
-        m_window = new MainWindow();
-        m_window.Activate();
     }
 
     internal Window? m_window;

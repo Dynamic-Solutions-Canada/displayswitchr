@@ -92,18 +92,20 @@ public sealed partial class SetupPage : Page
         Save(navChanged: true);
     }
 
+    /// <summary>Deletes this setup after asking (the kit's dialog, which defaults to Cancel, UI-6).</summary>
     private async void Delete_Click(object sender, RoutedEventArgs e)
     {
-        var dialog = new ContentDialog
+        if (SettingsWindow.GetCurrent() is not { } window)
         {
-            XamlRoot = XamlRoot,
-            Title = UiText.Format("Delete \"{{name}}\"?", ("name", _setup.Name)),
-            Content = UiText.Get("This removes the setup. Your displays and audio aren't changed."),
-            PrimaryButtonText = UiText.Get("Delete"),
-            CloseButtonText = UiText.Get("Cancel"),
-            DefaultButton = ContentDialogButton.Close,
-        };
-        if (await dialog.ShowAsync() != ContentDialogResult.Primary)
+            return;
+        }
+
+        bool confirmed = await WinUIAppKit.Windowing.ConfirmDialog.ConfirmAsync(
+            window,
+            UiText.Format("Delete \"{{name}}\"?", ("name", _setup.Name)),
+            UiText.Get("This removes the setup. Your displays and audio aren't changed."),
+            UiText.Get("Delete"));
+        if (!confirmed)
         {
             return;
         }

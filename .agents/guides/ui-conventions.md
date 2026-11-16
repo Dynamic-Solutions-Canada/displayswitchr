@@ -13,7 +13,7 @@ This app's own interface conventions. The shared family rules are in the standar
 - The setup page replaces the title with a header row: a 56 px icon button (opens the glyph picker flyout), the name `TextBox` in 24 px semibold, and Delete on the right.
 - Settings controls sit inside the card with their own `Header` (`ToggleSwitch`, `ComboBox`); a note under a control, or under a radio option, is a `CaptionTextBlockStyle` text block in `TextFillColorSecondaryBrush`.
 - Settings apply and save on change. There is no Save or Cancel button.
-- Questions and pickers that need room (delete a setup, detect a hub) are `ContentDialog`s shown from the settings window, never from the flyout or the popup.
+- A yes/no question (delete a setup, reset settings) goes through the kit's `ConfirmDialog.ConfirmAsync` on the settings window, with the action named on the confirm button; it defaults to Cancel (UI-6). A picker that needs room (detect a hub) is a `ContentDialog` shown from the settings window. Neither is ever shown from the flyout or the popup.
 
 ## Tray flyout
 

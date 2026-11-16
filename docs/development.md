@@ -34,9 +34,9 @@ The app icon and MSIX images come from `HubDisplaySwitchMSIX/generate-msix-image
 - `npm run format:check`: every C# project outside `external/` matches the root `.editorconfig`, which is winui-app-kit's file copied unchanged from the tag the app pins; never hand-edit it. `npm run format` rewrites the files.
 - `npm run check:l10n`: every key the code and XAML use exists in the English catalog, and every other catalog has exactly the same keys, no empty values and the same `{{placeholders}}`. It does not check the languages declared in the package manifest.
 - `npm run check:listing`: the Store listing source and the release notes for the current `<Version>`, checked as `store-assets/microsoft/listings.md` describes.
-- `npm test`: every portable harness under `tests/`, found by `scripts/run-tests` without a hand-kept list. Each has a README saying what it covers and does not prove. Today there is one, for the switching policy.
+- `npm test`: every portable harness under `tests/`, found by winui-app-kit's `scripts/run-tests` without a hand-kept list (it fails if it finds none). Each has a README saying what it covers and does not prove. Today there are two: the switching policy, and the settings file (loading, upgrading old files, reset) against the kit's real store.
 
-Formatting and tests run through `scripts/dotnet`, which uses the .NET SDK pinned in `global.json` when it is installed and otherwise its Docker image, capped at 3 GB (`KIT_DOTNET_MEMORY`). Run them as a non-root user. Run `npm run validate` and `npm run verify:desktop` before finishing a change.
+Formatting and tests run through winui-app-kit's `scripts/dotnet`, which uses the .NET SDK pinned in `global.json` when it is installed and otherwise its Docker image, capped at 3 GB (`KIT_DOTNET_MEMORY`). Run them as a non-root user. Run `npm run validate` and `npm run verify:desktop` before finishing a change.
 
 CI runs `npm run validate` on every push to `main` and every pull request, and compiles x64 and ARM64 on `windows-2025` when app source, packaging or build configuration changed (`.github/workflows/ci.yml`). CodeQL scans the C# and the workflows (`.github/workflows/codeql.yml`), and Dependabot proposes NuGet and action updates weekly.
 
@@ -48,6 +48,9 @@ The harness cannot see the screen, the USB hubs or the audio devices. Before a r
 - With a TV: the app waits for it to wake and for its HDMI audio, and corrects a drop back to 60 Hz afterwards.
 - The tray: a click opens the flyout with one tile per setup and the auto-switch toggle; a tile switches by hand; the right-click menu lists the setups, Pause, Settings, Open logs folder and Exit.
 - Settings: add, rename, change the icon of and delete a setup; "Detect by unplugging" finds a hub; start with Windows, switching on start, the popup toggle, theme, and a language change that relabels the windows and tray without reopening them.
+- Upgrading over an earlier build keeps every setup and setting, and leaves one `settings.json.v0.bak` beside `settings.json`.
+- Reset settings (General page) asks first, then shows one default setup for the displays in use, the default theme and language, and leaves Start with Windows as it was; a `settings.json.<time>.reset` file holds the old settings.
+- Exit from the tray menu removes the tray icon and the log ends with "Exit requested".
 - About: the version, and "Open logs folder" opens the folder with the current log.
 - Light, dark and high contrast.
 
@@ -66,7 +69,7 @@ It writes:
 | What | Where | After uninstall |
 | --- | --- | --- |
 | Settings (`settings.json`) | `%AppData%\HubDisplaySwitch\` | Removed, see below |
-| A backup of settings from the first, two-state version (`settings.json.v1.bak`), made once when they are migrated | `%AppData%\HubDisplaySwitch\` | Removed, see below |
+| Settings backups: `settings.json.v<n>.bak` before an upgrade from schema version n (every install from before schema versions gets one `.v0.bak`), `settings.json.bad` for a file that could not be read, `settings.json.<UTC time>.reset` after Reset settings | `%AppData%\HubDisplaySwitch\` | Removed, see below |
 | Logs (`logs.<start time>.txt`, the last few kept) | `%AppData%\HubDisplaySwitch\` | Removed, see below |
 | "Our other apps" list and icons | The package's local folder, `PromotedApps\` | Removed with the package |
 | Start with Windows | The package's startup task | Removed with the package |
@@ -76,4 +79,4 @@ Every install, including dev installs from `install:desktop`, is an MSIX package
 
 This list has not yet been confirmed against a real uninstall.
 
-There is nothing to back up or export beyond `settings.json`. To delete all data, uninstall the app.
+There is nothing to back up or export beyond `settings.json`. Reset settings (General page) starts again from the defaults and keeps the old file as a `.reset` backup. To delete all data, uninstall the app.

@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>HubDisplaySwitch.Settings.Tests</RootNamespace>
+  </PropertyGroup>
+  <!-- The real settings store from winui-app-kit and the app's real schema steps, settings class and
+       setup model, linked unchanged. The display and audio lists, the theme and language hooks and the
+       app's save call are replaced by the stand-ins in Stubs.cs, so this runs on Linux. -->
+  <ItemGroup>
+    <Compile Include="../../external/winui-app-kit/WinUIAppKit/Settings/JsonSettingsStore.cs" Link="Linked/JsonSettingsStore.cs" />
+    <Compile Include="../../external/winui-app-kit/WinUIAppKit/Settings/AtomicFile.cs" Link="Linked/AtomicFile.cs" />
+    <Compile Include="../../HubDisplaySwitch/Classes/Settings/SettingsMigrations.cs" Link="Linked/SettingsMigrations.cs" />
+    <Compile Include="../../HubDisplaySwitch/ViewModels/UserSettings.cs" Link="Linked/UserSettings.cs" />
+    <Compile Include="../../HubDisplaySwitch/Models/Setup.cs" Link="Linked/Setup.cs" />
+  </ItemGroup>
+  <!-- Versions come from Directory.Packages.props (the kit's shared versions). -->
+  <ItemGroup>
+    <PackageReference Include="NLog" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+  </ItemGroup>
+</Project>
