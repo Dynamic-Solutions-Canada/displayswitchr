@@ -77,6 +77,8 @@ It writes:
 
 Every install, including dev installs from `install:desktop`, is an MSIX package, so Windows redirects `%AppData%\HubDisplaySwitch\` into the package's own data folder and deletes it on uninstall. The About page's "Open logs folder" opens the real location. A copy run without a package (straight from a build output folder) writes to the real `%AppData%\HubDisplaySwitch\`, puts the "Our other apps" cache in `%LocalAppData%\TechnicallyReal\PromotedApps\`, and, for start with Windows, adds a `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` value; all of these remain until removed by hand. A packaged copy removes such Run values when it starts.
 
+Windows redirects only folders the packaged app creates itself: if `%AppData%\HubDisplaySwitch\` already existed when the package was first installed (from an unpackaged or PowerShell-era copy), the packaged app keeps using the real folder, and it remains after uninstall. Seen on 2026-11-16 on a machine upgraded from the unpackaged builds.
+
 This list has not yet been confirmed against a real uninstall.
 
 There is nothing to back up or export beyond `settings.json`. Reset settings (General page) starts again from the defaults and keeps the old file as a `.reset` backup. To delete all data, uninstall the app.
