@@ -51,7 +51,6 @@ This repo follows the shared standards at https://github.com/Dynamic-Solutions-C
 - Startup (kit `StartupRegistration`): packaged uses the manifest `StartupTask` `HubDisplaySwitchStartup` (registered once on first run, never overriding DisabledByUser or policy); unpackaged uses HKCU Run with `--silent`.
 - **PowerShell build scripts must be ASCII.**
 - Package identity is a **placeholder** (`TechnicallyReal.HubDisplaySwitch`) until the app is reserved in Partner Center; then update `Package.appxmanifest` and `windows-build.json` together.
-- `legacy/` holds the original PowerShell watcher scripts for reference only; they are not built or shipped.
 
 ## Commands
 
@@ -86,5 +85,6 @@ Before finishing a change, run `npm run check:l10n` and `npm run verify:desktop`
 | A UI pattern, shared style or control | `.agents/guides/ui-conventions.md` |
 | An npm command | The Commands table above, `docs/development.md`, the `desktop` skill, `paseo.json` |
 | Where the app writes data, or a new kind of data | The data table in `docs/development.md` |
+| winui-app-kit pin bumped | Copy the kit's `.editorconfig` and `build/shared.gitignore` (the last part of `.gitignore`) at that tag unchanged |
 | A language or catalog rule | Conventions above, `scripts/check-localization.py` |
 | A guide or skill moved or removed | The guidance map above and every skill that names it |
