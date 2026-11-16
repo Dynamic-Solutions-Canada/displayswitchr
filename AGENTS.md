@@ -62,7 +62,7 @@ Clone with `--recurse-submodules` (or run `git submodule update --init`) so `ext
 | `npm run verify:desktop` | The app compiles on Windows (Debug), XAML included | That it packages or runs |
 | `npm run build:desktop` | A signed dev package builds | That it installs or runs |
 | `npm run install:desktop` | The dev package updates in place and launches | Behaviour; check it in the running app |
-| `npm run package:desktop` | An unsigned Store package builds, manifest strings resolved for every language | Signing; that it runs |
+| `npm run package:desktop` | An unsigned Store package builds, with every declared language in one `resources.pri` | Signing; that it runs |
 | `npm run check:l10n` | Every catalog has the same keys and placeholders | That the text is translated well |
 
 Before finishing a change, run `npm run check:l10n` and `npm run verify:desktop`. Use the `desktop` skill for build and install requests.
@@ -71,6 +71,7 @@ Before finishing a change, run `npm run check:l10n` and `npm run verify:desktop`
 
 | Guide, doc, or skill | Read or use when | Governs |
 | --- | --- | --- |
+| [docs/development.md](docs/development.md) | Building, checking, or changing where the app writes data | Build setup, data locations |
 | [.agents/guides/ui-conventions.md](.agents/guides/ui-conventions.md) | Any window, page, flyout, tile, popup or card | `HubDisplaySwitch/**/*.xaml(.cs)`, `HubDisplaySwitch/Windows/**`, `HubDisplaySwitch/Pages/**` |
 | [WinUI App Kit `AGENTS.md`](external/winui-app-kit/AGENTS.md) | Using the kit's tray, menu, flyout, settings, startup, theme or localization APIs | `external/winui-app-kit/**` (read only) |
 | [Windows build tools README](https://github.com/Dynamic-Solutions-Canada/windows-build-tools) | A Windows build, install or packaging problem | `scripts/windows-build`, `windows-build.json` |
@@ -81,8 +82,9 @@ Before finishing a change, run `npm run check:l10n` and `npm run verify:desktop`
 | What changed | Update |
 | --- | --- |
 | A file, service or window added, moved or removed | The Architecture table above |
-| Arbitration, the switch sequence or another rule users can see | Behaviour above, `README.md` |
+| Arbitration, the switch sequence or another rule users can see | Behaviour above, `README.md` Features, the manual checks in `docs/development.md` |
 | A UI pattern, shared style or control | `.agents/guides/ui-conventions.md` |
-| An npm command | The Commands table above, the `desktop` skill, `paseo.json` |
+| An npm command | The Commands table above, `docs/development.md`, the `desktop` skill, `paseo.json` |
+| Where the app writes data, or a new kind of data | The data table in `docs/development.md` |
 | A language or catalog rule | Conventions above, `scripts/check-localization.py` |
 | A guide or skill moved or removed | The guidance map above and every skill that names it |
