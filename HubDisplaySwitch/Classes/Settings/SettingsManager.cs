@@ -75,7 +75,11 @@ public static class SettingsManager
                     Logger.Info("No settings yet; creating first-run defaults");
                     Current = CreateFirstRun();
                 }
-                else Logger.Info("Settings restored ({Count} setups)", Current.Setups?.Count ?? 0);   // zero setups is valid
+                else
+                {
+                    Logger.Info("Settings restored ({Count} setups)", Current.Setups?.Count ?? 0);   // zero setups is valid
+                }
+
                 changed = firstRun;
             }
         }
@@ -88,13 +92,20 @@ public static class SettingsManager
 
         changed |= Current.CompleteInitialization();
         AppTheme.Set(Current.AppTheme);
-        if (changed) SaveSettings();
+        if (changed)
+        {
+            SaveSettings();
+        }
     }
 
     /// <summary>The settings file as JSON (null when missing), or unreadable when it exists but isn't a JSON object.</summary>
     private static (JsonObject? Node, bool Unreadable) ReadNode()
     {
-        if (!File.Exists(Store.FilePath)) return (null, false);
+        if (!File.Exists(Store.FilePath))
+        {
+            return (null, false);
+        }
+
         try
         {
             return JsonNode.Parse(File.ReadAllText(Store.FilePath)) is JsonObject node ? (node, false) : (null, true);
@@ -117,7 +128,10 @@ public static class SettingsManager
         try
         {
             foreach (var m in DisplayConfig.GetMonitors().Where(m => m.Active))
+            {
                 desk.Displays.Add(new DisplayRef { Id = m.Id, Name = m.Name });
+            }
+
             desk.MainDisplayId = desk.Displays.FirstOrDefault()?.Id ?? "";
             if (AudioDevices.CurrentDefault() is { } a) { desk.AudioId = a.Id; desk.AudioName = a.Name; }
         }
@@ -139,7 +153,15 @@ public static class SettingsManager
             Paused = (bool?)v1["Paused"] ?? false,
         };
         if (v1["RefreshRates"] is JsonObject rr)
-            foreach (var (k, v) in rr) if (v != null) s.RefreshRates[k] = (int)v;
+        {
+            foreach (var (k, v) in rr)
+            {
+                if (v != null)
+                {
+                    s.RefreshRates[k] = (int)v;
+                }
+            }
+        }
 
         List<AudioDevice> audio;
         try { audio = AudioDevices.List(); } catch { audio = new(); }
@@ -151,12 +173,19 @@ public static class SettingsManager
             var setup = new Setup { Name = name, Glyph = glyph };
             string monName = (string?)a?["MonitorName"] ?? "", monId = (string?)a?["MonitorId"] ?? "";
             string mode = (string?)a?["Mode"] ?? "OnlyThis";
-            if (monName.Length > 0) setup.Displays.Add(new DisplayRef { Id = monId, Name = monName });
+            if (monName.Length > 0)
+            {
+                setup.Displays.Add(new DisplayRef { Id = monId, Name = monName });
+            }
+
             setup.MainDisplayId = monId.Length > 0 ? monId : monName;
             if (mode is "ExtendAsMain" or "Duplicate")
             {
                 foreach (var m in monitors.Where(m => m.Id != monId && m.Name != monName))
+                {
                     setup.Displays.Add(new DisplayRef { Id = m.Id, Name = m.Name });
+                }
+
                 setup.Mirror = mode == "Duplicate";
             }
             // Audio: a device named after the display (HDMI/DisplayPort audio), if there is one.
@@ -177,7 +206,9 @@ public static class SettingsManager
         var tv = FromAction(v1["Connected"], "TV", Glyphs.Game);
         string hubId = (string?)v1["HubDeviceId"] ?? "";
         if (hubId.Length > 0)
+        {
             tv.Hubs.Add(new HubRef { DeviceId = hubId, Name = (string?)v1["HubName"] ?? "USB hub", ExactPort = (bool?)v1["MatchExactPort"] ?? false });
+        }
 
         s.Setups.Add(desk);
         s.Setups.Add(tv);

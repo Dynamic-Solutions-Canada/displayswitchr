@@ -40,17 +40,32 @@ internal static class DetectHubDialog
         timer.Interval = TimeSpan.FromSeconds(1);
         timer.Tick += async (_, _) =>
         {
-            if (busy) return;
+            if (busy)
+            {
+                return;
+            }
+
             busy = true;
             try
             {
                 var now = await Task.Run(UsbDevices.List);
                 var ids = now.Select(d => d.DeviceId).ToHashSet(StringComparer.OrdinalIgnoreCase);
                 if (baseline != null)
+                {
                     foreach (var gone in baseline.Where(id => !ids.Contains(id)))
+                    {
                         if (removed.All(r => r.DeviceId != gone))
+                        {
                             removed.Add(new UsbDevice(gone, names.TryGetValue(gone, out var n) ? n : gone));
-                foreach (var d in now) names[d.DeviceId] = d.Name;
+                        }
+                    }
+                }
+
+                foreach (var d in now)
+                {
+                    names[d.DeviceId] = d.Name;
+                }
+
                 baseline = ids;
 
                 if (removed.Count > 0 && list.Items.Count != removed.Count)

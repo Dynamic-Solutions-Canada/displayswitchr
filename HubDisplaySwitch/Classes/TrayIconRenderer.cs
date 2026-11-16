@@ -32,9 +32,17 @@ internal static class TrayIconRenderer
             g.Clear(Color.Transparent);
             float w = m, h = m;
             var body = new RectangleF(w * 0.04f, h * 0.14f, w * 0.92f, h * 0.60f);
-            using (var b = new SolidBrush(frame)) g.FillPath(b, Rounded(body, w * 0.08f));
+            using (var b = new SolidBrush(frame))
+            {
+                g.FillPath(b, Rounded(body, w * 0.08f));
+            }
+
             var inner = RectangleF.Inflate(body, -w * 0.075f, -h * 0.075f);
-            using (var b = new SolidBrush(screen)) g.FillPath(b, Rounded(inner, w * 0.03f));
+            using (var b = new SolidBrush(screen))
+            {
+                g.FillPath(b, Rounded(inner, w * 0.03f));
+            }
+
             using var stand = new SolidBrush(frame);
             g.FillRectangle(stand, w * 0.43f, body.Bottom - 1, w * 0.14f, h * 0.12f);
             g.FillPath(stand, Rounded(new RectangleF(w * 0.24f, body.Bottom + h * 0.10f, w * 0.52f, h * 0.09f), h * 0.045f));

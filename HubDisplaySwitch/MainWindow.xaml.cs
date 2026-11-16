@@ -51,8 +51,16 @@ public sealed partial class MainWindow : Window
     /// </summary>
     public static bool ClaimSingleInstance()
     {
-        if (SingleInstance.TryClaim(MutexName)) return true;
-        if (!Startup.IsSilentLaunch()) SingleInstance.SignalRunningInstance(HostTitle, ShowSettingsMessageName);
+        if (SingleInstance.TryClaim(MutexName))
+        {
+            return true;
+        }
+
+        if (!Startup.IsSilentLaunch())
+        {
+            SingleInstance.SignalRunningInstance(HostTitle, ShowSettingsMessageName);
+        }
+
         return false;
     }
 
@@ -90,7 +98,11 @@ public sealed partial class MainWindow : Window
         _uiSettings.ColorValuesChanged += (_, _) => DispatcherQueue.TryEnqueue(UpdateTrayIcon);
         UpdateTrayIcon();
 
-        if (SettingsManager.IsFirstRun && SettingsManager.Current.Startup) _ = Startup.RegisterOnFirstRunAsync();
+        if (SettingsManager.IsFirstRun && SettingsManager.Current.Startup)
+        {
+            _ = Startup.RegisterOnFirstRunAsync();
+        }
+
         Startup.RemoveUnpackagedEntries("HubDisplaySwitch");   // the original watcher's Run value
 
         Logger.Info("Started v{Version}, {Count} setup(s), packaged={Packaged}",
@@ -98,7 +110,10 @@ public sealed partial class MainWindow : Window
         Engine.Start();
 
         // Also after the settings file had to be reset, so the user sees their setups were recreated.
-        if (!Startup.IsSilentLaunch() || SettingsManager.IsFirstRun || SettingsManager.WasReset) SettingsWindow.ShowInstance();
+        if (!Startup.IsSilentLaunch() || SettingsManager.IsFirstRun || SettingsManager.WasReset)
+        {
+            SettingsWindow.ShowInstance();
+        }
     }
 
     private void HideHostWindow()
@@ -129,7 +144,10 @@ public sealed partial class MainWindow : Window
         var s = SettingsManager.Current;
         var menu = new TrayMenu();
         foreach (var setup in s.Setups.ToList())
+        {
             menu.Add(setup.Name, () => Engine.Apply(setup, SwitchReason.Manual), isChecked: Engine.Active?.Id == setup.Id);
+        }
+
         menu.AddSeparator()
             .Add(UiText.Get(s.Paused ? "Resume auto-switching" : "Pause auto-switching"), () => Engine.SetPaused(!SettingsManager.Current.Paused))
             .Add(UiText.Get("Settings"), SettingsWindow.ShowInstance)

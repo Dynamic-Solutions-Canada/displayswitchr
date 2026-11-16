@@ -50,7 +50,9 @@ public partial class App : Application
         try
         {
             if (WinUIAppKit.AppEnvironment.IsPackaged && global::Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride.Length > 0)
+            {
                 global::Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "";
+            }
         }
         catch { }
 

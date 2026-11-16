@@ -113,7 +113,11 @@ public sealed partial class OsdWindow : Window
         _fadeStep++;
         byte alpha = (byte)Math.Max(0, 255 - 255 * _fadeStep / FadeSteps);
         SetLayeredWindowAttributes(_hwnd, 0, alpha, LWA_ALPHA);
-        if (_fadeStep < FadeSteps) return;
+        if (_fadeStep < FadeSteps)
+        {
+            return;
+        }
+
         _fade.Stop();
         _visible = false;
         Spinner.IsActive = false;

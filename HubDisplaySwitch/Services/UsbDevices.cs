@@ -18,7 +18,11 @@ public sealed partial class UsbDevices : IDisposable
             using (mo)
             {
                 var id = mo["DeviceID"] as string;
-                if (string.IsNullOrEmpty(id) || id.StartsWith(@"USB\ROOT_HUB", StringComparison.OrdinalIgnoreCase)) continue;
+                if (string.IsNullOrEmpty(id) || id.StartsWith(@"USB\ROOT_HUB", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
                 list.Add(new UsbDevice(id, mo["Name"] as string ?? id));
             }
         }

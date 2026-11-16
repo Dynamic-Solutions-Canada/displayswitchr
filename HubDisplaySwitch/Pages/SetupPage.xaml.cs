@@ -24,7 +24,11 @@ public sealed partial class SetupPage : Page
     {
         SetupId = e.Parameter as string;
         var setup = SettingsManager.Current.Setups.FirstOrDefault(s => s.Id == SetupId);
-        if (setup == null) return;
+        if (setup == null)
+        {
+            return;
+        }
+
         _setup = setup;
         Load();
     }
@@ -50,23 +54,38 @@ public sealed partial class SetupPage : Page
 
     private void Save(bool navChanged = false)
     {
-        if (_initializing) return;
+        if (_initializing)
+        {
+            return;
+        }
+
         SettingsManager.SaveSettings();
         MainWindow.Engine.SettingsChanged();
-        if (navChanged) SettingsWindow.GetCurrent()?.UpdateSetupItem(_setup);
+        if (navChanged)
+        {
+            SettingsWindow.GetCurrent()?.UpdateSetupItem(_setup);
+        }
     }
 
     // ── Name / icon / delete ─────────────────────────────────────────────
     private void NameBox_TextChanged(object sender, TextChangedEventArgs e)
     {
-        if (_initializing) return;
+        if (_initializing)
+        {
+            return;
+        }
+
         _setup.Name = string.IsNullOrWhiteSpace(NameBox.Text) ? UiText.Get("Setup") : NameBox.Text.Trim();
         Save(navChanged: true);
     }
 
     private void GlyphGrid_ItemClick(object sender, ItemClickEventArgs e)
     {
-        if (e.ClickedItem is not string glyph) return;
+        if (e.ClickedItem is not string glyph)
+        {
+            return;
+        }
+
         _setup.Glyph = glyph;
         GlyphIcon.Glyph = glyph;
         GlyphFlyout.Hide();
@@ -84,11 +103,18 @@ public sealed partial class SetupPage : Page
             CloseButtonText = UiText.Get("Cancel"),
             DefaultButton = ContentDialogButton.Close,
         };
-        if (await dialog.ShowAsync() != ContentDialogResult.Primary) return;
+        if (await dialog.ShowAsync() != ContentDialogResult.Primary)
+        {
+            return;
+        }
 
         var setups = SettingsManager.Current.Setups;
         setups.Remove(_setup);
-        if (_setup.IsDefault && setups.Count > 0 && !setups.Any(s => s.IsDefault)) setups[0].IsDefault = true;
+        if (_setup.IsDefault && setups.Count > 0 && !setups.Any(s => s.IsDefault))
+        {
+            setups[0].IsDefault = true;
+        }
+
         SettingsManager.SaveSettings();
         MainWindow.Engine.SettingsChanged();
         Logger.Info("Deleted setup {Name}", _setup.Name);
@@ -98,12 +124,26 @@ public sealed partial class SetupPage : Page
     // ── Trigger / hubs ───────────────────────────────────────────────────
     private void Trigger_Checked(object sender, RoutedEventArgs e)
     {
-        if (_initializing) return;
+        if (_initializing)
+        {
+            return;
+        }
+
         bool isDefault = DefaultRadio.IsChecked == true;
         HubSection.Visibility = isDefault ? Visibility.Collapsed : Visibility.Visible;
-        if (isDefault == _setup.IsDefault) return;
+        if (isDefault == _setup.IsDefault)
+        {
+            return;
+        }
+
         if (isDefault)
-            foreach (var other in SettingsManager.Current.Setups) other.IsDefault = false;
+        {
+            foreach (var other in SettingsManager.Current.Setups)
+            {
+                other.IsDefault = false;
+            }
+        }
+
         _setup.IsDefault = isDefault;
         Save();
     }
@@ -140,6 +180,7 @@ public sealed partial class SetupPage : Page
             HubsPanel.Children.Add(Row(Glyphs.Usb, info, exact, remove));
         }
         if (_setup.Hubs.Count == 0)
+        {
             HubsPanel.Children.Add(new TextBlock
             {
                 Text = UiText.Get("No hubs yet. Add one from the list, or detect it by unplugging it."),
@@ -147,6 +188,7 @@ public sealed partial class SetupPage : Page
                 Style = (Style)Application.Current.Resources["CaptionTextBlockStyle"],
                 Foreground = (Brush)Application.Current.Resources["TextFillColorSecondaryBrush"],
             });
+        }
     }
 
     /// <summary>A rounded row: icon, stretching content, then trailing controls.</summary>
@@ -182,12 +224,24 @@ public sealed partial class SetupPage : Page
         var hubs = devices.Where(d => d.IsHub).OrderBy(d => d.Name).ToList();
         var others = devices.Where(d => !d.IsHub).OrderBy(d => d.Name).ToList();
 
-        foreach (var d in hubs) AddHubMenu.Items.Add(HubMenuItem(d));
-        if (hubs.Count == 0) AddHubMenu.Items.Add(new MenuFlyoutItem { Text = UiText.Get("No USB hubs found"), IsEnabled = false });
+        foreach (var d in hubs)
+        {
+            AddHubMenu.Items.Add(HubMenuItem(d));
+        }
+
+        if (hubs.Count == 0)
+        {
+            AddHubMenu.Items.Add(new MenuFlyoutItem { Text = UiText.Get("No USB hubs found"), IsEnabled = false });
+        }
+
         if (others.Count > 0)
         {
             var sub = new MenuFlyoutSubItem { Text = UiText.Get("Other USB devices") };
-            foreach (var d in others) sub.Items.Add(HubMenuItem(d));
+            foreach (var d in others)
+            {
+                sub.Items.Add(HubMenuItem(d));
+            }
+
             AddHubMenu.Items.Add(new MenuFlyoutSeparator());
             AddHubMenu.Items.Add(sub);
         }
@@ -202,7 +256,10 @@ public sealed partial class SetupPage : Page
 
     private void AddHub(UsbDevice d)
     {
-        if (_setup.Hubs.Any(h => h.DeviceId.Equals(d.DeviceId, StringComparison.OrdinalIgnoreCase))) return;
+        if (_setup.Hubs.Any(h => h.DeviceId.Equals(d.DeviceId, StringComparison.OrdinalIgnoreCase)))
+        {
+            return;
+        }
         // If another setup already uses this hub model, match by exact port so they can be told apart.
         bool sameModelElsewhere = SettingsManager.Current.Setups.SelectMany(s => s.Hubs)
             .Any(h => UsbDevices.ModelPrefix(h.DeviceId).Equals(d.ModelPrefix, StringComparison.OrdinalIgnoreCase));
@@ -214,7 +271,10 @@ public sealed partial class SetupPage : Page
     private async void DetectHub_Click(object sender, RoutedEventArgs e)
     {
         var device = await DetectHubDialog.ShowAsync(XamlRoot);
-        if (device != null) AddHub(device);
+        if (device != null)
+        {
+            AddHub(device);
+        }
     }
 
     // ── Displays ─────────────────────────────────────────────────────────
@@ -227,7 +287,12 @@ public sealed partial class SetupPage : Page
         // Every display Windows can see now, plus any this setup uses that isn't connected right now.
         var known = monitors.Select(m => new DisplayRef { Id = m.Id, Name = m.Name }).ToList();
         foreach (var d in _setup.Displays)
-            if (!known.Any(k => Same(k, d))) known.Add(d);
+        {
+            if (!known.Any(k => Same(k, d)))
+            {
+                known.Add(d);
+            }
+        }
 
         var main = _setup.Main;
         string group = "main-" + _setup.Id;
@@ -238,20 +303,24 @@ public sealed partial class SetupPage : Page
             string status = UiText.Get(mon == null ? "Not connected or switched off" : mon.Active ? "On" : "Connected, currently off");
             if (mon?.Active == true)
             {
-                try { int hz = DisplayConfig.GetCurrentRefreshRate(mon.Id, mon.Name); if (hz > 0) status += $"  ·  {hz} Hz"; } catch { }
+                try { int hz = DisplayConfig.GetCurrentRefreshRate(mon.Id, mon.Name); if (hz > 0) { status += $"  ·  {hz} Hz"; } } catch { }
             }
 
             var info = new StackPanel();
             info.Children.Add(new TextBlock { Text = d.Name });
             info.Children.Add(new TextBlock
             {
-                Text = status, Style = (Style)Application.Current.Resources["CaptionTextBlockStyle"],
+                Text = status,
+                Style = (Style)Application.Current.Resources["CaptionTextBlockStyle"],
                 Foreground = (Brush)Application.Current.Resources["TextFillColorSecondaryBrush"],
             });
             var check = new CheckBox { Content = info, IsChecked = selected, VerticalAlignment = VerticalAlignment.Center };
             var mainRadio = new RadioButton
             {
-                Content = UiText.Get("Main display"), GroupName = group, MinWidth = 0, VerticalAlignment = VerticalAlignment.Center,
+                Content = UiText.Get("Main display"),
+                GroupName = group,
+                MinWidth = 0,
+                VerticalAlignment = VerticalAlignment.Center,
                 IsChecked = selected && main != null && Same(main, d),
             };
 
@@ -259,8 +328,16 @@ public sealed partial class SetupPage : Page
             check.Click += (_, _) => ToggleDisplay(display, check.IsChecked == true);
             mainRadio.Checked += (_, _) =>
             {
-                if (_initializing) return;
-                if (!_setup.Displays.Any(x => Same(x, display))) _setup.Displays.Add(display);
+                if (_initializing)
+                {
+                    return;
+                }
+
+                if (!_setup.Displays.Any(x => Same(x, display)))
+                {
+                    _setup.Displays.Add(display);
+                }
+
                 _setup.MainDisplayId = display.Id.Length > 0 ? display.Id : display.Name;
                 Save(); Rebuild();
             };
@@ -280,7 +357,9 @@ public sealed partial class SetupPage : Page
             grid.Children.Add(mainRadio);
             DisplaysPanel.Children.Add(new Border
             {
-                Child = grid, Padding = new Thickness(12, 6, 12, 6), CornerRadius = new CornerRadius(6),
+                Child = grid,
+                Padding = new Thickness(12, 6, 12, 6),
+                CornerRadius = new CornerRadius(6),
                 Background = (Brush)Application.Current.Resources["SubtleFillColorSecondaryBrush"],
             });
         }
@@ -297,16 +376,24 @@ public sealed partial class SetupPage : Page
         combo.Items.Add(KeepRate);
         if (mon?.Active == true)
         {
-            try { foreach (var r in DisplayConfig.GetRefreshRates(mon.Id, mon.Name)) combo.Items.Add($"{r} Hz"); } catch { }
+            try { foreach (var r in DisplayConfig.GetRefreshRates(mon.Id, mon.Name)) { combo.Items.Add($"{r} Hz"); } } catch { }
         }
         // Select an item rather than setting Text: an editable ComboBox shows blank for Text set before it's loaded.
         string current = display.RefreshRate == 0 ? HighestRate : display.RefreshRate < 0 ? KeepRate : $"{display.RefreshRate} Hz";
-        if (!combo.Items.Contains(current)) combo.Items.Add(current);
+        if (!combo.Items.Contains(current))
+        {
+            combo.Items.Add(current);
+        }
+
         combo.SelectedItem = current;
 
         void Commit(string text)
         {
-            if (_initializing) return;
+            if (_initializing)
+            {
+                return;
+            }
+
             text = text.Trim();
             display.RefreshRate =
                 text.Equals(HighestRate, StringComparison.CurrentCultureIgnoreCase) ? 0 :
@@ -314,7 +401,7 @@ public sealed partial class SetupPage : Page
                 int.TryParse(new string(text.TakeWhile(char.IsDigit).ToArray()), out var hz) && hz > 0 ? hz : 0;
             Save();
         }
-        combo.SelectionChanged += (_, _) => { if (combo.SelectedItem is string s) Commit(s); };
+        combo.SelectionChanged += (_, _) => { if (combo.SelectedItem is string s) { Commit(s); } };
         combo.TextSubmitted += (_, args) => Commit(args.Text);
         return combo;
     }
@@ -322,11 +409,21 @@ public sealed partial class SetupPage : Page
     private void ToggleDisplay(DisplayRef d, bool on)
     {
         var existing = _setup.Displays.FirstOrDefault(x => Same(x, d));
-        if (on && existing == null) _setup.Displays.Add(d);
-        if (!on && existing != null) _setup.Displays.Remove(existing);
+        if (on && existing == null)
+        {
+            _setup.Displays.Add(d);
+        }
+
+        if (!on && existing != null)
+        {
+            _setup.Displays.Remove(existing);
+        }
         // Keep exactly one main display among the selected ones.
         if (_setup.Displays.Count > 0 && !_setup.Displays.Any(x => x.Id == _setup.MainDisplayId || x.Name == _setup.MainDisplayId))
+        {
             _setup.MainDisplayId = _setup.Displays[0].Id.Length > 0 ? _setup.Displays[0].Id : _setup.Displays[0].Name;
+        }
+
         Save();
         Rebuild();
     }
@@ -342,7 +439,11 @@ public sealed partial class SetupPage : Page
 
     private void MirrorSwitch_Toggled(object sender, RoutedEventArgs e)
     {
-        if (_initializing) return;
+        if (_initializing)
+        {
+            return;
+        }
+
         _setup.Mirror = MirrorSwitch.IsOn;
         Save();
     }
@@ -367,13 +468,20 @@ public sealed partial class SetupPage : Page
         void Group(string header, IEnumerable<AudioDevice> items)
         {
             var list = items.ToList();
-            if (list.Count == 0) return;
+            if (list.Count == 0)
+            {
+                return;
+            }
+
             combo.Items.Add(new ComboBoxItem
             {
-                IsEnabled = false, IsHitTestVisible = false, Padding = new Thickness(11, 10, 11, 2),
+                IsEnabled = false,
+                IsHitTestVisible = false,
+                Padding = new Thickness(11, 10, 11, 2),
                 Content = new TextBlock
                 {
-                    Text = UiText.Get(header), Style = (Style)Application.Current.Resources["CaptionTextBlockStyle"],
+                    Text = UiText.Get(header),
+                    Style = (Style)Application.Current.Resources["CaptionTextBlockStyle"],
                     FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
                     Foreground = (Brush)Application.Current.Resources["TextFillColorSecondaryBrush"],
                 },
@@ -382,7 +490,10 @@ public sealed partial class SetupPage : Page
             {
                 var item = new ComboBoxItem { Content = a.Name, Tag = a.Id };
                 combo.Items.Add(item);
-                if (name.Length > 0 && selected == null && (a.Id == id || a.Name == name)) selected = item;
+                if (name.Length > 0 && selected == null && (a.Id == id || a.Name == name))
+                {
+                    selected = item;
+                }
             }
         }
         Group("Connected", devices.Where(d => d.Active));
@@ -393,10 +504,13 @@ public sealed partial class SetupPage : Page
             selected = new ComboBoxItem { Content = name, Tag = id };
             combo.Items.Add(new ComboBoxItem
             {
-                IsEnabled = false, IsHitTestVisible = false, Padding = new Thickness(11, 10, 11, 2),
+                IsEnabled = false,
+                IsHitTestVisible = false,
+                Padding = new Thickness(11, 10, 11, 2),
                 Content = new TextBlock
                 {
-                    Text = UiText.Get("Saved, not available now"), Style = (Style)Application.Current.Resources["CaptionTextBlockStyle"],
+                    Text = UiText.Get("Saved, not available now"),
+                    Style = (Style)Application.Current.Resources["CaptionTextBlockStyle"],
                     FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
                     Foreground = (Brush)Application.Current.Resources["TextFillColorSecondaryBrush"],
                 },
@@ -411,14 +525,22 @@ public sealed partial class SetupPage : Page
 
     private void OutputCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (_initializing || OutputCombo.SelectedItem is not ComboBoxItem item) return;
+        if (_initializing || OutputCombo.SelectedItem is not ComboBoxItem item)
+        {
+            return;
+        }
+
         (_setup.AudioId, _setup.AudioName) = Pick(item, _outputs, _setup.AudioId, _setup.AudioName);
         Save();
     }
 
     private void InputCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (_initializing || InputCombo.SelectedItem is not ComboBoxItem item) return;
+        if (_initializing || InputCombo.SelectedItem is not ComboBoxItem item)
+        {
+            return;
+        }
+
         (_setup.MicId, _setup.MicName) = Pick(item, _inputs, _setup.MicId, _setup.MicName);
         Save();
     }
@@ -426,7 +548,11 @@ public sealed partial class SetupPage : Page
     private static (string id, string name) Pick(ComboBoxItem item, List<AudioDevice> devices, string oldId, string oldName)
     {
         string id = item.Tag as string ?? "";
-        if (id.Length == 0) return ("", "");
+        if (id.Length == 0)
+        {
+            return ("", "");
+        }
+
         var device = devices.FirstOrDefault(a => a.Id == id);
         return device != null ? (device.Id, device.Name) : (oldId, oldName);   // "(not found)" entry keeps the saved one
     }

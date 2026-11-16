@@ -33,19 +33,30 @@ public sealed partial class GeneralPage : Page
 
     private void Persist(object sender, RoutedEventArgs e)
     {
-        if (!_initializing) SettingsManager.SaveSettings();
+        if (!_initializing)
+        {
+            SettingsManager.SaveSettings();
+        }
     }
 
     private void AutoSwitch_Toggled(object sender, RoutedEventArgs e)
     {
-        if (_initializing) return;
+        if (_initializing)
+        {
+            return;
+        }
+
         MainWindow.Engine.SetPaused(!AutoSwitch.IsOn);
     }
 
     // ── Start with Windows ──────────────────────────────────────────────
     private async void StartupSwitch_Toggled(object sender, RoutedEventArgs e)
     {
-        if (_updatingStartupSwitch || _initializing) return;
+        if (_updatingStartupSwitch || _initializing)
+        {
+            return;
+        }
+
         bool requested = StartupSwitch.IsOn;
         await LoadStartupAsync(() => MainWindow.Startup.SetEnabledAsync(requested));
     }
@@ -123,13 +134,21 @@ public sealed partial class GeneralPage : Page
 
     private void LanguageCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (_buildingLanguages || LanguageCombo.SelectedItem is not ComboBoxItem { Tag: string tag }) return;
+        if (_buildingLanguages || LanguageCombo.SelectedItem is not ComboBoxItem { Tag: string tag })
+        {
+            return;
+        }
+
         Settings.Language = tag;   // OnLanguageChanged applies + saves; the UI re-labels itself
     }
 
     private void ThemeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (_initializing) return;
+        if (_initializing)
+        {
+            return;
+        }
+
         Settings.AppTheme = (WinUIAppKit.Theming.AppThemeChoice)ThemeCombo.SelectedIndex;   // OnAppThemeChanged applies + saves
     }
 }

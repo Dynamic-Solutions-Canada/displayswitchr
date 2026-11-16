@@ -83,11 +83,23 @@ public static class DisplayConfig
         for (int attempt = 0; attempt < 3; attempt++)
         {
             int r = GetDisplayConfigBufferSizes(flags, out uint np, out uint nm);
-            if (r != 0) throw new InvalidOperationException($"GetDisplayConfigBufferSizes failed ({r})");
+            if (r != 0)
+            {
+                throw new InvalidOperationException($"GetDisplayConfigBufferSizes failed ({r})");
+            }
+
             var p = new PathInfo[np]; var m = new ModeInfo[nm];
             r = QueryDisplayConfig(flags, ref np, p, ref nm, m, IntPtr.Zero);
-            if (r == 122) continue; // ERROR_INSUFFICIENT_BUFFER: config changed between calls, retry
-            if (r != 0) throw new InvalidOperationException($"QueryDisplayConfig failed ({r})");
+            if (r == 122)
+            {
+                continue; // ERROR_INSUFFICIENT_BUFFER: config changed between calls, retry
+            }
+
+            if (r != 0)
+            {
+                throw new InvalidOperationException($"QueryDisplayConfig failed ({r})");
+            }
+
             Array.Resize(ref p, (int)np);
             return p;
         }
@@ -121,7 +133,11 @@ public static class DisplayConfig
         var result = new Dictionary<string, MonitorInfo>();
         foreach (var p in Query(QDC_ALL_PATHS))
         {
-            if (p.target.targetAvailable == 0) continue;
+            if (p.target.targetAvailable == 0)
+            {
+                continue;
+            }
+
             var n = GetTargetName(p.target);
             string key = string.IsNullOrEmpty(n.devicePath) ? $"{p.target.adapterId.Low}:{p.target.id}" : n.devicePath;
             bool active = (p.flags & PATH_ACTIVE) != 0;
@@ -139,7 +155,11 @@ public static class DisplayConfig
     /// </summary>
     public static void SetActive(IReadOnlyList<(string? id, string name)> monitors, bool mirror, bool skipMissing = false)
     {
-        if (monitors.Count == 0) throw new ArgumentException("No displays chosen");
+        if (monitors.Count == 0)
+        {
+            throw new ArgumentException("No displays chosen");
+        }
+
         if (monitors.Count == 1 && !mirror) { ShowOnly(monitors[0].id, monitors[0].name); return; }
 
         var all = Query(QDC_ALL_PATHS).Where(p => p.target.targetAvailable != 0)
@@ -152,11 +172,19 @@ public static class DisplayConfig
         foreach (var (id, name) in monitors)
         {
             var c = all.Where(x => IsMonitor(x.name, id, name, true)).ToList();
-            if (c.Count == 0) c = all.Where(x => IsMonitor(x.name, id, name, false)).ToList();
+            if (c.Count == 0)
+            {
+                c = all.Where(x => IsMonitor(x.name, id, name, false)).ToList();
+            }
+
             c = c.Where(x => !usedTargets.Contains(Key(x.path.target.adapterId, x.path.target.id))).ToList();
             if (c.Count == 0)
             {
-                if (skipMissing) continue;
+                if (skipMissing)
+                {
+                    continue;
+                }
+
                 throw new MonitorNotFoundException(name);
             }
 
@@ -164,9 +192,12 @@ public static class DisplayConfig
             var ordered = c.OrderByDescending(x => (x.path.flags & PATH_ACTIVE) != 0).Select(x => x.path).ToList();
             PathInfo? pick = null;
             if (mirror && mirrorSource is { } ms)
+            {
                 pick = ordered.Cast<PathInfo?>().FirstOrDefault(p => Key(p!.Value.source.adapterId, p.Value.source.id) == ms);
+            }
+
             pick ??= ordered.Cast<PathInfo?>().FirstOrDefault(p => !usedSources.Contains(Key(p!.Value.source.adapterId, p.Value.source.id)));
-            if (pick == null) { if (skipMissing) continue; throw new InvalidOperationException($"No free video output for '{name}'"); }
+            if (pick == null) { if (skipMissing) { continue; } throw new InvalidOperationException($"No free video output for '{name}'"); }
 
             var path = pick.Value;
             var src = Key(path.source.adapterId, path.source.id);
@@ -178,11 +209,17 @@ public static class DisplayConfig
             path.target.modeInfoIdx = IDX_INVALID;
             chosen.Add(path);
         }
-        if (chosen.Count == 0) throw new MonitorNotFoundException(monitors[0].name);
+        if (chosen.Count == 0)
+        {
+            throw new MonitorNotFoundException(monitors[0].name);
+        }
 
         int r = SetDisplayConfig((uint)chosen.Count, chosen.ToArray(), 0, null,
                                  SDC_APPLY | SDC_USE_SUPPLIED | SDC_ALLOW_CHANGES | SDC_SAVE | SDC_ALLOW_PATH_ORDER_CHANGES);
-        if (r != 0) throw new InvalidOperationException($"SetDisplayConfig failed ({r})");
+        if (r != 0)
+        {
+            throw new InvalidOperationException($"SetDisplayConfig failed ({r})");
+        }
     }
 
     static (uint, int, uint) Key(LUID adapter, uint id) => (adapter.Low, adapter.High, id);
@@ -194,8 +231,15 @@ public static class DisplayConfig
         // Prefer the monitor's currently active path, otherwise any path that drives it.
         var withNames = all.Select(p => (path: p, name: GetTargetName(p.target))).ToList();
         var candidates = withNames.Where(x => IsMonitor(x.name, id, name, true)).ToList();
-        if (candidates.Count == 0) candidates = withNames.Where(x => IsMonitor(x.name, id, name, false)).ToList();
-        if (candidates.Count == 0) throw new MonitorNotFoundException(name);
+        if (candidates.Count == 0)
+        {
+            candidates = withNames.Where(x => IsMonitor(x.name, id, name, false)).ToList();
+        }
+
+        if (candidates.Count == 0)
+        {
+            throw new MonitorNotFoundException(name);
+        }
 
         var activeOnes = candidates.Where(x => (x.path.flags & PATH_ACTIVE) != 0).ToList();
         var path = (activeOnes.Count > 0 ? activeOnes[0] : candidates[0]).path;
@@ -203,7 +247,10 @@ public static class DisplayConfig
         path.source.modeInfoIdx = IDX_INVALID;
         path.target.modeInfoIdx = IDX_INVALID;
         int r = SetDisplayConfig(1, new[] { path }, 0, null, SDC_APPLY | SDC_USE_SUPPLIED | SDC_ALLOW_CHANGES | SDC_SAVE);
-        if (r != 0) throw new InvalidOperationException($"SetDisplayConfig failed ({r})");
+        if (r != 0)
+        {
+            throw new InvalidOperationException($"SetDisplayConfig failed ({r})");
+        }
     }
 
     /// <summary>Extend the desktop across all connected monitors, with this one as the main display.</summary>
@@ -211,9 +258,16 @@ public static class DisplayConfig
     {
         if (!GetMonitors().Any(m => string.Equals(m.Id, id, StringComparison.OrdinalIgnoreCase) ||
                                     string.Equals(m.Name, name, StringComparison.OrdinalIgnoreCase)))
+        {
             throw new MonitorNotFoundException(name);
+        }
+
         int r = SetDisplayConfig(0, null, 0, null, SDC_APPLY | SDC_TOPOLOGY_EXTEND);
-        if (r != 0) throw new InvalidOperationException($"SetDisplayConfig (extend) failed ({r})");
+        if (r != 0)
+        {
+            throw new InvalidOperationException($"SetDisplayConfig (extend) failed ({r})");
+        }
+
         Thread.Sleep(800);
         SetPrimary(id, name);
     }
@@ -222,7 +276,10 @@ public static class DisplayConfig
     public static void Duplicate()
     {
         int r = SetDisplayConfig(0, null, 0, null, SDC_APPLY | SDC_TOPOLOGY_CLONE);
-        if (r != 0) throw new InvalidOperationException($"SetDisplayConfig (duplicate) failed ({r})");
+        if (r != 0)
+        {
+            throw new InvalidOperationException($"SetDisplayConfig (duplicate) failed ({r})");
+        }
     }
 
     /// <summary>GDI device name (\\.\DISPLAYn) of an active monitor, or null.</summary>
@@ -230,7 +287,11 @@ public static class DisplayConfig
     {
         var active = Query(QDC_ONLY_ACTIVE_PATHS).Select(p => (path: p, name: GetTargetName(p.target)));
         var hit = active.FirstOrDefault(x => IsMonitor(x.name, id, name, true));
-        if (hit.name.devicePath == null) hit = active.FirstOrDefault(x => IsMonitor(x.name, id, name, false));
+        if (hit.name.devicePath == null)
+        {
+            hit = active.FirstOrDefault(x => IsMonitor(x.name, id, name, false));
+        }
+
         return hit.name.devicePath == null ? null : GetGdiName(hit.path.source);
     }
 
@@ -241,14 +302,25 @@ public static class DisplayConfig
         var gdiNames = Query(QDC_ONLY_ACTIVE_PATHS).Select(p => GetGdiName(p.source)).OfType<string>().Distinct().ToList();
 
         var pm = NewDevMode();
-        if (!EnumDisplaySettings(primary, ENUM_CURRENT_SETTINGS, ref pm)) return;
+        if (!EnumDisplaySettings(primary, ENUM_CURRENT_SETTINGS, ref pm))
+        {
+            return;
+        }
+
         int dx = pm.dmPositionX, dy = pm.dmPositionY;
-        if (dx == 0 && dy == 0) return; // already primary
+        if (dx == 0 && dy == 0)
+        {
+            return; // already primary
+        }
 
         foreach (var gdi in gdiNames)
         {
             var dm = NewDevMode();
-            if (!EnumDisplaySettings(gdi, ENUM_CURRENT_SETTINGS, ref dm)) continue;
+            if (!EnumDisplaySettings(gdi, ENUM_CURRENT_SETTINGS, ref dm))
+            {
+                continue;
+            }
+
             dm.dmPositionX -= dx; dm.dmPositionY -= dy; dm.dmFields = DM_POSITION;
             uint flags = CDS_UPDATEREGISTRY | CDS_NORESET | (gdi == primary ? CDS_SET_PRIMARY : 0);
             ChangeDisplaySettingsEx(gdi, ref dm, IntPtr.Zero, flags, IntPtr.Zero);
@@ -262,14 +334,27 @@ public static class DisplayConfig
     public static List<int> GetRefreshRates(string? id, string name)
     {
         var gdi = ActiveGdiName(id, name);
-        if (gdi == null) return new();
+        if (gdi == null)
+        {
+            return new();
+        }
+
         var cur = NewDevMode();
-        if (!EnumDisplaySettings(gdi, ENUM_CURRENT_SETTINGS, ref cur)) return new();
+        if (!EnumDisplaySettings(gdi, ENUM_CURRENT_SETTINGS, ref cur))
+        {
+            return new();
+        }
+
         var rates = new SortedSet<int>();
         var dm = NewDevMode();
         for (int i = 0; EnumDisplaySettings(gdi, i, ref dm); i++)
+        {
             if (dm.dmPelsWidth == cur.dmPelsWidth && dm.dmPelsHeight == cur.dmPelsHeight && (dm.dmDisplayFlags & 2) == 0)
+            {
                 rates.Add(dm.dmDisplayFrequency);
+            }
+        }
+
         return rates.Reverse().ToList();
     }
 
@@ -302,20 +387,45 @@ public static class DisplayConfig
     private static string? ApplyRefreshRate(string? id, string name, int preferred, bool dryRun)
     {
         var gdi = ActiveGdiName(id, name);
-        if (gdi == null) return null;
+        if (gdi == null)
+        {
+            return null;
+        }
+
         var cur = NewDevMode();
-        if (!EnumDisplaySettings(gdi, ENUM_CURRENT_SETTINGS, ref cur)) return null;
+        if (!EnumDisplaySettings(gdi, ENUM_CURRENT_SETTINGS, ref cur))
+        {
+            return null;
+        }
 
         DEVMODE? best = null;
         var dm = NewDevMode();
         for (int i = 0; EnumDisplaySettings(gdi, i, ref dm); i++)
         {
-            if (dm.dmPelsWidth != cur.dmPelsWidth || dm.dmPelsHeight != cur.dmPelsHeight || (dm.dmDisplayFlags & 2) != 0) continue;
-            if (preferred > 0 && dm.dmDisplayFrequency > preferred) continue;
-            if (best == null || dm.dmDisplayFrequency > best.Value.dmDisplayFrequency) best = dm;
+            if (dm.dmPelsWidth != cur.dmPelsWidth || dm.dmPelsHeight != cur.dmPelsHeight || (dm.dmDisplayFlags & 2) != 0)
+            {
+                continue;
+            }
+
+            if (preferred > 0 && dm.dmDisplayFrequency > preferred)
+            {
+                continue;
+            }
+
+            if (best == null || dm.dmDisplayFrequency > best.Value.dmDisplayFrequency)
+            {
+                best = dm;
+            }
         }
-        if (best == null || best.Value.dmDisplayFrequency == cur.dmDisplayFrequency) return null;
-        if (dryRun) return $"{name}: {cur.dmDisplayFrequency} → {best.Value.dmDisplayFrequency} Hz";
+        if (best == null || best.Value.dmDisplayFrequency == cur.dmDisplayFrequency)
+        {
+            return null;
+        }
+
+        if (dryRun)
+        {
+            return $"{name}: {cur.dmDisplayFrequency} → {best.Value.dmDisplayFrequency} Hz";
+        }
 
         var target = best.Value;
         target.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;

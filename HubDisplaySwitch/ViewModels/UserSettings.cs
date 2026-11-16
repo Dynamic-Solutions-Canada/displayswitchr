@@ -86,8 +86,10 @@ public partial class UserSettings : ObservableObject
         {
             SettingsWindow = new WindowPlacement
             {
-                X = SettingsWindowX ?? 0, Y = SettingsWindowY ?? 0,
-                Width = SettingsWindowWidth.Value, Height = SettingsWindowHeight.Value,
+                X = SettingsWindowX ?? 0,
+                Y = SettingsWindowY ?? 0,
+                Width = SettingsWindowWidth.Value,
+                Height = SettingsWindowHeight.Value,
             };
         }
         SettingsWindowX = SettingsWindowY = SettingsWindowWidth = SettingsWindowHeight = null;
@@ -101,7 +103,12 @@ public partial class UserSettings : ObservableObject
             s.Displays ??= new();
             // Older builds kept refresh preferences per display globally; carry them into each setup.
             foreach (var d in s.Displays)
-                if (d.RefreshRate == 0 && RefreshRates.TryGetValue(d.Name, out var r)) d.RefreshRate = r;
+            {
+                if (d.RefreshRate == 0 && RefreshRates.TryGetValue(d.Name, out var r))
+                {
+                    d.RefreshRate = r;
+                }
+            }
         }
         RefreshRates.Clear();
         return changed;

@@ -69,7 +69,10 @@ public sealed partial class SettingsWindow : Window
                 Icon = new FontIcon { Glyph = s.Glyph },
             };
             RootNavigation.MenuItems.Add(item);
-            if (s.Id == selectId) select = item;
+            if (s.Id == selectId)
+            {
+                select = item;
+            }
         }
         RootNavigation.MenuItems.Add(new NavigationViewItem
         {
@@ -79,27 +82,46 @@ public sealed partial class SettingsWindow : Window
             Icon = new FontIcon { Glyph = "" },
         });
 
-        if (select != null) RootNavigation.SelectedItem = select;
-        else if (SettingsManager.Current.Setups.Count == 0) RootNavigation.SelectedItem = RootNavigation.SettingsItem;
-        else RootNavigation.SelectedItem = RootNavigation.MenuItems.OfType<NavigationViewItem>().First();
+        if (select != null)
+        {
+            RootNavigation.SelectedItem = select;
+        }
+        else if (SettingsManager.Current.Setups.Count == 0)
+        {
+            RootNavigation.SelectedItem = RootNavigation.SettingsItem;
+        }
+        else
+        {
+            RootNavigation.SelectedItem = RootNavigation.MenuItems.OfType<NavigationViewItem>().First();
+        }
     }
 
     /// <summary>Update a setup's nav item text/icon in place (no reselect, keeps the page).</summary>
     public void UpdateSetupItem(Setup s)
     {
         foreach (var item in RootNavigation.MenuItems.OfType<NavigationViewItem>())
+        {
             if (item.Tag as string == s.Id)
             {
                 item.Content = s.Name;
                 item.Icon = new FontIcon { Glyph = s.Glyph };
             }
+        }
     }
 
     private void RootNavigation_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
     {
-        if (args.InvokedItemContainer?.Tag as string != AddTag) return;
+        if (args.InvokedItemContainer?.Tag as string != AddTag)
+        {
+            return;
+        }
+
         var setup = new Setup { Name = UiText.Get("New setup"), Glyph = Glyphs.Monitor };
-        if (SettingsManager.Current.Setups.Count == 0) setup.IsDefault = true;
+        if (SettingsManager.Current.Setups.Count == 0)
+        {
+            setup.IsDefault = true;
+        }
+
         SettingsManager.Current.Setups.Add(setup);
         SettingsManager.SaveSettings();
         MainWindow.Engine.SettingsChanged();
@@ -108,9 +130,17 @@ public sealed partial class SettingsWindow : Window
 
     private void RootNavigation_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {
-        if (_rebuildingQuietly) return;
+        if (_rebuildingQuietly)
+        {
+            return;
+        }
+
         if (args.IsSettingsSelected) { Navigate(typeof(GeneralPage), null); return; }
-        if ((args.SelectedItem as NavigationViewItem)?.Tag is not string tag || tag == AddTag) return;
+        if ((args.SelectedItem as NavigationViewItem)?.Tag is not string tag || tag == AddTag)
+        {
+            return;
+        }
+
         if (tag == "AboutPage") { Navigate(typeof(AboutPage), null); return; }
         if (tag == "PromoPage") { Navigate(typeof(TechnicallyReal.Promo.PromotedAppsPage), null); return; }
         Navigate(typeof(SetupPage), tag);
@@ -118,15 +148,26 @@ public sealed partial class SettingsWindow : Window
 
     private void Navigate(Type page, string? parameter, bool force = false)
     {
-        if (!force && ContentFrame.Content is SetupPage current && page == typeof(SetupPage) && current.SetupId == parameter) return;
-        if (!force && ContentFrame.Content?.GetType() == page && page != typeof(SetupPage)) return;
+        if (!force && ContentFrame.Content is SetupPage current && page == typeof(SetupPage) && current.SetupId == parameter)
+        {
+            return;
+        }
+
+        if (!force && ContentFrame.Content?.GetType() == page && page != typeof(SetupPage))
+        {
+            return;
+        }
+
         ContentFrame.Navigate(page, parameter);
     }
 
     /// <summary>WinUI's built-in Settings item follows the Windows language; label it ourselves.</summary>
     private void LocalizeSettingsItem()
     {
-        if (RootNavigation.SettingsItem is NavigationViewItem item) Localize.SetContent(item, "Settings");
+        if (RootNavigation.SettingsItem is NavigationViewItem item)
+        {
+            Localize.SetContent(item, "Settings");
+        }
     }
 
     /// <summary>Re-label the navigation and reload the current page (its code-built rows hold text too).</summary>
@@ -138,11 +179,17 @@ public sealed partial class SettingsWindow : Window
         try
         {
             RebuildSetupItems(setupId);
-            if (setupId == null) RootNavigation.SelectedItem = selected;   // Settings / About / promo stay selected
+            if (setupId == null)
+            {
+                RootNavigation.SelectedItem = selected;   // Settings / About / promo stay selected
+            }
         }
         finally { _rebuildingQuietly = false; }
         // XAML text refreshes itself (Localize); setup pages also build rows in code, so reload those.
-        if (setupId != null) Navigate(typeof(SetupPage), setupId, force: true);
+        if (setupId != null)
+        {
+            Navigate(typeof(SetupPage), setupId, force: true);
+        }
     });
 
     private bool _rebuildingQuietly;
@@ -152,7 +199,11 @@ public sealed partial class SettingsWindow : Window
         _instance = null;
         UiText.Changed -= OnLanguageChanged;
         // Minimized or maximized: keep the last normal placement.
-        if (WindowChrome.CapturePlacement(this) is { } placement) SettingsManager.Current.SettingsWindow = placement;
+        if (WindowChrome.CapturePlacement(this) is { } placement)
+        {
+            SettingsManager.Current.SettingsWindow = placement;
+        }
+
         SettingsManager.SaveSettings();
     }
 }

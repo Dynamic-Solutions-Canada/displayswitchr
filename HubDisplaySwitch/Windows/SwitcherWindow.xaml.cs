@@ -59,7 +59,9 @@ public sealed partial class SwitcherWindow : Window
 
         TilesPanel.Children.Clear();
         foreach (var setup in s.Setups)
+        {
             TilesPanel.Children.Add(BuildTile(engine, setup));
+        }
 
         StatusText.Text = engine == null ? ""
             : engine.IsSwitching ? UiText.Format("Switching to {{setup}}…", ("setup", engine.Active?.Name))
@@ -67,7 +69,10 @@ public sealed partial class SwitcherWindow : Window
             : engine.Active != null ? UiText.Format("Using {{setup}}", ("setup", engine.Active.Name)) : "";
 
         // Wording or setups changed while it's open (e.g. language switch): re-fit the height.
-        if (_controller is { IsOpen: true }) _controller.UpdateSize();
+        if (_controller is { IsOpen: true })
+        {
+            _controller.UpdateSize();
+        }
     }
 
     private Button BuildTile(SwitchEngine? engine, Setup setup)
@@ -77,23 +82,32 @@ public sealed partial class SwitcherWindow : Window
 
         var circle = new Border
         {
-            Width = 40, Height = 40, CornerRadius = new CornerRadius(20),
+            Width = 40,
+            Height = 40,
+            CornerRadius = new CornerRadius(20),
             Background = (Brush)res[active ? "AccentFillColorDefaultBrush" : "SubtleFillColorSecondaryBrush"],
             Child = new FontIcon
             {
-                Glyph = setup.Glyph, FontSize = 18,
+                Glyph = setup.Glyph,
+                FontSize = 18,
                 Foreground = (Brush)res[active ? "TextOnAccentFillColorPrimaryBrush" : "TextFillColorPrimaryBrush"],
             },
         };
 
         var detail = new List<string> { setup.DescribeDisplays() };
-        if (setup.AudioName.Length > 0) detail.Add(SwitchEngine.ShortAudio(setup.AudioName));
+        if (setup.AudioName.Length > 0)
+        {
+            detail.Add(SwitchEngine.ShortAudio(setup.AudioName));
+        }
+
         var text = new StackPanel { Margin = new Thickness(12, 0, 8, 0), VerticalAlignment = VerticalAlignment.Center };
         text.Children.Add(new TextBlock { Text = setup.Name, Style = (Style)res["BodyStrongTextBlockStyle"], TextTrimming = TextTrimming.CharacterEllipsis });
         text.Children.Add(new TextBlock
         {
-            Text = string.Join("  ·  ", detail), Style = (Style)res["CaptionTextBlockStyle"],
-            Foreground = (Brush)res["TextFillColorSecondaryBrush"], TextTrimming = TextTrimming.CharacterEllipsis,
+            Text = string.Join("  ·  ", detail),
+            Style = (Style)res["CaptionTextBlockStyle"],
+            Foreground = (Brush)res["TextFillColorSecondaryBrush"],
+            TextTrimming = TextTrimming.CharacterEllipsis,
         });
 
         // No badge for a setup with no hubs; never look up an empty key (the kit logs missing keys).
@@ -103,7 +117,9 @@ public sealed partial class SwitcherWindow : Window
                      : setup.Hubs.Count > 0 ? UiText.Get("Hub not connected") : "";
         var badgeText = new TextBlock
         {
-            Text = badge, Style = (Style)res["CaptionTextBlockStyle"], VerticalAlignment = VerticalAlignment.Center,
+            Text = badge,
+            Style = (Style)res["CaptionTextBlockStyle"],
+            VerticalAlignment = VerticalAlignment.Center,
             Foreground = (Brush)res[active ? "AccentTextFillColorPrimaryBrush" : "TextFillColorTertiaryBrush"],
             FontWeight = active ? Microsoft.UI.Text.FontWeights.SemiBold : Microsoft.UI.Text.FontWeights.Normal,
         };
@@ -125,7 +141,11 @@ public sealed partial class SwitcherWindow : Window
             Background = new SolidColorBrush(Microsoft.UI.Colors.Transparent),
             BorderThickness = new Thickness(0),
         };
-        if (active) button.Background = (Brush)res["SubtleFillColorSecondaryBrush"];
+        if (active)
+        {
+            button.Background = (Brush)res["SubtleFillColorSecondaryBrush"];
+        }
+
         button.Click += (_, _) =>
         {
             Dismiss();
@@ -136,7 +156,11 @@ public sealed partial class SwitcherWindow : Window
 
     private void AutoSwitch_Toggled(object sender, RoutedEventArgs e)
     {
-        if (_updatingToggle) return;
+        if (_updatingToggle)
+        {
+            return;
+        }
+
         MainWindow.Engine.SetPaused(!AutoSwitch.IsOn);
     }
 

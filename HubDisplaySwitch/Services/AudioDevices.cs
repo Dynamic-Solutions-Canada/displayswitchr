@@ -32,7 +32,11 @@ public static class AudioDevices
             Check(coll.GetCount(out uint n));
             for (uint i = 0; i < n; i++)
             {
-                if (coll.Item(i, out var dev) != 0) continue;
+                if (coll.Item(i, out var dev) != 0)
+                {
+                    continue;
+                }
+
                 try
                 {
                     dev.GetId(out var id);
@@ -67,27 +71,43 @@ public static class AudioDevices
             var candidates = new List<(string id, bool active, bool byId)>();
             for (uint i = 0; i < n; i++)
             {
-                if (coll.Item(i, out var dev) != 0) continue;
+                if (coll.Item(i, out var dev) != 0)
+                {
+                    continue;
+                }
+
                 try
                 {
                     dev.GetId(out var devId);
                     dev.GetState(out var state);
                     bool byId = !string.IsNullOrEmpty(id) && string.Equals(devId, id, StringComparison.OrdinalIgnoreCase);
                     bool byName = string.Equals(FriendlyName(dev), name, StringComparison.OrdinalIgnoreCase);
-                    if (byId || byName) candidates.Add((devId, state == DEVICE_STATE_ACTIVE, byId));
+                    if (byId || byName)
+                    {
+                        candidates.Add((devId, state == DEVICE_STATE_ACTIVE, byId));
+                    }
                 }
                 finally { Marshal.ReleaseComObject(dev); }
             }
             Marshal.ReleaseComObject(coll);
 
-            if (candidates.Count == 0) return AudioResult.NotFound;
+            if (candidates.Count == 0)
+            {
+                return AudioResult.NotFound;
+            }
             // Prefer an active device: exact id first, then same name (the id can change after a driver reinstall).
             var pick = candidates.Where(c => c.active).OrderByDescending(c => c.byId).ToList();
-            if (pick.Count == 0) return AudioResult.NotReady;   // e.g. TV HDMI audio before the TV display is up
+            if (pick.Count == 0)
+            {
+                return AudioResult.NotReady;   // e.g. TV HDMI audio before the TV display is up
+            }
+
             string matchId = pick[0].id;
             if (string.Equals(matchId, currentDefault, StringComparison.OrdinalIgnoreCase) &&
                 string.Equals(matchId, currentComms, StringComparison.OrdinalIgnoreCase))
+            {
                 return AudioResult.AlreadySet;
+            }
 
             var policy = (IPolicyConfig)new PolicyConfigClient();
             try
@@ -109,25 +129,43 @@ public static class AudioDevices
 
     static string? DefaultId(IMMDeviceEnumerator en, AudioFlow flow, ERole role = ERole.Multimedia)
     {
-        if (en.GetDefaultAudioEndpoint((EDataFlow)flow, role, out var dev) != 0 || dev == null) return null;
+        if (en.GetDefaultAudioEndpoint((EDataFlow)flow, role, out var dev) != 0 || dev == null)
+        {
+            return null;
+        }
+
         try { dev.GetId(out var id); return id; }
         finally { Marshal.ReleaseComObject(dev); }
     }
 
     static string? FriendlyName(IMMDevice dev)
     {
-        if (dev.OpenPropertyStore(STGM_READ, out var store) != 0) return null;
+        if (dev.OpenPropertyStore(STGM_READ, out var store) != 0)
+        {
+            return null;
+        }
+
         try
         {
             var key = PKEY_Device_FriendlyName;
-            if (store.GetValue(ref key, out var pv) != 0) return null;
+            if (store.GetValue(ref key, out var pv) != 0)
+            {
+                return null;
+            }
+
             try { return pv.vt == VT_LPWSTR ? Marshal.PtrToStringUni(pv.p) : null; }
             finally { PropVariantClear(ref pv); }
         }
         finally { Marshal.ReleaseComObject(store); }
     }
 
-    static void Check(int hr) { if (hr != 0) Marshal.ThrowExceptionForHR(hr); }
+    static void Check(int hr)
+    {
+        if (hr != 0)
+        {
+            Marshal.ThrowExceptionForHR(hr);
+        }
+    }
 
     // ---- COM interop ---------------------------------------------------------------------------
     const uint DEVICE_STATE_ACTIVE = 1, DEVICE_STATE_NOTPRESENT = 4, DEVICE_STATE_UNPLUGGED = 8;

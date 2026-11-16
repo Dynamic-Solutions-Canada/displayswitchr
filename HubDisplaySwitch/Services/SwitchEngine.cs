@@ -101,10 +101,14 @@ public sealed class SwitchEngine : IDisposable
                 if (!initial) { Logger.Info("Hub for '{Setup}' connected", s.Name); newlyConnected = s.Id; }
             }
             else if (!present && _connectedAt.Remove(s.Id))
+            {
                 Logger.Info("Hub for '{Setup}' disconnected", s.Name);
+            }
         }
         foreach (var gone in _connectedAt.Keys.Where(id => hubSetups.All(s => s.Id != id)).ToList())
+        {
             _connectedAt.Remove(gone);
+        }
 
         var desired = Desired();
         if (initial)
@@ -113,19 +117,26 @@ public sealed class SwitchEngine : IDisposable
             Logger.Info("Start: hubs connected for [{Hubs}]; setup = {Setup}",
                 string.Join(", ", hubSetups.Where(IsHubConnected).Select(s => s.Name)), desired?.Name ?? "(none)");
             if (desired != null && Settings.ApplyOnStart && !Settings.Paused && !IsAlreadyApplied(desired))
+            {
                 Apply(desired, SwitchReason.AppStarted);
+            }
             else
             {
                 Active ??= desired;
-                if (desired != null) Logger.Info("'{Setup}' is already in place; nothing to switch", desired.Name);
+                if (desired != null)
+                {
+                    Logger.Info("'{Setup}' is already in place; nothing to switch", desired.Name);
+                }
             }
         }
         else if (desired?.Id != _desiredId)
         {
             _desiredId = desired?.Id;
             if (desired != null && !Settings.Paused)
+            {
                 Apply(desired, desired.Id == newlyConnected ? SwitchReason.HubConnected
                              : desired.IsDefault ? SwitchReason.HubDisconnected : SwitchReason.PreviousSetup);
+            }
         }
         StateChanged?.Invoke();
     }
@@ -143,15 +154,33 @@ public sealed class SwitchEngine : IDisposable
             bool Matches(MonitorInfo m, DisplayRef d) =>
                 (d.Id.Length > 0 && d.Id.Equals(m.Id, StringComparison.OrdinalIgnoreCase)) || d.Name.Equals(m.Name, StringComparison.OrdinalIgnoreCase);
 
-            if (s.Displays.Count == 0 || active.Count != s.Displays.Count) return false;
-            if (!s.Displays.All(d => active.Any(m => Matches(m, d)))) return false;
-            if (s.Mirror && s.Displays.Count > 1) return false;   // can't cheaply verify cloning; just apply
-            if (s.Displays.Count > 1 && s.Main is { } main && !DisplayConfig.IsPrimary(main.Id, main.Name)) return false;
+            if (s.Displays.Count == 0 || active.Count != s.Displays.Count)
+            {
+                return false;
+            }
+
+            if (!s.Displays.All(d => active.Any(m => Matches(m, d))))
+            {
+                return false;
+            }
+
+            if (s.Mirror && s.Displays.Count > 1)
+            {
+                return false;   // can't cheaply verify cloning; just apply
+            }
+
+            if (s.Displays.Count > 1 && s.Main is { } main && !DisplayConfig.IsPrimary(main.Id, main.Name))
+            {
+                return false;
+            }
 
             foreach (var m in active)
             {
                 var d = s.Displays.First(x => Matches(m, x));
-                if (DisplayConfig.RefreshRateNeedsChange(m.Id, m.Name, d.RefreshRate)) return false;
+                if (DisplayConfig.RefreshRateNeedsChange(m.Id, m.Name, d.RefreshRate))
+                {
+                    return false;
+                }
             }
 
             bool IsDefault(AudioFlow flow, string id, string name) =>
@@ -177,16 +206,24 @@ public sealed class SwitchEngine : IDisposable
     /// <summary>Call after setups were edited: re-evaluates hubs without switching right away.</summary>
     public void SettingsChanged()
     {
-        if (Active != null) Active = Settings.Setups.FirstOrDefault(x => x.Id == Active.Id) ?? Active;
+        if (Active != null)
+        {
+            Active = Settings.Setups.FirstOrDefault(x => x.Id == Active.Id) ?? Active;
+        }
+
         _connectedAt.Clear();
         try
         {
             var devices = UsbDevices.List();
             var hubSetups = Settings.Setups.Where(s => !s.IsDefault && s.Hubs.Count > 0).ToList();
             for (int i = 0; i < hubSetups.Count; i++)
+            {
                 if (hubSetups[i].Hubs.Any(h => UsbDevices.IsPresent(devices, h.DeviceId, h.ExactPort)))
+                {
                     _connectedAt[hubSetups[i].Id] = hubSetups[i].Id == Active?.Id
                         ? DateTime.Now : DateTime.MinValue.AddMinutes(hubSetups.Count - i);
+                }
+            }
         }
         catch (Exception ex) { Logger.Error(ex, "USB query failed"); }
         _desiredId = Desired()?.Id;
@@ -248,7 +285,11 @@ public sealed class SwitchEngine : IDisposable
                 }
                 catch (MonitorNotFoundException ex) when (++_attempts < DisplayRetries)
                 {
-                    if (_attempts == 1) Logger.Info("{Message}; waiting for it", ex.Message);
+                    if (_attempts == 1)
+                    {
+                        Logger.Info("{Message}; waiting for it", ex.Message);
+                    }
+
                     Show(UiText.Format("Waiting for {{display}}…", ("display", ex.DisplayName)), UiText.Get("Turn it on if it's off"), OsdState.Working);
                     Go(Phase.WaitForDisplay, DisplayRetryMs);
                 }
@@ -267,46 +308,68 @@ public sealed class SwitchEngine : IDisposable
                 break;
 
             case Phase.Settle:
-            {
-                _ticks++;
-                var changes = RefreshPass(s);
-                string? audioMsg = AudioPass(s, quiet: false);
-                if (changes.Count > 0 || audioMsg != null)
                 {
-                    _stable = 0;
-                    Show(SwitchingTo(s), audioMsg ?? UiText.Format("Refresh rate: {{change}}", ("change", changes[^1])), OsdState.Working);
-                }
-                else if (AudioDone) _stable++;
-                else Show(SwitchingTo(s),
-                          !_outDone ? UiText.Format("Waiting for audio: {{device}}", ("device", ShortAudio(s.AudioName)))
-                                    : UiText.Format("Waiting for microphone: {{device}}", ("device", ShortAudio(s.MicName))),
-                          OsdState.Working);
+                    _ticks++;
+                    var changes = RefreshPass(s);
+                    string? audioMsg = AudioPass(s, quiet: false);
+                    if (changes.Count > 0 || audioMsg != null)
+                    {
+                        _stable = 0;
+                        Show(SwitchingTo(s), audioMsg ?? UiText.Format("Refresh rate: {{change}}", ("change", changes[^1])), OsdState.Working);
+                    }
+                    else if (AudioDone)
+                    {
+                        _stable++;
+                    }
+                    else
+                    {
+                        Show(SwitchingTo(s),
+                              !_outDone ? UiText.Format("Waiting for audio: {{device}}", ("device", ShortAudio(s.AudioName)))
+                                        : UiText.Format("Waiting for microphone: {{device}}", ("device", ShortAudio(s.MicName))),
+                              OsdState.Working);
+                    }
 
-                if (_stable >= SettleStable || _ticks >= SettleMaxTicks)
-                {
-                    if (!_outDone) Logger.Warn("Playback device '{Audio}' didn't become available", s.AudioName);
-                    if (!_micDone) Logger.Warn("Recording device '{Mic}' didn't become available", s.MicName);
-                    Show(s.Name, Summary(s), OsdState.Done);
-                    Go(Phase.Background, BackgroundMs);
-                    StateChanged?.Invoke();
+                    if (_stable >= SettleStable || _ticks >= SettleMaxTicks)
+                    {
+                        if (!_outDone)
+                        {
+                            Logger.Warn("Playback device '{Audio}' didn't become available", s.AudioName);
+                        }
+
+                        if (!_micDone)
+                        {
+                            Logger.Warn("Recording device '{Mic}' didn't become available", s.MicName);
+                        }
+
+                        Show(s.Name, Summary(s), OsdState.Done);
+                        Go(Phase.Background, BackgroundMs);
+                        StateChanged?.Invoke();
+                    }
+                    break;
                 }
-                break;
-            }
 
             case Phase.Background:
-            {
-                _ticks++;
-                var changes = RefreshPass(s);
-                string? audioMsg = AudioDone ? null : AudioPass(s, quiet: true);
-                if (changes.Count > 0 || audioMsg != null)
                 {
-                    _stable = 0;
-                    Show(s.Name, audioMsg ?? UiText.Format("Refresh rate restored: {{change}}", ("change", changes[^1])), OsdState.Done);
+                    _ticks++;
+                    var changes = RefreshPass(s);
+                    string? audioMsg = AudioDone ? null : AudioPass(s, quiet: true);
+                    if (changes.Count > 0 || audioMsg != null)
+                    {
+                        _stable = 0;
+                        Show(s.Name, audioMsg ?? UiText.Format("Refresh rate restored: {{change}}", ("change", changes[^1])), OsdState.Done);
+                    }
+                    else
+                    {
+                        _stable++;
+                    }
+
+                    if (_ticks >= BackgroundTicks || (_stable >= BackgroundStable && AudioDone))
+                    {
+                        Finish();
+                    }
+
+                    break;
                 }
-                else _stable++;
-                if (_ticks >= BackgroundTicks || (_stable >= BackgroundStable && AudioDone)) Finish();
-                break;
-            }
 
             default:
                 Finish();
@@ -317,7 +380,11 @@ public sealed class SwitchEngine : IDisposable
     static void ApplyLayout(Setup s, bool skipMissing)
     {
         var displays = s.DisplaysMainFirst.Select(d => ((string?)d.Id, d.Name)).ToList();
-        if (displays.Count == 0) throw new NoDisplaysChosenException();
+        if (displays.Count == 0)
+        {
+            throw new NoDisplaysChosenException();
+        }
+
         DisplayConfig.SetActive(displays, s.Mirror, skipMissing);
         if (!s.Mirror && displays.Count > 1 && s.Main is { } main)
         {
@@ -337,7 +404,11 @@ public sealed class SwitchEngine : IDisposable
                 var d = s.Displays.FirstOrDefault(x => x.Id.Length > 0 && x.Id.Equals(m.Id, StringComparison.OrdinalIgnoreCase))
                      ?? s.Displays.FirstOrDefault(x => x.Name.Equals(m.Name, StringComparison.OrdinalIgnoreCase));
                 int pref = d?.RefreshRate ?? 0;   // displays outside the setup (shouldn't be on) get the highest rate
-                if (pref < 0) continue;
+                if (pref < 0)
+                {
+                    continue;
+                }
+
                 var msg = DisplayConfig.ApplyRefreshRate(m.Id, m.Name, pref);
                 if (msg != null) { Logger.Info("Refresh: {Change}", msg); changes.Add(msg); }
             }
@@ -350,8 +421,16 @@ public sealed class SwitchEngine : IDisposable
     string? AudioPass(Setup s, bool quiet)
     {
         var parts = new List<string>();
-        if (!_outDone && TrySet(AudioFlow.Output, s.AudioId, s.AudioName, ref _outDone)) parts.Add(UiText.Format("Audio: {{device}}", ("device", ShortAudio(s.AudioName))));
-        if (!_micDone && TrySet(AudioFlow.Input, s.MicId, s.MicName, ref _micDone)) parts.Add(UiText.Format("Mic: {{device}}", ("device", ShortAudio(s.MicName))));
+        if (!_outDone && TrySet(AudioFlow.Output, s.AudioId, s.AudioName, ref _outDone))
+        {
+            parts.Add(UiText.Format("Audio: {{device}}", ("device", ShortAudio(s.AudioName))));
+        }
+
+        if (!_micDone && TrySet(AudioFlow.Input, s.MicId, s.MicName, ref _micDone))
+        {
+            parts.Add(UiText.Format("Mic: {{device}}", ("device", ShortAudio(s.MicName))));
+        }
+
         return parts.Count == 0 ? null : string.Join("  ·  ", parts);
     }
 
@@ -392,10 +471,21 @@ public sealed class SwitchEngine : IDisposable
         {
             int hz = 0;
             try { hz = DisplayConfig.GetCurrentRefreshRate(main.Id, main.Name); } catch { }
-            if (hz > 0) parts.Add($"{hz} Hz");
+            if (hz > 0)
+            {
+                parts.Add($"{hz} Hz");
+            }
         }
-        if (s.AudioName.Length > 0) parts.Add(_outDone ? UiText.Format("Audio: {{device}}", ("device", ShortAudio(s.AudioName))) : UiText.Get("Audio not available"));
-        if (s.MicName.Length > 0 && !_micDone) parts.Add(UiText.Get("Mic not available"));
+        if (s.AudioName.Length > 0)
+        {
+            parts.Add(_outDone ? UiText.Format("Audio: {{device}}", ("device", ShortAudio(s.AudioName))) : UiText.Get("Audio not available"));
+        }
+
+        if (s.MicName.Length > 0 && !_micDone)
+        {
+            parts.Add(UiText.Get("Mic not available"));
+        }
+
         parts.Add(UiText.Get(_reason));
         return string.Join("  ·  ", parts);
     }
@@ -411,7 +501,10 @@ public sealed class SwitchEngine : IDisposable
 
     void Show(string title, string subtitle, OsdState state)
     {
-        if (Settings.ShowOsd) Popup?.Invoke(title, subtitle, state);
+        if (Settings.ShowOsd)
+        {
+            Popup?.Invoke(title, subtitle, state);
+        }
     }
 
     public void Dispose()
