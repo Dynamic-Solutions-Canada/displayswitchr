@@ -17,7 +17,7 @@ This repo follows the shared standards at https://github.com/Dynamic-Solutions-C
 | Setup model | `Models/Setup.cs` |
 | Arbitration and switch sequence | `Services/SwitchEngine.cs` |
 | Displays (CCD `SetDisplayConfig`, `ChangeDisplaySettingsEx`) | `Services/DisplayConfig.cs` |
-| USB presence + change events (WMI) | `Services/UsbDevices.cs` |
+| USB presence + change events (WMI) | `Services/UsbDevices.cs`; the device record and hub matching in `Services/UsbDevice.cs` |
 | Default audio device (Core Audio + undocumented `IPolicyConfig`) | `Services/AudioDevices.cs` |
 | Settings | `ViewModels/UserSettings.cs`, `Classes/Settings/SettingsManager.cs` (kit `JsonSettingsStore`) |
 | Tray, flyout window, single instance, startup, theme, window chrome, localization mechanism | `external/winui-app-kit` submodule, `ProjectReference` in the csproj |
@@ -59,12 +59,15 @@ Clone with `--recurse-submodules` (or run `git submodule update --init`) so `ext
 | Command | Proves | Does not prove |
 | --- | --- | --- |
 | `npm run verify:desktop` | The app compiles on Windows (Debug), XAML included | That it packages or runs |
-| `npm run build:desktop` | A signed dev package builds | That it installs or runs |
+| `npm run package:desktop:dev` | A signed dev package builds | That it installs or runs |
 | `npm run install:desktop` | The dev package updates in place and launches | Behaviour; check it in the running app |
 | `npm run package:desktop` | An unsigned Store package builds, with every declared language in one `resources.pri` | Signing; that it runs |
 | `npm run check:l10n` | Every catalog has the same keys and placeholders | That the text is translated well |
+| `npm test` | Every portable harness under `tests/` passes on Linux (host .NET SDK or Docker): today the switching policy | Anything that needs Windows, real displays, audio or USB devices; each harness README says what it leaves out |
+| `npm run validate` | The whole Linux gate passes: `format:check`, `check:l10n`, then `npm test` | A Windows compile; also run `verify:desktop` |
+| `npm run format` | Rewrites every C# project (not `external/`) to the root `.editorconfig`, which is winui-app-kit's copied unchanged | Behaviour; review the diff |
 
-Before finishing a change, run `npm run check:l10n` and `npm run verify:desktop`. Use the `desktop` skill for build and install requests.
+Before finishing a change, run `npm run validate` and `npm run verify:desktop`. Use the `desktop` skill for build and install requests.
 
 ## Guidance map
 
@@ -81,7 +84,8 @@ Before finishing a change, run `npm run check:l10n` and `npm run verify:desktop`
 | What changed | Update |
 | --- | --- |
 | A file, service or window added, moved or removed | The Architecture table above |
-| Arbitration, the switch sequence or another rule users can see | Behaviour above, `README.md` Features, the manual checks in `docs/development.md` |
+| Arbitration, the switch sequence or another rule users can see | Behaviour above, `README.md` Features, the manual checks in `docs/development.md`, the scenarios and README in `tests/HubDisplaySwitch.Policy.Tests/` |
+| A test harness added or changed | Its README; `npm test` finds it by itself |
 | A UI pattern, shared style or control | `.agents/guides/ui-conventions.md` |
 | An npm command | The Commands table above, `docs/development.md`, the `desktop` skill, `paseo.json` |
 | Where the app writes data, or a new kind of data | The data table in `docs/development.md` |

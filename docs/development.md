@@ -7,7 +7,7 @@
 
 - WSL with this repository cloned inside it, including submodules: clone with `--recurse-submodules`, or run `git submodule update --init` (the app builds on `external/winui-app-kit` and `external/promo`).
 - [lefthook](https://lefthook.dev) for the git hooks in `lefthook.yml`: run `lefthook install` once after cloning.
-- Node.js for the root `npm run` commands, and Python 3 for the catalog check.
+- Node.js for the root `npm run` commands, Python 3 for the catalog check, and either the .NET SDK pinned in `global.json` or Docker for formatting and tests.
 - The [shared Windows build tools](https://github.com/Dynamic-Solutions-Canada/windows-build-tools), which run the Windows build from WSL and document their own Windows-side requirements, the disposable Windows TEMP copy and the local build VM.
 
 ## Build and install
@@ -17,7 +17,7 @@ Run these from the repository root in WSL. The build platform defaults to the Wi
 | Command | What it does | What it proves |
 | --- | --- | --- |
 | `npm run verify:desktop` | Debug compile on Windows | The app compiles, XAML included |
-| `npm run build:desktop` | Signed dev MSIX | The package builds; not that it installs or runs |
+| `npm run package:desktop:dev` | Signed dev MSIX | The package builds; not that it installs or runs |
 | `npm run install:desktop` | Builds the dev MSIX, updates the installed copy in place and launches it | That it installs and starts; check behaviour in the app |
 | `npm run package:desktop` | Unsigned Store MSIX | The Store package builds, with every declared language in one `resources.pri` |
 
@@ -29,13 +29,17 @@ The app icon and MSIX images come from `HubDisplaySwitchMSIX/generate-msix-image
 
 ## Checks
 
-- `npm run check:l10n`: every key the code and XAML use exists in the English catalog, and every other catalog has exactly the same keys, no empty values and the same `{{placeholders}}`. It does not check the languages declared in the package manifest.
+`npm run validate` is the Linux gate. It runs, in order:
 
-Run `npm run check:l10n` and `npm run verify:desktop` before finishing a change.
+- `npm run format:check`: every C# project outside `external/` matches the root `.editorconfig`, which is winui-app-kit's file copied unchanged from the tag the app pins; never hand-edit it. `npm run format` rewrites the files.
+- `npm run check:l10n`: every key the code and XAML use exists in the English catalog, and every other catalog has exactly the same keys, no empty values and the same `{{placeholders}}`. It does not check the languages declared in the package manifest.
+- `npm test`: every portable harness under `tests/`, found by `scripts/run-tests` without a hand-kept list. Each has a README saying what it covers and does not prove. Today there is one, for the switching policy.
+
+Formatting and tests run through `scripts/dotnet`, which uses the .NET SDK pinned in `global.json` when it is installed and otherwise its Docker image, capped at 3 GB (`KIT_DOTNET_MEMORY`). Run them as a non-root user. Run `npm run validate` and `npm run verify:desktop` before finishing a change.
 
 ### Manual checks in the installed app
 
-Nothing automated can see the screen, the USB hubs or the audio devices. Before a release, install the build (`npm run install:desktop`) and check:
+The harness cannot see the screen, the USB hubs or the audio devices. Before a release, install the build (`npm run install:desktop`) and check:
 
 - Connecting a setup's hub switches to it: the popup appears without taking focus, the displays, main display and refresh rates change, and the playback device and microphone follow. Disconnecting it goes back to the previous connected hub's setup, then the default.
 - With a TV: the app waits for it to wake and for its HDMI audio, and corrects a drop back to 60 Hz afterwards.

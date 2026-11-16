@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>HubDisplaySwitch.Policy.Tests</RootNamespace>
+  </PropertyGroup>
+  <!-- The production switching policy, linked unchanged. The dispatcher, WMI, the display and audio
+       APIs, settings, interface text and NLog are replaced by the stand-ins in Fakes.cs, so this runs
+       on Linux without Windows. -->
+  <ItemGroup>
+    <Compile Include="../../HubDisplaySwitch/Services/SwitchEngine.cs" Link="Linked/SwitchEngine.cs" />
+    <Compile Include="../../HubDisplaySwitch/Services/UsbDevice.cs" Link="Linked/UsbDevice.cs" />
+    <Compile Include="../../HubDisplaySwitch/Models/Setup.cs" Link="Linked/Setup.cs" />
+  </ItemGroup>
+</Project>

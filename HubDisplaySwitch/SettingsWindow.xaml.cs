@@ -18,16 +18,16 @@ namespace HubDisplaySwitch;
 /// </summary>
 public sealed partial class SettingsWindow : Window
 {
-    private static SettingsWindow? instance;
+    private static SettingsWindow? _instance;
     private const string AddTag = "add";
 
-    public static SettingsWindow? GetCurrent() => instance;
+    public static SettingsWindow? GetCurrent() => _instance;
 
     public static void ShowInstance()
     {
-        if (instance != null)
+        if (_instance != null)
         {
-            WindowChrome.BringToFront(instance);
+            WindowChrome.BringToFront(_instance);
             return;
         }
         new SettingsWindow().Activate();
@@ -36,7 +36,7 @@ public sealed partial class SettingsWindow : Window
     private SettingsWindow()
     {
         InitializeComponent();
-        instance = this;
+        _instance = this;
         Closed += SettingsWindow_Closed;
 
         SystemBackdrop = new MicaBackdrop();
@@ -149,7 +149,7 @@ public sealed partial class SettingsWindow : Window
 
     private void SettingsWindow_Closed(object sender, WindowEventArgs e)
     {
-        instance = null;
+        _instance = null;
         UiText.Changed -= OnLanguageChanged;
         // Minimized or maximized: keep the last normal placement.
         if (WindowChrome.CapturePlacement(this) is { } placement) SettingsManager.Current.SettingsWindow = placement;

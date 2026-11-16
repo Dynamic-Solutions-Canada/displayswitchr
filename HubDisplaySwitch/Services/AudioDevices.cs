@@ -139,7 +139,7 @@ public static class AudioDevices
     enum ERole { Console = 0, Multimedia = 1, Communications = 2 }
 
     [StructLayout(LayoutKind.Sequential)] struct PROPERTYKEY { public Guid fmtid; public int pid; }
-    [StructLayout(LayoutKind.Sequential)] struct PROPVARIANT { public ushort vt; ushort r1, r2, r3; public IntPtr p; public IntPtr p2; }
+    [StructLayout(LayoutKind.Sequential)] struct PROPVARIANT { public ushort vt; ushort _r1, _r2, _r3; public IntPtr p; public IntPtr p2; }
     [DllImport("ole32.dll")] static extern int PropVariantClear(ref PROPVARIANT pvar);
 
     [ComImport, Guid("BCDE0395-E52F-467C-8E3D-C4579291692E")] class MMDeviceEnumerator { }
