@@ -1,0 +1,27 @@
+version: 2
+
+# Weekly, grouped updates (HYG-8). The harness under tests/ has no package references, so the app
+# project is the only NuGet manifest. Shared versions that move into winui-app-kit arrive with a kit tag.
+
+updates:
+  - package-ecosystem: nuget
+    directories:
+      - "/HubDisplaySwitch"
+    schedule:
+      interval: weekly
+    groups:
+      nuget:
+        patterns: ["*"]
+    ignore:
+      # The app ships with a Package.appxmanifest dependency on Microsoft.WindowsAppRuntime.1.8;
+      # moving off the 1.8 line means updating that dependency and retesting the Store package.
+      - dependency-name: Microsoft.WindowsAppSDK
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns: ["*"]

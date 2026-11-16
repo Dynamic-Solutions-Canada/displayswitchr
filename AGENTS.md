@@ -87,7 +87,8 @@ Before finishing a change, run `npm run validate` and `npm run verify:desktop`. 
 | Arbitration, the switch sequence or another rule users can see | Behaviour above, `README.md` Features, the manual checks in `docs/development.md`, the scenarios and README in `tests/HubDisplaySwitch.Policy.Tests/` |
 | A test harness added or changed | Its README; `npm test` finds it by itself |
 | A UI pattern, shared style or control | `.agents/guides/ui-conventions.md` |
-| An npm command | The Commands table above, `docs/development.md`, the `desktop` skill, `paseo.json` |
+| An npm command | The Commands table above, `docs/development.md`, the `desktop` skill, `paseo.json`, and `.github/workflows/ci.yml` if `validate` or the Windows compile changes |
+| App source, packaging or build configuration moved to a new top-level path | The Windows path filter in `.github/workflows/ci.yml` |
 | Where the app writes data, or a new kind of data | The data table in `docs/development.md` |
 | winui-app-kit pin bumped | Copy the kit's `.editorconfig` and `build/shared.gitignore` (the last part of `.gitignore`) at that tag unchanged |
 | A language or catalog rule | Conventions above, `scripts/check-localization.py` |

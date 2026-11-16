@@ -37,6 +37,8 @@ The app icon and MSIX images come from `HubDisplaySwitchMSIX/generate-msix-image
 
 Formatting and tests run through `scripts/dotnet`, which uses the .NET SDK pinned in `global.json` when it is installed and otherwise its Docker image, capped at 3 GB (`KIT_DOTNET_MEMORY`). Run them as a non-root user. Run `npm run validate` and `npm run verify:desktop` before finishing a change.
 
+CI runs `npm run validate` on every push to `main` and every pull request, and compiles x64 and ARM64 on `windows-2025` when app source, packaging or build configuration changed (`.github/workflows/ci.yml`). CodeQL scans the C# and the workflows (`.github/workflows/codeql.yml`), and Dependabot proposes NuGet and action updates weekly.
+
 ### Manual checks in the installed app
 
 The harness cannot see the screen, the USB hubs or the audio devices. Before a release, install the build (`npm run install:desktop`) and check:
