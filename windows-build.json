@@ -6,5 +6,8 @@
   "version_file": "Directory.Build.props",
   "dev_identity": "TechnicallyReal.HubDisplaySwitch",
   "signing": "shared-dev",
-  "trusted_certificate": true
+  "trusted_certificate": true,
+  "store_identity": "DynamicSolutionsCA.HubDisplaySwitch",
+  "store_publisher": "CN=C21E6CEF-D0D1-4497-93F9-3718D054DA0E",
+  "store_identity_switch": "-UseStoreIdentity"
 }

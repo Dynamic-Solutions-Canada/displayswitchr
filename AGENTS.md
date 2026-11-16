@@ -44,7 +44,7 @@ This repo follows the shared standards at https://github.com/Dynamic-Solutions-C
 - `build-msix.ps1` strips makepri's `<packaging>` node so scaled images and languages stay in the single `resources.pri` (split `resources.*.pri` files only work in a bundle) and fails if a split file appears.
 - **Settings** save on every edit; call `MainWindow.Engine.SettingsChanged()` after editing setups. A change to the file's shape is a new step in `SettingsMigrations`. Read [.agents/guides/settings.md](.agents/guides/settings.md) before changing `UserSettings` or `SettingsManager`.
 - **PowerShell build scripts must be ASCII.**
-- Package identity is a **placeholder** (`TechnicallyReal.HubDisplaySwitch`) until the app is reserved in Partner Center; then update `Package.appxmanifest` and `windows-build.json` together.
+- **Package identities:** the manifest carries the Store identity (`DynamicSolutionsCA.HubDisplaySwitch`, Store ID 9P1S2QJFXZFW). Signed dev builds are stamped with the separate dev identity `TechnicallyReal.HubDisplaySwitch` by `build-msix.ps1` (DIST-3), named again as `dev_identity` in `windows-build.json`; `--store-identity` signs with the Store identity for testing over a Store install. Change an identity only in all three places together.
 
 ## Commands
 

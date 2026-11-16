@@ -11,7 +11,7 @@
        (e.g. 27766TechnicallyReal.HubDisplaySwitch) here AND dev_identity in windows-build.json.
        The build script swaps Publisher to the signing cert subject for local dev builds. -->
   <Identity
-    Name="TechnicallyReal.HubDisplaySwitch"
+    Name="DynamicSolutionsCA.HubDisplaySwitch"
     Publisher="CN=C21E6CEF-D0D1-4497-93F9-3718D054DA0E"
     Version="VERSION_PLACEHOLDER"
     ProcessorArchitecture="ARCH_PLACEHOLDER" />

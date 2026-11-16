@@ -58,7 +58,9 @@ The harness cannot see the screen, the USB hubs or the audio devices. Before a r
 
 The full procedure is the [`release` skill](../.agents/skills/release/SKILL.md). In short: the notes for the new version are written as user-facing bullets in `release-notes/<version>.md` and one translation per other wording catalog, and approved first; then `<Version>` in `Directory.Build.props` and the notes are committed together as `Bump version to vX.Y.Z`, tagged `vX.Y.Z` (annotated) and pushed. The tag runs "Build and Package" (`.github/workflows/build-msix.yml`): the validate gate, an x64 and ARM64 package build, then a GitHub Release titled `Hub Display Switch X.Y.Z` with the notes as its body. It fails if the notes are missing.
 
-The app is not yet in the Microsoft Store, and its package identity is a placeholder until the name is reserved, so the Store submission is not automated yet.
+The Store submission is not automated yet. The app is reserved in Partner Center as `DynamicSolutionsCA.HubDisplaySwitch` (Store ID 9P1S2QJFXZFW) but not yet published.
+
+Signed dev builds (`package:desktop:dev`, `install:desktop`) install under the separate dev identity `TechnicallyReal.HubDisplaySwitch`, so they never replace a Store install; `npm run install:desktop -- --store-identity` signs with the Store identity to test over one. `npm run package:desktop` keeps the Store identity for upload.
 
 ## Where the app stores data
 
