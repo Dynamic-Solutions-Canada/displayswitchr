@@ -1,4 +1,4 @@
-using HubDisplaySwitch.Localization;
+using WinUIAppKit.Localization;
 using HubDisplaySwitch.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;

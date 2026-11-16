@@ -173,9 +173,17 @@ if (Test-Path $existingPri) { Remove-Item $existingPri -Force }
 $priconfigFile = Join-Path $layoutDir "priconfig.xml"
 & $makepri createconfig /cf $priconfigFile /dq en-US /o
 if ($LASTEXITCODE -ne 0) { Write-Error "makepri createconfig failed"; exit 1 }
+# The default config splits languages and scales into resources.<qualifier>.pri files, which only
+# take effect as resource packs in a bundle. This is a single package: keep every candidate (scaled
+# images, the nine declared languages) in resources.pri (same choice as WSL Monitor and Persistent).
+$priconfig = [xml](Get-Content $priconfigFile -Raw)
+foreach ($node in @($priconfig.SelectNodes("//packaging"))) { [void]$node.ParentNode.RemoveChild($node) }
+$priconfig.Save($priconfigFile)
 & $makepri new /pr $layoutDir /cf $priconfigFile /mn (Join-Path $layoutDir "AppxManifest.xml") /of $existingPri /o
 if ($LASTEXITCODE -ne 0) { Write-Error "makepri new failed"; exit 1 }
 Remove-Item $priconfigFile -Force -ErrorAction SilentlyContinue
+$splitPri = @(Get-ChildItem $layoutDir -Filter "resources.*.pri" -File)
+if ($splitPri.Count -gt 0) { Write-Error "makepri still split resources: $($splitPri.Name -join ', ')"; exit 1 }
 
 # -- Step 4: Package -----------------------------------------------------------------
 Write-Host "`n=== Packaging MSIX ===" -ForegroundColor Cyan

@@ -1,12 +1,12 @@
-using HubDisplaySwitch.Classes;
-using HubDisplaySwitch.Classes.Settings;
 using HubDisplaySwitch.Services;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using WinRT.Interop;
+using WinUIAppKit.Theming;
 using static HubDisplaySwitch.Classes.NativeMethods;
+using static WinUIAppKit.Interop.NativeMethods;
 
 namespace HubDisplaySwitch.Windows;
 
@@ -48,8 +48,7 @@ public sealed partial class OsdWindow : Window
         AddExStyle(_hwnd, WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE | WS_EX_TRANSPARENT | WS_EX_LAYERED);
         SetLayeredWindowAttributes(_hwnd, 0, 255, LWA_ALPHA);
 
-        WindowRoot.RequestedTheme = ThemeManager.Requested(SettingsManager.Current.AppTheme);
-        ThemeManager.ThemeChanged += () => WindowRoot.RequestedTheme = ThemeManager.Requested(SettingsManager.Current.AppTheme);
+        AppTheme.Track(this);
 
         _hold = DispatcherQueue.CreateTimer();
         _hold.IsRepeating = false;

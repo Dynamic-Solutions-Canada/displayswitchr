@@ -1,4 +1,6 @@
+using HubDisplaySwitch.Classes;
 using HubDisplaySwitch.Classes.Settings;
+using WinUIAppKit.Localization;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using System.IO;
@@ -37,7 +39,25 @@ public partial class App : Application
             e.Handled = true;
         };
 
+        if (!MainWindow.ClaimSingleInstance())
+        {
+            Environment.Exit(0);
+            return;
+        }
+
+        // Builds 1.0.0.10-11 set the package's PrimaryLanguageOverride; the kit resolves "Match Windows"
+        // from the package language list, which that override would pin. Hub no longer sets it.
+        try
+        {
+            if (WinUIAppKit.AppEnvironment.IsPackaged && global::Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride.Length > 0)
+                global::Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "";
+        }
+        catch { }
+
+        // Configure first: first-run defaults are named in the Windows language. Then apply the saved choice.
+        UiText.Configure(typeof(App).Assembly, AppLanguages.CatalogPrefix, AppLanguages.Supported, null);
         SettingsManager.RestoreSettings();
+        UiText.SetOverride(SettingsManager.Current.Language);
 
         m_window = new MainWindow();
         m_window.Activate();

@@ -1,6 +1,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using HubDisplaySwitch.Models;
 using System.Text.Json.Serialization;
+using WinUIAppKit.Theming;
+using WinUIAppKit.Windowing;
 
 namespace HubDisplaySwitch.ViewModels;
 
@@ -13,9 +15,9 @@ public partial class UserSettings : ObservableObject
     /// <summary>Settings file format. 2 = setups.</summary>
     public int Version { get; set; } = 2;
 
-    /// <summary>App theme. 0 = System default, 1 = Light, 2 = Dark.</summary>
+    /// <summary>App theme. Stored as 0 = System default, 1 = Light, 2 = Dark (same numbers as before the kit).</summary>
     [ObservableProperty]
-    public partial int AppTheme { get; set; }
+    public partial AppThemeChoice AppTheme { get; set; }
 
     /// <summary>Interface language, e.g. "fr-CA". Empty = match Windows.</summary>
     [ObservableProperty]
@@ -47,36 +49,50 @@ public partial class UserSettings : ObservableObject
     [ObservableProperty]
     public partial string LastKnownVersion { get; set; } = "";
 
-    // ── Settings window geometry ─────────────────────────────────────
-    [ObservableProperty] public partial int SettingsWindowX { get; set; }
-    [ObservableProperty] public partial int SettingsWindowY { get; set; }
-    [ObservableProperty] public partial int SettingsWindowWidth { get; set; }
-    [ObservableProperty] public partial int SettingsWindowHeight { get; set; }
+    /// <summary>Settings window position and size (physical pixels), restored when it reopens.</summary>
+    public WindowPlacement? SettingsWindow { get; set; }
+
+    // Older builds stored the settings window geometry as four numbers; read once and moved into SettingsWindow.
+    public int? SettingsWindowX { get; set; }
+    public int? SettingsWindowY { get; set; }
+    public int? SettingsWindowWidth { get; set; }
+    public int? SettingsWindowHeight { get; set; }
 
     [JsonIgnore] public Setup? DefaultSetup => Setups.FirstOrDefault(s => s.IsDefault);
 
 
     [JsonIgnore] private bool _initializing = true;
 
-    partial void OnAppThemeChanged(int oldValue, int newValue)
+    partial void OnAppThemeChanged(AppThemeChoice value)
     {
-        if (oldValue == newValue || _initializing) return;
-        Classes.ThemeManager.ApplyAndSaveTheme(newValue);
+        if (_initializing) return;
+        WinUIAppKit.Theming.AppTheme.Set(value);
+        Classes.Settings.SettingsManager.SaveSettings();
     }
 
     partial void OnLanguageChanged(string value)
     {
         if (_initializing) return;
-        Localization.UiText.SetOverride(value);
         Classes.Settings.SettingsManager.SaveSettings();
+        WinUIAppKit.Localization.UiText.SetOverride(value);   // open windows relabel on UiText.Changed
     }
 
-    /// <summary>Repairs any nulls from older/partial settings files.</summary>
-    public void CompleteInitialization()
+    /// <summary>Repairs any nulls from older/partial settings files and migrates old fields. Returns true if it changed what's on disk.</summary>
+    public bool CompleteInitialization()
     {
         Language ??= "";
-        Localization.UiText.SetOverride(Language, notify: false);
+        bool legacyWindow = SettingsWindowX != null || SettingsWindowY != null || SettingsWindowWidth != null || SettingsWindowHeight != null;
+        if (SettingsWindow == null && SettingsWindowWidth is > 0 && SettingsWindowHeight is > 0)
+        {
+            SettingsWindow = new WindowPlacement
+            {
+                X = SettingsWindowX ?? 0, Y = SettingsWindowY ?? 0,
+                Width = SettingsWindowWidth.Value, Height = SettingsWindowHeight.Value,
+            };
+        }
+        SettingsWindowX = SettingsWindowY = SettingsWindowWidth = SettingsWindowHeight = null;
         _initializing = false;
+        bool changed = legacyWindow || Setups == null || RefreshRates is { Count: > 0 };
         Setups ??= new();
         RefreshRates = new Dictionary<string, int>(RefreshRates ?? new(), StringComparer.OrdinalIgnoreCase);
         foreach (var s in Setups)
@@ -88,5 +104,6 @@ public partial class UserSettings : ObservableObject
                 if (d.RefreshRate == 0 && RefreshRates.TryGetValue(d.Name, out var r)) d.RefreshRate = r;
         }
         RefreshRates.Clear();
+        return changed;
     }
 }

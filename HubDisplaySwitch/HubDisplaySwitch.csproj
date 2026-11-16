@@ -25,17 +25,19 @@
     <!-- WinUI 3 (Windows App SDK) — Fluent Design, Mica, NavigationView -->
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260209005" />
 
-    <!-- Tray right-click menu (H.NotifyIcon.Core.PopupMenu); the icon itself is raw Shell_NotifyIcon -->
-    <PackageReference Include="H.NotifyIcon.WinUI" Version="2.4.1" />
-
     <!-- MVVM source generators (ObservableProperty, RelayCommand) -->
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 
     <!-- USB device enumeration + change events (WMI) -->
     <PackageReference Include="System.Management" Version="10.0.0" />
 
-    <!-- Structured logging -->
-    <PackageReference Include="NLog" Version="6.1.1" />
+    <!-- Structured logging (same version as the app kit) -->
+    <PackageReference Include="NLog" Version="6.2.2" />
+  </ItemGroup>
+
+  <!-- Shared tray/flyout/settings/startup/theme/localization plumbing (submodule) -->
+  <ItemGroup>
+    <ProjectReference Include="..\external\winui-app-kit\WinUIAppKit\WinUIAppKit.csproj" />
   </ItemGroup>
 
   <!-- Content files to copy to output ────────────────────────────── -->

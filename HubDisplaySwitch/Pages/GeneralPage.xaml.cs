@@ -1,5 +1,5 @@
 using HubDisplaySwitch.Classes.Settings;
-using HubDisplaySwitch.Localization;
+using WinUIAppKit.Localization;
 using HubDisplaySwitch.Services;
 using HubDisplaySwitch.ViewModels;
 using Microsoft.UI.Xaml;
@@ -22,10 +22,10 @@ public sealed partial class GeneralPage : Page
         Loaded += async (_, _) =>
         {
             BuildLanguages();
-            ThemeCombo.SelectedIndex = Math.Clamp(Settings.AppTheme, 0, 2);
+            ThemeCombo.SelectedIndex = Math.Clamp((int)Settings.AppTheme, 0, 2);
             AutoSwitch.IsOn = !Settings.Paused;
             _updatingStartupSwitch = true;
-            try { StartupSwitch.IsOn = await MainWindow.IsStartupEnabledAsync(); }
+            try { StartupSwitch.IsOn = await MainWindow.Startup.IsEnabledAsync(); }
             catch (Exception ex) { Logger.Warn(ex, "Couldn't read startup state"); }
             finally { _updatingStartupSwitch = false; }
             _initializing = false;
@@ -49,7 +49,7 @@ public sealed partial class GeneralPage : Page
         _updatingStartupSwitch = true;
         try
         {
-            bool result = await MainWindow.SetStartupAsync(StartupSwitch.IsOn);
+            bool result = await MainWindow.Startup.SetEnabledAsync(StartupSwitch.IsOn);
             StartupSwitch.IsOn = result;   // the user or policy may refuse
             Settings.Startup = result;
             SettingsManager.SaveSettings();
@@ -58,16 +58,9 @@ public sealed partial class GeneralPage : Page
         finally { _updatingStartupSwitch = false; }
     }
 
-    /// <summary>Language names are in their own language (as in Persistent), so they read the same whatever is selected.</summary>
-    private static readonly (string Tag, string Name)[] Languages =
-    [
-        ("en-US", "English (United States)"), ("en-CA", "English (Canada)"), ("es-ES", "Español (España)"),
-        ("fr-FR", "Français (France)"), ("fr-CA", "Français (Canada)"), ("de-DE", "Deutsch (Deutschland)"),
-        ("zh-CN", "简体中文（中国）"), ("pt-BR", "Português (Brasil)"), ("ja-JP", "日本語（日本）"),
-    ];
-
     private bool _buildingLanguages;
 
+    /// <summary>"Match Windows", then each language in its own name (as in Persistent), so they read the same whatever is selected.</summary>
     private void BuildLanguages()
     {
         _buildingLanguages = true;
@@ -75,10 +68,18 @@ public sealed partial class GeneralPage : Page
         {
             LanguageCombo.Items.Clear();
             var match = new ComboBoxItem { Tag = "" };
-            Classes.Localize.SetContent(match, "Match Windows");
+            Localize.SetContent(match, "Match Windows");
             LanguageCombo.Items.Add(match);
-            foreach (var (tag, name) in Languages) LanguageCombo.Items.Add(new ComboBoxItem { Content = name, Tag = tag });
-            string current = SupportedLanguages.NormalizeOverride(Settings.Language) ?? "";
+            foreach (string identity in UiText.Languages.Identities)
+            {
+                LanguageCombo.Items.Add(new ComboBoxItem
+                {
+                    Content = UiText.Languages.NativeName(identity),
+                    Tag = identity,
+                    Language = identity,   // so the font and line breaking suit that language's script
+                });
+            }
+            string current = UiText.Override ?? "";
             LanguageCombo.SelectedItem = LanguageCombo.Items.OfType<ComboBoxItem>().FirstOrDefault(i => (string)i.Tag == current) ?? match;
         }
         finally { _buildingLanguages = false; }
@@ -93,6 +94,6 @@ public sealed partial class GeneralPage : Page
     private void ThemeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (_initializing) return;
-        Settings.AppTheme = ThemeCombo.SelectedIndex;   // OnAppThemeChanged applies + saves
+        Settings.AppTheme = (WinUIAppKit.Theming.AppThemeChoice)ThemeCombo.SelectedIndex;   // OnAppThemeChanged applies + saves
     }
 }

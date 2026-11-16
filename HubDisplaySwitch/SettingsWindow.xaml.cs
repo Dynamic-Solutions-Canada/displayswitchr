@@ -1,26 +1,24 @@
 using HubDisplaySwitch.Classes.Settings;
-using HubDisplaySwitch.Localization;
 using HubDisplaySwitch.Models;
 using HubDisplaySwitch.Pages;
-using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
-using System.IO;
-using WinRT.Interop;
-using static HubDisplaySwitch.Classes.NativeMethods;
+using WinUIAppKit.Localization;
+using WinUIAppKit.Theming;
+using WinUIAppKit.Windowing;
 
 namespace HubDisplaySwitch;
 
 /// <summary>
 /// Settings window (Mica + NavigationView). Each setup is a navigation item; the built-in Settings item
-/// is the General page. Edits apply and save immediately (Windows Settings style).
+/// is the General page. Edits apply and save immediately (Windows Settings style). Icon, saved placement
+/// and theme come from the app kit.
 /// </summary>
 public sealed partial class SettingsWindow : Window
 {
     private static SettingsWindow? instance;
-    private IntPtr _hIconSmall, _hIconBig;
     private const string AddTag = "add";
 
     public static SettingsWindow? GetCurrent() => instance;
@@ -29,10 +27,7 @@ public sealed partial class SettingsWindow : Window
     {
         if (instance != null)
         {
-            var hwnd = WindowNative.GetWindowHandle(instance);
-            var appWindow = AppWindow.GetFromWindowId(Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hwnd));
-            if (appWindow.Presenter is OverlappedPresenter { State: OverlappedPresenterState.Minimized } p) p.Restore();
-            SetForegroundWindow(hwnd);
+            WindowChrome.BringToFront(instance);
             return;
         }
         new SettingsWindow().Activate();
@@ -48,47 +43,14 @@ public sealed partial class SettingsWindow : Window
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(AppTitleBar);
 
-        var hwnd = WindowNative.GetWindowHandle(this);
-        var appWindow = AppWindow.GetFromWindowId(Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hwnd));
+        WindowIcon.Apply(this, App.IconPath);
+        try { TitleBarIcon.Source = new BitmapImage(new Uri(App.IconPngPath)); } catch { }
+        WindowChrome.RestorePlacement(this, SettingsManager.Current.SettingsWindow, 980, 760);
+        AppTheme.Track(this);
 
-        if (File.Exists(App.IconPath))
-        {
-            ApplyWindowIcon(hwnd, App.IconPath);
-            SetAppWindowIcon(appWindow, App.IconPath);
-            try { TitleBarIcon.Source = new BitmapImage(new Uri(App.IconPngPath)); } catch { }
-        }
-
-        double scale = GetDpiForWindow(hwnd) / 96.0;
-        var settings = SettingsManager.Current;
-        if (settings.SettingsWindowWidth >= 400 && settings.SettingsWindowHeight >= 300)
-        {
-            appWindow.Resize(new global::Windows.Graphics.SizeInt32(settings.SettingsWindowWidth, settings.SettingsWindowHeight));
-            appWindow.Move(new global::Windows.Graphics.PointInt32(settings.SettingsWindowX, settings.SettingsWindowY));
-        }
-        else
-        {
-            int width = (int)(980 * scale), height = (int)(760 * scale);
-            appWindow.Resize(new global::Windows.Graphics.SizeInt32(width, height));
-            GetCursorPos(out var pt);
-            var (_, work, _) = MonitorArea(MonitorFromPoint(pt, MONITOR_DEFAULTTONEAREST));
-            appWindow.Move(new global::Windows.Graphics.PointInt32(
-                work.Left + (work.Right - work.Left - width) / 2, work.Top + (work.Bottom - work.Top - height) / 2));
-        }
-
-        RebuildSetupItems(MainWindow.Engine?.Active?.Id ?? settings.Setups.FirstOrDefault()?.Id);
-        Classes.ThemeManager.ApplySavedTheme(this);
+        RebuildSetupItems(MainWindow.Engine?.Active?.Id ?? SettingsManager.Current.Setups.FirstOrDefault()?.Id);
         RootNavigation.Loaded += (_, _) => LocalizeSettingsItem();
         UiText.Changed += OnLanguageChanged;
-
-        Activated += (s, e) =>
-        {
-            if (_hIconBig != IntPtr.Zero)
-            {
-                var h = WindowNative.GetWindowHandle(this);
-                SendMessage(h, WM_SETICON, ICON_SMALL, _hIconSmall);
-                SendMessage(h, WM_SETICON, ICON_BIG, _hIconBig);
-            }
-        };
     }
 
     // ── Navigation ───────────────────────────────────────────────────────
@@ -164,13 +126,12 @@ public sealed partial class SettingsWindow : Window
     /// <summary>WinUI's built-in Settings item follows the Windows language; label it ourselves.</summary>
     private void LocalizeSettingsItem()
     {
-        if (RootNavigation.SettingsItem is NavigationViewItem item) item.Content = UiText.Get("Settings");
+        if (RootNavigation.SettingsItem is NavigationViewItem item) Localize.SetContent(item, "Settings");
     }
 
     /// <summary>Re-label the navigation and reload the current page (its code-built rows hold text too).</summary>
     private void OnLanguageChanged() => DispatcherQueue.TryEnqueue(() =>
     {
-        LocalizeSettingsItem();
         string? setupId = (ContentFrame.Content as SetupPage)?.SetupId;
         var selected = RootNavigation.SelectedItem;
         _rebuildingQuietly = true;
@@ -186,43 +147,12 @@ public sealed partial class SettingsWindow : Window
 
     private bool _rebuildingQuietly;
 
-    // ── Icon / geometry ──────────────────────────────────────────────────
-    private static void SetAppWindowIcon(AppWindow appWindow, string icoPath)
-    {
-        var hIcon = LoadImage(IntPtr.Zero, icoPath, IMAGE_ICON, 0, 0, LR_LOADFROMFILE);
-        if (hIcon == IntPtr.Zero) return;
-        try { appWindow.SetIcon(Microsoft.UI.Win32Interop.GetIconIdFromIcon(hIcon)); }
-        finally { DestroyIcon(hIcon); }
-    }
-
-    /// <summary>Load the icon frames at this window's scaling (fixed 16/32 px get stretched and look blurry).</summary>
-    private void ApplyWindowIcon(IntPtr hwnd, string icoPath)
-    {
-        uint dpi = GetDpiForWindow(hwnd);
-        int small = GetSystemMetricsForDpi(SM_CXSMICON, dpi), big = GetSystemMetricsForDpi(SM_CXICON, dpi);
-        _hIconSmall = LoadImage(IntPtr.Zero, icoPath, IMAGE_ICON, small, small, LR_LOADFROMFILE);
-        _hIconBig = LoadImage(IntPtr.Zero, icoPath, IMAGE_ICON, big, big, LR_LOADFROMFILE);
-        if (_hIconSmall != IntPtr.Zero) SendMessage(hwnd, WM_SETICON, ICON_SMALL, _hIconSmall);
-        if (_hIconBig != IntPtr.Zero) SendMessage(hwnd, WM_SETICON, ICON_BIG, _hIconBig);
-    }
-
     private void SettingsWindow_Closed(object sender, WindowEventArgs e)
     {
         instance = null;
         UiText.Changed -= OnLanguageChanged;
-        var hwnd = WindowNative.GetWindowHandle(this);
-        var appWindow = AppWindow.GetFromWindowId(Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hwnd));
-        var settings = SettingsManager.Current;
-        bool normal = appWindow.Presenter is OverlappedPresenter { State: OverlappedPresenterState.Restored };
-        if (normal)
-        {
-            settings.SettingsWindowX = appWindow.Position.X;
-            settings.SettingsWindowY = appWindow.Position.Y;
-            settings.SettingsWindowWidth = appWindow.Size.Width;
-            settings.SettingsWindowHeight = appWindow.Size.Height;
-        }
+        // Minimized or maximized: keep the last normal placement.
+        if (WindowChrome.CapturePlacement(this) is { } placement) SettingsManager.Current.SettingsWindow = placement;
         SettingsManager.SaveSettings();
-        if (_hIconSmall != IntPtr.Zero) DestroyIcon(_hIconSmall);
-        if (_hIconBig != IntPtr.Zero) DestroyIcon(_hIconBig);
     }
 }

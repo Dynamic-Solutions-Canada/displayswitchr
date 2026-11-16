@@ -1,5 +1,5 @@
 using HubDisplaySwitch.Classes.Settings;
-using HubDisplaySwitch.Localization;
+using WinUIAppKit.Localization;
 using HubDisplaySwitch.Models;
 using HubDisplaySwitch.ViewModels;
 using Microsoft.UI.Dispatching;

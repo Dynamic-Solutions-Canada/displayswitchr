@@ -2,138 +2,118 @@ using HubDisplaySwitch.Models;
 using HubDisplaySwitch.Services;
 using HubDisplaySwitch.ViewModels;
 using System.IO;
-using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
+using WinUIAppKit;
+using WinUIAppKit.Settings;
+using WinUIAppKit.Theming;
 
 namespace HubDisplaySwitch.Classes.Settings;
 
 /// <summary>
-/// Manages app settings, serialized as JSON to %AppData%\HubDisplaySwitch\settings.json
-/// (redirected to package data when packaged).
+/// The app's settings: %AppData%\HubDisplaySwitch\settings.json (redirected into package data when
+/// packaged), loaded and saved atomically by the kit's <see cref="JsonSettingsStore{T}"/> (nulls omitted,
+/// defaults written: several bools default to true, so an omitted false would load back as true).
+/// Also migrates the first, two-state settings file. Edits apply and save immediately.
 /// </summary>
 public static class SettingsManager
 {
     private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
-    internal static string SettingsDir => Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-        "HubDisplaySwitch");
+    /// <summary>Folder name under %AppData% for settings and logs (must match NLog.config).</summary>
+    public const string DataFolderName = "HubDisplaySwitch";
 
-    private static string SettingsFilePath => Path.Combine(SettingsDir, "settings.json");
+    private static readonly JsonSettingsStore<UserSettings> Store =
+        new(Path.Combine(AppEnvironment.DataDirectory(DataFolderName), "settings.json"));
 
     /// <summary>
-    /// The real on-disk folder for settings and logs, for handing to another process (e.g. Explorer).
-    /// When packaged, %AppData% writes are redirected into the package's LocalCache\Roaming (MSIX VFS),
-    /// which other processes don't see through <see cref="SettingsDir"/>.
+    /// The real on-disk folder for settings and logs, for handing to another process (e.g. Explorer):
+    /// packaged %AppData% writes land in the package's LocalCache\Roaming.
     /// </summary>
-    internal static string PhysicalSettingsDir
-    {
-        get
-        {
-            if (MainWindow.IsPackaged)
-            {
-                try
-                {
-                    return Path.Combine(global::Windows.Storage.ApplicationData.Current.LocalCacheFolder.Path, "Roaming", "HubDisplaySwitch");
-                }
-                catch { }
-            }
-            return SettingsDir;
-        }
-    }
+    internal static string PhysicalSettingsDir => AppEnvironment.PhysicalDataDirectory(DataFolderName);
 
-    // Not WhenWritingDefault: several bools default to true, so an omitted false would load back as true.
-    internal static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        WriteIndented = true,
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        PropertyNamingPolicy = null, // PascalCase to match property names
-    };
-
-    private static UserSettings _current = new();
-
-    /// <summary>The current user settings.</summary>
-    public static UserSettings Current
-    {
-        get => _current ??= new UserSettings();
-        set => _current = value;
-    }
+    /// <summary>The current user settings. Valid after <see cref="RestoreSettings"/>.</summary>
+    public static UserSettings Current { get; private set; } = new();
 
     /// <summary>True when no settings file existed and first-run defaults were created.</summary>
     public static bool IsFirstRun { get; private set; }
 
-    /// <summary>Restores settings from disk, migrating the earlier two-state format, or creates first-run defaults.</summary>
-    public static UserSettings RestoreSettings(string? filePath = null)
+    /// <summary>True when the file couldn't be used and defaults replaced it (shown to the user; not a first run).</summary>
+    public static bool WasReset { get; private set; }
+
+    /// <summary>
+    /// Restores settings from disk, migrating the earlier two-state format, or creates first-run defaults;
+    /// applies the saved theme. Never throws: anything unusable falls back to defaults so the app still starts.
+    /// Writes the file only when it changed (first run, reset, migration), so a second instance that
+    /// launches just to signal the first doesn't rewrite it.
+    /// </summary>
+    public static void RestoreSettings()
     {
-        filePath ??= SettingsFilePath;
+        bool changed;
         try
         {
-            if (File.Exists(filePath))
+            var (node, unreadable) = ReadNode();
+            if (node != null && !node.ContainsKey("Setups") && node.ContainsKey("Connected"))
             {
-                string json = File.ReadAllText(filePath);
-                var node = JsonNode.Parse(json)?.AsObject();
-                if (node != null && node.ContainsKey("Setups"))
+                File.Copy(Store.FilePath, Store.FilePath + ".v1.bak", overwrite: true);
+                Current = MigrateV1(node);
+                Logger.Info("Migrated two-state settings to setups");
+                changed = true;
+            }
+            else if (unreadable || (node != null && !node.ContainsKey("Setups")))
+            {
+                Store.Load(out _);   // logs the problem and keeps the file as .bad
+                Logger.Warn("Settings unusable; recreating defaults");
+                Current = CreateFirstRun();
+                WasReset = changed = true;
+            }
+            else
+            {
+                Current = Store.Load(out bool firstRun);
+                IsFirstRun = firstRun;
+                if (firstRun)
                 {
-                    var deserialized = JsonSerializer.Deserialize<UserSettings>(json, JsonOptions);
-                    if (deserialized != null)
-                    {
-                        _current = deserialized;
-                        _current.CompleteInitialization();
-                        Logger.Info("Settings restored ({Count} setups)", _current.Setups.Count);
-                        return _current;
-                    }
+                    Logger.Info("No settings yet; creating first-run defaults");
+                    Current = CreateFirstRun();
                 }
-                else if (node != null && node.ContainsKey("Connected"))
-                {
-                    File.Copy(filePath, filePath + ".v1.bak", overwrite: true);
-                    _current = MigrateV1(node);
-                    _current.CompleteInitialization();
-                    SaveSettings(filePath);
-                    Logger.Info("Migrated two-state settings to setups");
-                    return _current;
-                }
+                else Logger.Info("Settings restored ({Count} setups)", Current.Setups?.Count ?? 0);   // zero setups is valid
+                changed = firstRun;
             }
         }
         catch (Exception ex)
         {
-            Logger.Error(ex, "Error restoring settings");
+            Logger.Error(ex, "Couldn't restore settings; using defaults");
+            Current = CreateFirstRun();
+            WasReset = changed = true;
         }
 
-        Logger.Warn("Settings not found or unreadable — creating first-run defaults");
-        IsFirstRun = true;
-        _current = CreateFirstRun();
-        _current.CompleteInitialization();
-        SaveSettings(filePath);
-        return _current;
+        changed |= Current.CompleteInitialization();
+        AppTheme.Set(Current.AppTheme);
+        if (changed) SaveSettings();
     }
 
-    /// <summary>Saves the current settings to disk.</summary>
-    public static void SaveSettings(string? filePath = null)
+    /// <summary>The settings file as JSON (null when missing), or unreadable when it exists but isn't a JSON object.</summary>
+    private static (JsonObject? Node, bool Unreadable) ReadNode()
     {
-        filePath ??= SettingsFilePath;
+        if (!File.Exists(Store.FilePath)) return (null, false);
         try
         {
-            string? directory = Path.GetDirectoryName(filePath);
-            if (directory != null && !Directory.Exists(directory))
-                Directory.CreateDirectory(directory);
-
-            string json = JsonSerializer.Serialize(_current, JsonOptions);
-            string tmp = filePath + ".tmp";
-            File.WriteAllText(tmp, json);
-            File.Move(tmp, filePath, overwrite: true);
+            return JsonNode.Parse(File.ReadAllText(Store.FilePath)) is JsonObject node ? (node, false) : (null, true);
         }
         catch (Exception ex)
         {
-            Logger.Error(ex, "Error saving settings");
+            Logger.Warn(ex, "Settings file isn't valid JSON");
+            return (null, true);
         }
     }
+
+    /// <summary>Saves the current settings to disk.</summary>
+    public static void SaveSettings() => Store.Save(Current);
 
     /// <summary>First run: one default setup with whatever displays and audio are in use right now.</summary>
     private static UserSettings CreateFirstRun()
     {
         var s = new UserSettings();
-        var desk = new Setup { Name = Localization.UiText.Get("Desk"), Glyph = Glyphs.Desktop, IsDefault = true };
+        var desk = new Setup { Name = WinUIAppKit.Localization.UiText.Get("Desk"), Glyph = Glyphs.Desktop, IsDefault = true };
         try
         {
             foreach (var m in DisplayConfig.GetMonitors().Where(m => m.Active))

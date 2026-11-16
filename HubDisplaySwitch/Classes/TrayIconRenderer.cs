@@ -7,29 +7,18 @@ namespace HubDisplaySwitch.Classes;
 
 /// <summary>
 /// Renders the tray icon (a monitor) in code: frame follows the taskbar theme, screen is blue when
-/// auto-switching is on and grey when paused. Rendered at exactly the pixel size the tray uses at the
-/// current scaling (Windows would otherwise pick the nearest size and stretch it, which looks blurry),
-/// packed as a PNG-compressed ICO in memory (never Icon.Save, which drops the PNG data).
+/// auto-switching is on and grey when paused. Rendered as a PNG at exactly the pixel size the tray uses
+/// at the current scaling (<see cref="WinUIAppKit.Tray.TrayIcon.IconPixelSize"/>), so Windows doesn't
+/// stretch a nearby size and blur it.
 /// </summary>
 internal static class TrayIconRenderer
 {
-    public static Icon Create(bool paused, bool darkTaskbar, int size)
+    public static byte[] Render(bool paused, bool darkTaskbar, int size)
     {
         size = Math.Clamp(size, 16, 256);
         var frame = darkTaskbar ? Color.White : Color.FromArgb(32, 32, 32);
         var screen = paused ? Color.FromArgb(128, 128, 128) : Color.FromArgb(59, 130, 246);
-
-        var blob = Render(size, frame, screen);
-        using var ms = new MemoryStream();
-        using var bw = new BinaryWriter(ms);
-        bw.Write((ushort)0); bw.Write((ushort)1); bw.Write((ushort)1);
-        bw.Write((byte)(size >= 256 ? 0 : size)); bw.Write((byte)(size >= 256 ? 0 : size)); bw.Write((byte)0); bw.Write((byte)0);
-        bw.Write((ushort)1); bw.Write((ushort)32);
-        bw.Write((uint)blob.Length); bw.Write((uint)22);
-        bw.Write(blob);
-        bw.Flush();
-        ms.Position = 0;
-        return new Icon(ms, size, size);
+        return Render(size, frame, screen);
     }
 
     static byte[] Render(int size, Color frame, Color screen)
