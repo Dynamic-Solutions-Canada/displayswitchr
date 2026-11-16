@@ -31,9 +31,9 @@ Each **setup** says:
 
 ## Build
 
-From WSL in this folder (see `.codex/docs/windows-development.md`):
+From WSL in this folder (see the [Windows build tools README](https://github.com/Dynamic-Solutions-Canada/windows-build-tools)):
 
 ```bash
-npm run verify:desktop -- --platform x64     # Debug compile, including XAML
-npm run install:desktop -- --platform x64    # signed dev MSIX, update in place, launch
+npm run verify:desktop     # Debug compile, including XAML
+npm run install:desktop    # signed dev MSIX, update in place, launch
 ```
