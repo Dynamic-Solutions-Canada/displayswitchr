@@ -4,9 +4,13 @@ name: Build and Package
 # exist yet, so this file follows the baseline and is replaced by a call to it once it does.
 #
 # On a v* tag: run the gate (CI-4), build the x64 and ARM64 packages, then create the GitHub Release
-# from the committed notes (REL-5, REL-6). The Release carries no package: the app is meant for the
-# Microsoft Store, and whether a signed sideload package is attached waits on the pricing decision
-# (DIST-5). Store submission is not automated yet. workflow_dispatch runs the gate and the build only.
+# from the committed notes (REL-5, REL-6). workflow_dispatch runs the gate and the build only.
+#
+# This workflow publishes no binaries anywhere, on purpose (DIST-5). Hub Display Switch is a paid
+# Microsoft Store app in a public repo, and an Actions artifact or Release asset on a public repo can
+# be downloaded by anyone, so attaching a signed package would give the paid app away. The install
+# route is the Microsoft Store; anyone who wants to run it from source can build it themselves
+# (docs/development.md). Store submission is not automated yet.
 
 on:
   workflow_dispatch:

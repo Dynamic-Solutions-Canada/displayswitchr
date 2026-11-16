@@ -33,7 +33,7 @@ Translated wording uses the same terms as the in-app catalogs (`HubDisplaySwitch
 | Field | Value |
 | --- | --- |
 | Category | Not set; suggested Utilities & tools > Display |
-| Pricing | Not decided |
+| Pricing | Paid, US $0.99 (price tier Tier1012), with the same free trial as the other paid apps; the trial length is set in Partner Center |
 | Age rating | Questionnaire not completed |
 | Privacy policy URL | Not available yet; it comes from Ryan (D-017) |
 
@@ -44,5 +44,5 @@ Planned set, in caption order: tray flyout above the taskbar, a setup page (TV),
 ## Open questions before submission
 
 - Reserve the name in Partner Center, then set `<Identity>` in `HubDisplaySwitchMSIX/Package.appxmanifest` and the identities in `windows-build.json` together.
-- Pricing, category, age rating and the privacy policy URL (above).
+- Category, age rating and the privacy policy URL (above).
 - Add the product ID to the shared promo catalog (apps-promo) once the listing is live.
