@@ -12,6 +12,8 @@
                 <StackPanel Spacing="4">
                     <ToggleSwitch x:Name="StartupSwitch" l10n:Localize.Header="Start with Windows" Toggled="StartupSwitch_Toggled"
                                   l10n:Localize.OnContent="On" l10n:Localize.OffContent="Off" />
+                    <TextBlock x:Name="StartupNote" Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="Wrap"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" Visibility="Collapsed" Margin="0,-4,0,8" />
                     <ToggleSwitch x:Name="ApplyOnStartSwitch" l10n:Localize.Header="Switch to the right setup when the app starts (for example after you sign in)"
                                   l10n:Localize.OnContent="On" l10n:Localize.OffContent="Off"
                                   IsOn="{x:Bind Settings.ApplyOnStart, Mode=TwoWay}" Toggled="Persist" />

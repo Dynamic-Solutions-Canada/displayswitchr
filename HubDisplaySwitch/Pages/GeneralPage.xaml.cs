@@ -5,6 +5,7 @@ using HubDisplaySwitch.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using WinUIAppKit.Startup;
 
 namespace HubDisplaySwitch.Pages;
 
@@ -24,11 +25,9 @@ public sealed partial class GeneralPage : Page
             BuildLanguages();
             ThemeCombo.SelectedIndex = Math.Clamp((int)Settings.AppTheme, 0, 2);
             AutoSwitch.IsOn = !Settings.Paused;
-            _updatingStartupSwitch = true;
-            try { StartupSwitch.IsOn = await MainWindow.Startup.IsEnabledAsync(); }
-            catch (Exception ex) { Logger.Warn(ex, "Couldn't read startup state"); }
-            finally { _updatingStartupSwitch = false; }
+            // The other controls are live from here; the startup switch has its own guard while it loads.
             _initializing = false;
+            await LoadStartupAsync(() => MainWindow.Startup.GetStatusAsync());
         };
     }
 
@@ -43,19 +42,56 @@ public sealed partial class GeneralPage : Page
         MainWindow.Engine.SetPaused(!AutoSwitch.IsOn);
     }
 
+    // ── Start with Windows ──────────────────────────────────────────────
     private async void StartupSwitch_Toggled(object sender, RoutedEventArgs e)
     {
         if (_updatingStartupSwitch || _initializing) return;
+        bool requested = StartupSwitch.IsOn;
+        await LoadStartupAsync(() => MainWindow.Startup.SetEnabledAsync(requested));
+    }
+
+    /// <summary>
+    /// Run a startup query or change and show its outcome (same pattern as WSL Monitor). Windows may
+    /// refuse a change (the user turned the app off in Settings, or a policy decides); the switch then
+    /// shows the real state, is disabled, and a note says where the decision lives. On an error the
+    /// real state is re-read.
+    /// </summary>
+    private async Task LoadStartupAsync(Func<Task<StartupStatus>> operation)
+    {
         _updatingStartupSwitch = true;
         try
         {
-            bool result = await MainWindow.Startup.SetEnabledAsync(StartupSwitch.IsOn);
-            StartupSwitch.IsOn = result;   // the user or policy may refuse
-            Settings.Startup = result;
+            ShowStartup(await operation());
+        }
+        catch (Exception ex)
+        {
+            Logger.Warn(ex, "Couldn't read or change the startup state");
+            try { ShowStartup(await MainWindow.Startup.GetStatusAsync()); } catch { }
+        }
+        finally
+        {
+            _updatingStartupSwitch = false;
+        }
+    }
+
+    private void ShowStartup(StartupStatus status)
+    {
+        StartupSwitch.IsOn = status.IsOn();
+        StartupSwitch.IsEnabled = status.CanChange();
+        if (Settings.Startup != status.IsOn())
+        {
+            Settings.Startup = status.IsOn();
             SettingsManager.SaveSettings();
         }
-        catch (Exception ex) { Logger.Warn(ex, "Couldn't change startup state"); }
-        finally { _updatingStartupSwitch = false; }
+
+        // Keys stay literal so scripts/check-localization.py can find them.
+        switch (status)
+        {
+            case StartupStatus.DisabledByUser: Localize.SetText(StartupNote, "Turned off in Windows Settings (Apps > Startup). Turn it back on there."); break;
+            case StartupStatus.DisabledByPolicy: Localize.SetText(StartupNote, "Turned off by your organization."); break;
+            case StartupStatus.EnabledByPolicy: Localize.SetText(StartupNote, "Turned on by your organization."); break;
+        }
+        StartupNote.Visibility = status.CanChange() ? Visibility.Collapsed : Visibility.Visible;
     }
 
     private bool _buildingLanguages;
