@@ -366,7 +366,9 @@ FodyWeavers.xsd
 # Windows tail: packaging output from HubDisplaySwitchMSIX/build-msix.ps1.
 /HubDisplaySwitchMSIX/bin/
 
-# Part 2: project rules, each with a one-line reason. None yet.
+# Part 2: project rules, each with a one-line reason.
+# The release skill's folder, which the template's [Rr]elease/ rule would otherwise ignore (HYG-6).
+!/.agents/skills/release/
 # Shared block (HYG-6), from winui-app-kit build/shared.gitignore. Paste it unchanged as the last part
 # of every repo's .gitignore, so no earlier line can un-ignore what it covers. Change it in the kit.
 /.artifacts/

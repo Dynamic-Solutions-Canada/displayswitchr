@@ -33,6 +33,7 @@ The app icon and MSIX images come from `HubDisplaySwitchMSIX/generate-msix-image
 
 - `npm run format:check`: every C# project outside `external/` matches the root `.editorconfig`, which is winui-app-kit's file copied unchanged from the tag the app pins; never hand-edit it. `npm run format` rewrites the files.
 - `npm run check:l10n`: every key the code and XAML use exists in the English catalog, and every other catalog has exactly the same keys, no empty values and the same `{{placeholders}}`. It does not check the languages declared in the package manifest.
+- `npm run check:listing`: the Store listing source and the release notes for the current `<Version>`, checked as `store-assets/microsoft/listings.md` describes.
 - `npm test`: every portable harness under `tests/`, found by `scripts/run-tests` without a hand-kept list. Each has a README saying what it covers and does not prove. Today there is one, for the switching policy.
 
 Formatting and tests run through `scripts/dotnet`, which uses the .NET SDK pinned in `global.json` when it is installed and otherwise its Docker image, capped at 3 GB (`KIT_DOTNET_MEMORY`). Run them as a non-root user. Run `npm run validate` and `npm run verify:desktop` before finishing a change.
@@ -52,7 +53,9 @@ The harness cannot see the screen, the USB hubs or the audio devices. Before a r
 
 ## Releases
 
-There is no release process yet. The app is not yet in the Microsoft Store, and its package identity is a placeholder until the name is reserved.
+The full procedure is the [`release` skill](../.agents/skills/release/SKILL.md). In short: the notes for the new version are written as user-facing bullets in `release-notes/<version>.md` and one translation per other wording catalog, and approved first; then `<Version>` in `Directory.Build.props` and the notes are committed together as `Bump version to vX.Y.Z`, tagged `vX.Y.Z` (annotated) and pushed. The tag runs "Build and Package" (`.github/workflows/build-msix.yml`): the validate gate, an x64 and ARM64 package build, then a GitHub Release titled `Hub Display Switch X.Y.Z` with the notes as its body. It fails if the notes are missing.
+
+The app is not yet in the Microsoft Store, and its package identity is a placeholder until the name is reserved, so the Store submission is not automated yet.
 
 ## Where the app stores data
 
