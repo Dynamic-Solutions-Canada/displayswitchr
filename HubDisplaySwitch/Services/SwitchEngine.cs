@@ -1,4 +1,5 @@
 using HubDisplaySwitch.Classes.Settings;
+using HubDisplaySwitch.Localization;
 using HubDisplaySwitch.Models;
 using HubDisplaySwitch.ViewModels;
 using Microsoft.UI.Dispatching;
@@ -6,6 +7,13 @@ using Microsoft.UI.Dispatching;
 namespace HubDisplaySwitch.Services;
 
 public enum OsdState { Working, Done, Error }
+
+/// <summary>Why a switch happened. The values are <see cref="UiText"/> keys: logged as-is, translated in the popup.</summary>
+public static class SwitchReason
+{
+    public const string Manual = "Switched manually", AppStarted = "App started", HubConnected = "Hub connected",
+                        HubDisconnected = "Hub disconnected", PreviousSetup = "Hub disconnected · previous setup";
+}
 
 /// <summary>
 /// Watches USB hubs, decides which setup should be active, and runs the switch sequence:
@@ -105,7 +113,7 @@ public sealed class SwitchEngine : IDisposable
             Logger.Info("Start: hubs connected for [{Hubs}]; setup = {Setup}",
                 string.Join(", ", hubSetups.Where(IsHubConnected).Select(s => s.Name)), desired?.Name ?? "(none)");
             if (desired != null && Settings.ApplyOnStart && !Settings.Paused && !IsAlreadyApplied(desired))
-                Apply(desired, "App started");
+                Apply(desired, SwitchReason.AppStarted);
             else
             {
                 Active ??= desired;
@@ -116,8 +124,8 @@ public sealed class SwitchEngine : IDisposable
         {
             _desiredId = desired?.Id;
             if (desired != null && !Settings.Paused)
-                Apply(desired, desired.Id == newlyConnected ? "Hub connected"
-                             : desired.IsDefault ? "Hub disconnected" : "Hub disconnected · previous setup");
+                Apply(desired, desired.Id == newlyConnected ? SwitchReason.HubConnected
+                             : desired.IsDefault ? SwitchReason.HubDisconnected : SwitchReason.PreviousSetup);
         }
         StateChanged?.Invoke();
     }
@@ -194,6 +202,7 @@ public sealed class SwitchEngine : IDisposable
     }
 
     // ---- switch sequence -----------------------------------------------------------------------
+    /// <param name="reason">One of <see cref="SwitchReason"/>.</param>
     public void Apply(Setup setup, string reason)
     {
         _target = setup;
@@ -202,7 +211,7 @@ public sealed class SwitchEngine : IDisposable
         _attempts = 0;
         _outDone = setup.AudioName.Length == 0;
         _micDone = setup.MicName.Length == 0;
-        Show($"Switching to {setup.Name}…", reason, OsdState.Working);
+        Show(SwitchingTo(setup), UiText.Get(reason), OsdState.Working);
         Go(Phase.Apply, ApplyDelayMs);
         StateChanged?.Invoke();
     }
@@ -234,19 +243,25 @@ public sealed class SwitchEngine : IDisposable
                     bool lastTry = _attempts >= DisplayRetries - 1;
                     ApplyLayout(s, skipMissing: lastTry);
                     Logger.Info("Switched to '{Setup}': {Displays} ({Reason})", s.Name, s.DescribeDisplays(), _reason);
-                    Show($"Switching to {s.Name}…", "Setting up displays…", OsdState.Working);
+                    Show(SwitchingTo(s), UiText.Get("Setting up displays…"), OsdState.Working);
                     Go(Phase.Settle, SettleMs);
                 }
                 catch (MonitorNotFoundException ex) when (++_attempts < DisplayRetries)
                 {
                     if (_attempts == 1) Logger.Info("{Message}; waiting for it", ex.Message);
-                    Show($"Waiting for {ex.DisplayName}…", "Turn it on if it's off", OsdState.Working);
+                    Show(UiText.Format("Waiting for {{display}}…", ("display", ex.DisplayName)), UiText.Get("Turn it on if it's off"), OsdState.Working);
                     Go(Phase.WaitForDisplay, DisplayRetryMs);
                 }
                 catch (Exception ex)
                 {
                     Logger.Error(ex, "Couldn't switch to '{Setup}'", s.Name);
-                    Show($"Couldn't switch to {s.Name}", ex.Message, OsdState.Error);
+                    string detail = ex switch
+                    {
+                        MonitorNotFoundException missing => UiText.Format("{{display}} isn't connected or is switched off", ("display", missing.DisplayName)),
+                        NoDisplaysChosenException => UiText.Get("This setup has no displays chosen"),
+                        _ => ex.Message,   // a Windows error code; not worth translating
+                    };
+                    Show(UiText.Format("Couldn't switch to {{setup}}", ("setup", s.Name)), detail, OsdState.Error);
                     Finish();
                 }
                 break;
@@ -259,11 +274,12 @@ public sealed class SwitchEngine : IDisposable
                 if (changes.Count > 0 || audioMsg != null)
                 {
                     _stable = 0;
-                    Show($"Switching to {s.Name}…", audioMsg ?? $"Refresh rate: {changes[^1]}", OsdState.Working);
+                    Show(SwitchingTo(s), audioMsg ?? UiText.Format("Refresh rate: {{change}}", ("change", changes[^1])), OsdState.Working);
                 }
                 else if (AudioDone) _stable++;
-                else Show($"Switching to {s.Name}…",
-                          $"Waiting for {(!_outDone ? "audio: " + ShortAudio(s.AudioName) : "microphone: " + ShortAudio(s.MicName))}",
+                else Show(SwitchingTo(s),
+                          !_outDone ? UiText.Format("Waiting for audio: {{device}}", ("device", ShortAudio(s.AudioName)))
+                                    : UiText.Format("Waiting for microphone: {{device}}", ("device", ShortAudio(s.MicName))),
                           OsdState.Working);
 
                 if (_stable >= SettleStable || _ticks >= SettleMaxTicks)
@@ -285,7 +301,7 @@ public sealed class SwitchEngine : IDisposable
                 if (changes.Count > 0 || audioMsg != null)
                 {
                     _stable = 0;
-                    Show(s.Name, audioMsg ?? $"Refresh rate restored: {changes[^1]}", OsdState.Done);
+                    Show(s.Name, audioMsg ?? UiText.Format("Refresh rate restored: {{change}}", ("change", changes[^1])), OsdState.Done);
                 }
                 else _stable++;
                 if (_ticks >= BackgroundTicks || (_stable >= BackgroundStable && AudioDone)) Finish();
@@ -301,7 +317,7 @@ public sealed class SwitchEngine : IDisposable
     static void ApplyLayout(Setup s, bool skipMissing)
     {
         var displays = s.DisplaysMainFirst.Select(d => ((string?)d.Id, d.Name)).ToList();
-        if (displays.Count == 0) throw new InvalidOperationException("This setup has no displays chosen");
+        if (displays.Count == 0) throw new NoDisplaysChosenException();
         DisplayConfig.SetActive(displays, s.Mirror, skipMissing);
         if (!s.Mirror && displays.Count > 1 && s.Main is { } main)
         {
@@ -334,8 +350,8 @@ public sealed class SwitchEngine : IDisposable
     string? AudioPass(Setup s, bool quiet)
     {
         var parts = new List<string>();
-        if (!_outDone && TrySet(AudioFlow.Output, s.AudioId, s.AudioName, ref _outDone)) parts.Add($"Audio: {ShortAudio(s.AudioName)}");
-        if (!_micDone && TrySet(AudioFlow.Input, s.MicId, s.MicName, ref _micDone)) parts.Add($"Mic: {ShortAudio(s.MicName)}");
+        if (!_outDone && TrySet(AudioFlow.Output, s.AudioId, s.AudioName, ref _outDone)) parts.Add(UiText.Format("Audio: {{device}}", ("device", ShortAudio(s.AudioName))));
+        if (!_micDone && TrySet(AudioFlow.Input, s.MicId, s.MicName, ref _micDone)) parts.Add(UiText.Format("Mic: {{device}}", ("device", ShortAudio(s.MicName))));
         return parts.Count == 0 ? null : string.Join("  ·  ", parts);
     }
 
@@ -378,11 +394,13 @@ public sealed class SwitchEngine : IDisposable
             try { hz = DisplayConfig.GetCurrentRefreshRate(main.Id, main.Name); } catch { }
             if (hz > 0) parts.Add($"{hz} Hz");
         }
-        if (s.AudioName.Length > 0) parts.Add(_outDone ? $"Audio: {ShortAudio(s.AudioName)}" : "Audio not available");
-        if (s.MicName.Length > 0 && !_micDone) parts.Add("Mic not available");
-        parts.Add(_reason);
+        if (s.AudioName.Length > 0) parts.Add(_outDone ? UiText.Format("Audio: {{device}}", ("device", ShortAudio(s.AudioName))) : UiText.Get("Audio not available"));
+        if (s.MicName.Length > 0 && !_micDone) parts.Add(UiText.Get("Mic not available"));
+        parts.Add(UiText.Get(_reason));
         return string.Join("  ·  ", parts);
     }
+
+    static string SwitchingTo(Setup s) => UiText.Format("Switching to {{setup}}…", ("setup", s.Name));
 
     /// <summary>"LG TV (AMD High Definition Audio Device)" → "LG TV".</summary>
     public static string ShortAudio(string name)
@@ -403,3 +421,5 @@ public sealed class SwitchEngine : IDisposable
         _usb?.Dispose();
     }
 }
+
+public sealed class NoDisplaysChosenException() : InvalidOperationException("This setup has no displays chosen");

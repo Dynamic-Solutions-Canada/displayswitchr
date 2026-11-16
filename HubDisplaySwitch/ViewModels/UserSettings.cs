@@ -17,6 +17,10 @@ public partial class UserSettings : ObservableObject
     [ObservableProperty]
     public partial int AppTheme { get; set; }
 
+    /// <summary>Interface language, e.g. "fr-CA". Empty = match Windows.</summary>
+    [ObservableProperty]
+    public partial string Language { get; set; } = "";
+
     /// <summary>Start at sign-in (StartupTask when packaged, Run key when unpackaged). Registered once on first run.</summary>
     [ObservableProperty]
     public partial bool Startup { get; set; } = true;
@@ -60,9 +64,18 @@ public partial class UserSettings : ObservableObject
         Classes.ThemeManager.ApplyAndSaveTheme(newValue);
     }
 
+    partial void OnLanguageChanged(string value)
+    {
+        if (_initializing) return;
+        Localization.UiText.SetOverride(value);
+        Classes.Settings.SettingsManager.SaveSettings();
+    }
+
     /// <summary>Repairs any nulls from older/partial settings files.</summary>
     public void CompleteInitialization()
     {
+        Language ??= "";
+        Localization.UiText.SetOverride(Language, notify: false);
         _initializing = false;
         Setups ??= new();
         RefreshRates = new Dictionary<string, int>(RefreshRates ?? new(), StringComparer.OrdinalIgnoreCase);

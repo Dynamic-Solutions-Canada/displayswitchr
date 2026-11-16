@@ -1,5 +1,6 @@
 using HubDisplaySwitch.Classes;
 using HubDisplaySwitch.Classes.Settings;
+using HubDisplaySwitch.Localization;
 using HubDisplaySwitch.Services;
 using HubDisplaySwitch.Windows;
 using Microsoft.UI.Windowing;
@@ -79,6 +80,10 @@ public sealed partial class MainWindow : Window
 
         AddTrayIcon();
         ThemeManager.ThemeChanged += UpdateTrayIcon;
+        UiText.Changed += () => DispatcherQueue.TryEnqueue(() => { UpdateTrayIcon(); _switcher.Refresh(); });
+        // The shared "Our other apps" page has its own strings; point it at our language choice.
+        TechnicallyReal.Promo.PromoLocalization.LocaleProvider = () => UiText.Locale;
+        UiText.Changed += () => DispatcherQueue.TryEnqueue(TechnicallyReal.Promo.PromoLocalization.Refresh);
         _uiSettings.ColorValuesChanged += (s, e) => DispatcherQueue.TryEnqueue(UpdateTrayIcon);
 
         _ = ApplyFirstRunStartupAsync();
@@ -187,7 +192,8 @@ public sealed partial class MainWindow : Window
     private string TrayTooltip()
     {
         var s = SettingsManager.Current;
-        string tip = $"Hub Display Switch – {Engine.Active?.Name ?? "no setup"}{(s.Paused ? " (paused)" : "")}";
+        string setup = Engine.Active?.Name ?? UiText.Get("no setup");
+        string tip = "Hub Display Switch – " + (s.Paused ? UiText.Format("{{setup}} (paused)", ("setup", setup)) : setup);
         return tip.Length > 127 ? tip[..127] : tip;
     }
 
@@ -261,25 +267,25 @@ public sealed partial class MainWindow : Window
             {
                 Text = (Engine.Active?.Id == setup.Id ? "● " : "    ") + setup.Name,
             };
-            item.Click += (_, _) => DispatcherQueue.TryEnqueue(() => Engine.Apply(setup, "Switched manually"));
+            item.Click += (_, _) => DispatcherQueue.TryEnqueue(() => Engine.Apply(setup, SwitchReason.Manual));
             popup.Items.Add(item);
         }
         popup.Items.Add(new H.NotifyIcon.Core.PopupMenuSeparator());
 
-        var pause = new H.NotifyIcon.Core.PopupMenuItem { Text = s.Paused ? "Resume auto-switching" : "Pause auto-switching" };
+        var pause = new H.NotifyIcon.Core.PopupMenuItem { Text = UiText.Get(s.Paused ? "Resume auto-switching" : "Pause auto-switching") };
         pause.Click += (_, _) => DispatcherQueue.TryEnqueue(() => Engine.SetPaused(!SettingsManager.Current.Paused));
         popup.Items.Add(pause);
 
-        var settings = new H.NotifyIcon.Core.PopupMenuItem { Text = "Settings" };
+        var settings = new H.NotifyIcon.Core.PopupMenuItem { Text = UiText.Get("Settings") };
         settings.Click += (_, _) => DispatcherQueue.TryEnqueue(SettingsWindow.ShowInstance);
         popup.Items.Add(settings);
 
-        var logs = new H.NotifyIcon.Core.PopupMenuItem { Text = "Open logs folder" };
+        var logs = new H.NotifyIcon.Core.PopupMenuItem { Text = UiText.Get("Open logs folder") };
         logs.Click += (_, _) => OpenLogsFolder();
         popup.Items.Add(logs);
 
         popup.Items.Add(new H.NotifyIcon.Core.PopupMenuSeparator());
-        var exit = new H.NotifyIcon.Core.PopupMenuItem { Text = "Exit" };
+        var exit = new H.NotifyIcon.Core.PopupMenuItem { Text = UiText.Get("Exit") };
         exit.Click += (_, _) => DispatcherQueue.TryEnqueue(ExitApp);
         popup.Items.Add(exit);
 

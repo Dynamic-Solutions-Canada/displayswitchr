@@ -1,4 +1,5 @@
 using HubDisplaySwitch.Classes.Settings;
+using HubDisplaySwitch.Localization;
 using HubDisplaySwitch.Models;
 using HubDisplaySwitch.Pages;
 using Microsoft.UI.Windowing;
@@ -76,6 +77,8 @@ public sealed partial class SettingsWindow : Window
 
         RebuildSetupItems(MainWindow.Engine?.Active?.Id ?? settings.Setups.FirstOrDefault()?.Id);
         Classes.ThemeManager.ApplySavedTheme(this);
+        RootNavigation.Loaded += (_, _) => LocalizeSettingsItem();
+        UiText.Changed += OnLanguageChanged;
 
         Activated += (s, e) =>
         {
@@ -93,7 +96,7 @@ public sealed partial class SettingsWindow : Window
     public void RebuildSetupItems(string? selectId)
     {
         RootNavigation.MenuItems.Clear();
-        RootNavigation.MenuItems.Add(new NavigationViewItemHeader { Content = "Setups" });
+        RootNavigation.MenuItems.Add(new NavigationViewItemHeader { Content = UiText.Get("Setups") });
         NavigationViewItem? select = null;
         foreach (var s in SettingsManager.Current.Setups)
         {
@@ -108,7 +111,7 @@ public sealed partial class SettingsWindow : Window
         }
         RootNavigation.MenuItems.Add(new NavigationViewItem
         {
-            Content = "Add setup",
+            Content = UiText.Get("Add setup"),
             Tag = AddTag,
             SelectsOnInvoked = false,
             Icon = new FontIcon { Glyph = "" },
@@ -133,7 +136,7 @@ public sealed partial class SettingsWindow : Window
     private void RootNavigation_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
     {
         if (args.InvokedItemContainer?.Tag as string != AddTag) return;
-        var setup = new Setup { Name = "New setup", Glyph = Glyphs.Monitor };
+        var setup = new Setup { Name = UiText.Get("New setup"), Glyph = Glyphs.Monitor };
         if (SettingsManager.Current.Setups.Count == 0) setup.IsDefault = true;
         SettingsManager.Current.Setups.Add(setup);
         SettingsManager.SaveSettings();
@@ -143,6 +146,7 @@ public sealed partial class SettingsWindow : Window
 
     private void RootNavigation_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {
+        if (_rebuildingQuietly) return;
         if (args.IsSettingsSelected) { Navigate(typeof(GeneralPage), null); return; }
         if ((args.SelectedItem as NavigationViewItem)?.Tag is not string tag || tag == AddTag) return;
         if (tag == "AboutPage") { Navigate(typeof(AboutPage), null); return; }
@@ -150,12 +154,37 @@ public sealed partial class SettingsWindow : Window
         Navigate(typeof(SetupPage), tag);
     }
 
-    private void Navigate(Type page, string? parameter)
+    private void Navigate(Type page, string? parameter, bool force = false)
     {
-        if (ContentFrame.Content is SetupPage current && page == typeof(SetupPage) && current.SetupId == parameter) return;
-        if (ContentFrame.Content?.GetType() == page && page != typeof(SetupPage)) return;
+        if (!force && ContentFrame.Content is SetupPage current && page == typeof(SetupPage) && current.SetupId == parameter) return;
+        if (!force && ContentFrame.Content?.GetType() == page && page != typeof(SetupPage)) return;
         ContentFrame.Navigate(page, parameter);
     }
+
+    /// <summary>WinUI's built-in Settings item follows the Windows language; label it ourselves.</summary>
+    private void LocalizeSettingsItem()
+    {
+        if (RootNavigation.SettingsItem is NavigationViewItem item) item.Content = UiText.Get("Settings");
+    }
+
+    /// <summary>Re-label the navigation and reload the current page (its code-built rows hold text too).</summary>
+    private void OnLanguageChanged() => DispatcherQueue.TryEnqueue(() =>
+    {
+        LocalizeSettingsItem();
+        string? setupId = (ContentFrame.Content as SetupPage)?.SetupId;
+        var selected = RootNavigation.SelectedItem;
+        _rebuildingQuietly = true;
+        try
+        {
+            RebuildSetupItems(setupId);
+            if (setupId == null) RootNavigation.SelectedItem = selected;   // Settings / About / promo stay selected
+        }
+        finally { _rebuildingQuietly = false; }
+        // XAML text refreshes itself (Localize); setup pages also build rows in code, so reload those.
+        if (setupId != null) Navigate(typeof(SetupPage), setupId, force: true);
+    });
+
+    private bool _rebuildingQuietly;
 
     // ── Icon / geometry ──────────────────────────────────────────────────
     private static void SetAppWindowIcon(AppWindow appWindow, string icoPath)
@@ -180,6 +209,7 @@ public sealed partial class SettingsWindow : Window
     private void SettingsWindow_Closed(object sender, WindowEventArgs e)
     {
         instance = null;
+        UiText.Changed -= OnLanguageChanged;
         var hwnd = WindowNative.GetWindowHandle(this);
         var appWindow = AppWindow.GetFromWindowId(Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hwnd));
         var settings = SettingsManager.Current;

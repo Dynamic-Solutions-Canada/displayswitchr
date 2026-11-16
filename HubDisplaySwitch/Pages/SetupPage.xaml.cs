@@ -1,4 +1,5 @@
 using HubDisplaySwitch.Classes.Settings;
+using HubDisplaySwitch.Localization;
 using HubDisplaySwitch.Models;
 using HubDisplaySwitch.Services;
 using Microsoft.UI.Xaml;
@@ -59,7 +60,7 @@ public sealed partial class SetupPage : Page
     private void NameBox_TextChanged(object sender, TextChangedEventArgs e)
     {
         if (_initializing) return;
-        _setup.Name = string.IsNullOrWhiteSpace(NameBox.Text) ? "Setup" : NameBox.Text.Trim();
+        _setup.Name = string.IsNullOrWhiteSpace(NameBox.Text) ? UiText.Get("Setup") : NameBox.Text.Trim();
         Save(navChanged: true);
     }
 
@@ -77,10 +78,10 @@ public sealed partial class SetupPage : Page
         var dialog = new ContentDialog
         {
             XamlRoot = XamlRoot,
-            Title = $"Delete \"{_setup.Name}\"?",
-            Content = "This removes the setup. Your displays and audio aren't changed.",
-            PrimaryButtonText = "Delete",
-            CloseButtonText = "Cancel",
+            Title = UiText.Format("Delete \"{{name}}\"?", ("name", _setup.Name)),
+            Content = UiText.Get("This removes the setup. Your displays and audio aren't changed."),
+            PrimaryButtonText = UiText.Get("Delete"),
+            CloseButtonText = UiText.Get("Cancel"),
             DefaultButton = ContentDialogButton.Close,
         };
         if (await dialog.ShowAsync() != ContentDialogResult.Primary) return;
@@ -122,17 +123,18 @@ public sealed partial class SetupPage : Page
             info.Children.Add(new TextBlock { Text = hub.Name, TextTrimming = TextTrimming.CharacterEllipsis });
             info.Children.Add(new TextBlock
             {
-                Text = $"{(connected ? "Connected" : "Not connected")}  ·  {model}",
+                Text = $"{UiText.Get(connected ? "Connected" : "Not connected")}  ·  {model}",
                 Style = (Style)Application.Current.Resources["CaptionTextBlockStyle"],
                 Foreground = (Brush)Application.Current.Resources[connected ? "SystemFillColorSuccessBrush" : "TextFillColorSecondaryBrush"],
             });
 
-            var exact = new CheckBox { Content = "This port only", IsChecked = hub.ExactPort, MinWidth = 0, VerticalAlignment = VerticalAlignment.Center };
-            ToolTipService.SetToolTip(exact, "Only match when plugged into this exact USB port. Needed if two setups use the same hub model.");
+            var exact = new CheckBox { Content = UiText.Get("This port only"), IsChecked = hub.ExactPort, MinWidth = 0, VerticalAlignment = VerticalAlignment.Center };
+            ToolTipService.SetToolTip(exact, UiText.Get("Only match when plugged into this exact USB port. Needed if two setups use the same hub model."));
             exact.Click += (_, _) => { hub.ExactPort = exact.IsChecked == true; Save(); BuildHubs(); };
 
             var remove = new Button { Content = new FontIcon { Glyph = "", FontSize = 12 }, Padding = new Thickness(8), VerticalAlignment = VerticalAlignment.Center };
-            ToolTipService.SetToolTip(remove, "Remove");
+            ToolTipService.SetToolTip(remove, UiText.Get("Remove"));
+            Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(remove, UiText.Get("Remove"));
             remove.Click += (_, _) => { _setup.Hubs.Remove(hub); Save(); BuildHubs(); };
 
             HubsPanel.Children.Add(Row(Glyphs.Usb, info, exact, remove));
@@ -140,7 +142,8 @@ public sealed partial class SetupPage : Page
         if (_setup.Hubs.Count == 0)
             HubsPanel.Children.Add(new TextBlock
             {
-                Text = "No hubs yet. Add one from the list, or detect it by unplugging it.",
+                Text = UiText.Get("No hubs yet. Add one from the list, or detect it by unplugging it."),
+                TextWrapping = TextWrapping.Wrap,
                 Style = (Style)Application.Current.Resources["CaptionTextBlockStyle"],
                 Foreground = (Brush)Application.Current.Resources["TextFillColorSecondaryBrush"],
             });
@@ -180,10 +183,10 @@ public sealed partial class SetupPage : Page
         var others = devices.Where(d => !d.IsHub).OrderBy(d => d.Name).ToList();
 
         foreach (var d in hubs) AddHubMenu.Items.Add(HubMenuItem(d));
-        if (hubs.Count == 0) AddHubMenu.Items.Add(new MenuFlyoutItem { Text = "No USB hubs found", IsEnabled = false });
+        if (hubs.Count == 0) AddHubMenu.Items.Add(new MenuFlyoutItem { Text = UiText.Get("No USB hubs found"), IsEnabled = false });
         if (others.Count > 0)
         {
-            var sub = new MenuFlyoutSubItem { Text = "Other USB devices" };
+            var sub = new MenuFlyoutSubItem { Text = UiText.Get("Other USB devices") };
             foreach (var d in others) sub.Items.Add(HubMenuItem(d));
             AddHubMenu.Items.Add(new MenuFlyoutSeparator());
             AddHubMenu.Items.Add(sub);
@@ -232,7 +235,7 @@ public sealed partial class SetupPage : Page
         {
             var mon = monitors.FirstOrDefault(m => m.Id == d.Id) ?? monitors.FirstOrDefault(m => m.Name == d.Name);
             bool selected = _setup.Displays.Any(x => Same(x, d));
-            string status = mon == null ? "Not connected or switched off" : mon.Active ? "On" : "Connected, currently off";
+            string status = UiText.Get(mon == null ? "Not connected or switched off" : mon.Active ? "On" : "Connected, currently off");
             if (mon?.Active == true)
             {
                 try { int hz = DisplayConfig.GetCurrentRefreshRate(mon.Id, mon.Name); if (hz > 0) status += $"  ·  {hz} Hz"; } catch { }
@@ -248,7 +251,7 @@ public sealed partial class SetupPage : Page
             var check = new CheckBox { Content = info, IsChecked = selected, VerticalAlignment = VerticalAlignment.Center };
             var mainRadio = new RadioButton
             {
-                Content = "Main display", GroupName = group, MinWidth = 0, VerticalAlignment = VerticalAlignment.Center,
+                Content = UiText.Get("Main display"), GroupName = group, MinWidth = 0, VerticalAlignment = VerticalAlignment.Center,
                 IsChecked = selected && main != null && Same(main, d),
             };
 
@@ -283,13 +286,13 @@ public sealed partial class SetupPage : Page
         }
     }
 
-    private const string HighestRate = "Highest refresh rate", KeepRate = "Don't change refresh rate";
-
     /// <summary>Editable picker: highest (default) / don't change / the display's rates (when it's on) / a typed number.</summary>
     private ComboBox RefreshPicker(DisplayRef display, MonitorInfo? mon)
     {
-        var combo = new ComboBox { IsEditable = true, Width = 210, VerticalAlignment = VerticalAlignment.Center };
-        ToolTipService.SetToolTip(combo, "Refresh rate to use in this setup. Re-applied for about 45 seconds after switching, because TVs waking from standby often fall back to 60 Hz.");
+        string HighestRate = UiText.Get("Highest refresh rate"), KeepRate = UiText.Get("Don't change refresh rate");
+        var combo = new ComboBox { IsEditable = true, Width = 230, VerticalAlignment = VerticalAlignment.Center };
+        ToolTipService.SetToolTip(combo, UiText.Get("Refresh rate to use in this setup. Re-applied for about 45 seconds after switching, because TVs waking from standby often fall back to 60 Hz."));
+        Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(combo, UiText.Get("Refresh rate"));
         combo.Items.Add(HighestRate);
         combo.Items.Add(KeepRate);
         if (mon?.Active == true)
@@ -306,8 +309,8 @@ public sealed partial class SetupPage : Page
             if (_initializing) return;
             text = text.Trim();
             display.RefreshRate =
-                text.StartsWith("High", StringComparison.OrdinalIgnoreCase) ? 0 :
-                text.StartsWith("Don", StringComparison.OrdinalIgnoreCase) ? -1 :
+                text.Equals(HighestRate, StringComparison.CurrentCultureIgnoreCase) ? 0 :
+                text.Equals(KeepRate, StringComparison.CurrentCultureIgnoreCase) ? -1 :
                 int.TryParse(new string(text.TakeWhile(char.IsDigit).ToArray()), out var hz) && hz > 0 ? hz : 0;
             Save();
         }
@@ -358,7 +361,7 @@ public sealed partial class SetupPage : Page
         List<AudioDevice> devices;
         try { devices = AudioDevices.List(flow); } catch (Exception ex) { Logger.Warn(ex, "{Flow} list failed", flow); devices = new(); }
         combo.Items.Clear();
-        combo.Items.Add(new ComboBoxItem { Content = "Don't change", Tag = "" });
+        combo.Items.Add(new ComboBoxItem { Content = UiText.Get("Don't change"), Tag = "" });
         ComboBoxItem? selected = null;
 
         void Group(string header, IEnumerable<AudioDevice> items)
@@ -370,7 +373,7 @@ public sealed partial class SetupPage : Page
                 IsEnabled = false, IsHitTestVisible = false, Padding = new Thickness(11, 10, 11, 2),
                 Content = new TextBlock
                 {
-                    Text = header, Style = (Style)Application.Current.Resources["CaptionTextBlockStyle"],
+                    Text = UiText.Get(header), Style = (Style)Application.Current.Resources["CaptionTextBlockStyle"],
                     FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
                     Foreground = (Brush)Application.Current.Resources["TextFillColorSecondaryBrush"],
                 },
@@ -393,7 +396,7 @@ public sealed partial class SetupPage : Page
                 IsEnabled = false, IsHitTestVisible = false, Padding = new Thickness(11, 10, 11, 2),
                 Content = new TextBlock
                 {
-                    Text = "Saved, not available now", Style = (Style)Application.Current.Resources["CaptionTextBlockStyle"],
+                    Text = UiText.Get("Saved, not available now"), Style = (Style)Application.Current.Resources["CaptionTextBlockStyle"],
                     FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
                     Foreground = (Brush)Application.Current.Resources["TextFillColorSecondaryBrush"],
                 },
@@ -428,5 +431,5 @@ public sealed partial class SetupPage : Page
         return device != null ? (device.Id, device.Name) : (oldId, oldName);   // "(not found)" entry keeps the saved one
     }
 
-    private void SwitchNow_Click(object sender, RoutedEventArgs e) => MainWindow.Engine.Apply(_setup, "Switched manually");
+    private void SwitchNow_Click(object sender, RoutedEventArgs e) => MainWindow.Engine.Apply(_setup, SwitchReason.Manual);
 }

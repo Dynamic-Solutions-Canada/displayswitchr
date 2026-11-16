@@ -1,5 +1,6 @@
 using HubDisplaySwitch.Classes;
 using HubDisplaySwitch.Classes.Settings;
+using HubDisplaySwitch.Localization;
 using HubDisplaySwitch.Models;
 using HubDisplaySwitch.Services;
 using Microsoft.UI.Windowing;
@@ -170,9 +171,9 @@ public sealed partial class SwitcherWindow : Window
             TilesPanel.Children.Add(BuildTile(engine, setup));
 
         StatusText.Text = engine == null ? ""
-            : engine.IsSwitching ? $"Switching to {engine.Active?.Name}…"
-            : s.Paused ? "Auto-switching is paused"
-            : engine.Active != null ? $"Using {engine.Active.Name}" : "";
+            : engine.IsSwitching ? UiText.Format("Switching to {{setup}}…", ("setup", engine.Active?.Name))
+            : s.Paused ? UiText.Get("Auto-switching is paused")
+            : engine.Active != null ? UiText.Format("Using {{setup}}", ("setup", engine.Active.Name)) : "";
     }
 
     private Button BuildTile(SwitchEngine? engine, Setup setup)
@@ -201,10 +202,10 @@ public sealed partial class SwitcherWindow : Window
             Foreground = (Brush)res["TextFillColorSecondaryBrush"], TextTrimming = TextTrimming.CharacterEllipsis,
         });
 
-        string badge = active ? "Active"
+        string badge = UiText.Get(active ? "Active"
                      : setup.IsDefault ? "Default"
                      : engine != null && engine.IsHubConnected(setup) ? "Hub connected"
-                     : setup.Hubs.Count > 0 ? "Hub not connected" : "";
+                     : setup.Hubs.Count > 0 ? "Hub not connected" : "");
         var badgeText = new TextBlock
         {
             Text = badge, Style = (Style)res["CaptionTextBlockStyle"], VerticalAlignment = VerticalAlignment.Center,
@@ -233,7 +234,7 @@ public sealed partial class SwitcherWindow : Window
         button.Click += (_, _) =>
         {
             Dismiss();
-            MainWindow.Engine.Apply(setup, "Switched manually");
+            MainWindow.Engine.Apply(setup, SwitchReason.Manual);
         };
         return button;
     }

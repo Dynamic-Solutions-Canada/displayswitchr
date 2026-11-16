@@ -59,10 +59,12 @@ public sealed class Setup
 
     public string DescribeDisplays()
     {
-        if (Displays.Count == 0) return "No displays chosen";
+        if (Displays.Count == 0) return Localization.UiText.Get("No displays chosen");
         if (Displays.Count == 1) return Displays[0].Name;
         var names = DisplaysMainFirst.Select(d => d.Name).ToList();
-        return Mirror ? "Mirror: " + string.Join(", ", names) : string.Join(" + ", names);
+        if (!Mirror) return string.Join(" + ", names);
+        string list = string.Join(", ", names);
+        return Localization.UiText.Format("Mirror: {{displays}}", ("displays", list));
     }
 }
 

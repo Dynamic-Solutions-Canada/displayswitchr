@@ -133,7 +133,7 @@ public static class SettingsManager
     private static UserSettings CreateFirstRun()
     {
         var s = new UserSettings();
-        var desk = new Setup { Name = "Desk", Glyph = Glyphs.Desktop, IsDefault = true };
+        var desk = new Setup { Name = Localization.UiText.Get("Desk"), Glyph = Glyphs.Desktop, IsDefault = true };
         try
         {
             foreach (var m in DisplayConfig.GetMonitors().Where(m => m.Active))

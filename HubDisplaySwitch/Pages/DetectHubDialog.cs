@@ -1,3 +1,4 @@
+using HubDisplaySwitch.Localization;
 using HubDisplaySwitch.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -12,7 +13,7 @@ internal static class DetectHubDialog
 {
     public static async Task<UsbDevice?> ShowAsync(XamlRoot root)
     {
-        var info = new TextBlock { Text = "Unplug the USB hub now…", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 12) };
+        var info = new TextBlock { Text = UiText.Get("Unplug the USB hub now…"), TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 12) };
         var list = new ListView { SelectionMode = ListViewSelectionMode.Single, MinHeight = 120, MaxHeight = 240 };
         var panel = new StackPanel { Width = 440 };
         panel.Children.Add(info);
@@ -21,10 +22,10 @@ internal static class DetectHubDialog
         var dialog = new ContentDialog
         {
             XamlRoot = root,
-            Title = "Detect USB hub",
+            Title = UiText.Get("Detect USB hub"),
             Content = panel,
-            PrimaryButtonText = "Use this device",
-            CloseButtonText = "Cancel",
+            PrimaryButtonText = UiText.Get("Use this device"),
+            CloseButtonText = UiText.Get("Cancel"),
             DefaultButton = ContentDialogButton.Primary,
             IsPrimaryButtonEnabled = false,
         };
@@ -57,7 +58,8 @@ internal static class DetectHubDialog
                     var ordered = removed.OrderByDescending(r => r.IsHub).ToList();
                     list.ItemsSource = ordered;
                     list.SelectedIndex = 0;
-                    info.Text = "Got it. These devices disappeared, with the hub selected. Plug it back in, then choose \"Use this device\".";
+                    info.Text = UiText.Format("Got it. These devices disappeared, with the hub selected. Plug it back in, then choose \"{{button}}\".",
+                        ("button", UiText.Get("Use this device")));
                 }
             }
             catch { /* WMI hiccup; try again next tick */ }

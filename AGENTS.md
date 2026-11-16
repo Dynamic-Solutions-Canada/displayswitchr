@@ -33,6 +33,7 @@ Launcher / Repilot conventions (settings window, `SettingsManager`/`UserSettings
 | Default audio device (Core Audio + undocumented `IPolicyConfig`) | `Services/AudioDevices.cs` |
 | Settings | `ViewModels/UserSettings.cs`, `Classes/Settings/SettingsManager.cs` |
 | UI P/Invoke | `Classes/NativeMethods.cs` (use `using static`) |
+| UI text / languages | `Localization/UiText.cs`, `Localization/SupportedLanguages.cs`, `Localization/Catalogs/*.json`, `Classes/Localize.cs` |
 | "Our other apps" page | `external/promo` submodule (shared `apps-promo` catalog), imported in the csproj |
 
 ## Conventions / gotchas
@@ -43,6 +44,15 @@ Launcher / Repilot conventions (settings window, `SettingsManager`/`UserSettings
   off-screen, never hidden**, and has a 300 ms re-open guard after dismissal.
 - The popup must never activate: `WS_EX_NOACTIVATE | WS_EX_TRANSPARENT | WS_EX_TOOLWINDOW | WS_EX_LAYERED`;
   fade via `SetLayeredWindowAttributes`; re-centred on `WM_DISPLAYCHANGE` (forwarded by the host).
+- **Localization** follows Persistent: nine locale identities (`en-US`, `en-CA`, `es-ES`, `fr-FR`,
+  `fr-CA`, `de-DE`, `zh-CN`, `pt-BR`, `ja-JP`; Canadian ones reuse en-US/fr-FR wording). UI text lives
+  in `Localization/Catalogs/*.json`, keyed by the English text and embedded in the exe. Use
+  `UiText.Get("English text")` / `UiText.Format("… {{name}} …", ("name", value))` in code and
+  `l10n:Localize.Text|Content|Header|ToolTip|…="English text"` in XAML (refreshes live on language
+  change). Never translate logs, settings values, device names or setup names; switch reasons are
+  `SwitchReason` keys, translated only in the popup. Add every new key to all seven catalogs and run
+  `npm run check:l10n`. The language follows Windows unless `UserSettings.Language` is set (General page).
+  New locales also go in `Package.appxmanifest` `<Resources>` and the Store `listings.json`.
 - Namespace `HubDisplaySwitch.Windows` shadows WinRT `Windows.*` — always write `global::Windows...`.
 - Settings JSON uses `WhenWritingNull` (not `WhenWritingDefault`): several bools default to true and
   an omitted false would load back as true.
