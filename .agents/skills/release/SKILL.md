@@ -9,7 +9,7 @@ Goal: a tagged version on `main` whose CI run has created the GitHub Release fro
 
 Stop for exactly these:
 
-- **Notes approval.** Show the exact notes and wait for Ryan, or someone he has delegated release approval to, to approve or edit them before any file changes. Approval of one draft does not carry to a later release.
+- **Notes approval.** Show the exact notes and wait for the maintainer, or someone they have delegated release approval to, to approve or edit them before any file changes. Approval of one draft does not carry to a later release.
 - **A dirty tree or a moved branch.** Uncommitted changes, or `HEAD` not equal to `origin/main`. Report it; never commit unrelated work with the release.
 - **Failed evidence.** A red `npm run validate`, `npm run verify:desktop` or CI run. Report the failure; do not retry around it.
 
@@ -21,6 +21,6 @@ Steps:
 4. Commit only those files, with the subject `Bump version to v<version>`.
 5. Tag and push together: `git tag -a v<version> -m "Hub Display Switch <version>"`, then `git push --atomic origin main v<version>`.
 6. Watch the "Build and Package" run for the tag (`gh run list --workflow build-msix.yml`, then `gh run watch <id> --exit-status`). Check that the Release is titled `Hub Display Switch <version>`, its body is the `en-US` notes followed by the AI disclosure line, and it is marked Latest.
-7. The Store submission is not automated yet: tell Ryan the version is ready to submit in Partner Center, with each locale's "What's new" taken from the notes files. Post-release steps outside this repo (the promo catalog entry, the website page) go to Ryan as well.
+7. The Store submission is not automated yet: tell the maintainer the version is ready to submit in Partner Center, with each locale's "What's new" taken from the notes files. Post-release steps outside this repo (the promo catalog entry, the website page) go to the maintainer as well.
 
-Report: the version, the commit and tag, who approved the notes, each CI run's result with its link, the Release link, and what is left for Ryan (Store submission, post-release steps).
+Report: the version, the commit and tag, who approved the notes, each CI run's result with its link, the Release link, and what is left for the maintainer (Store submission, post-release steps).

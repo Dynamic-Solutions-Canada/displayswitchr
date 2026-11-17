@@ -6,7 +6,7 @@ Release notes are not in this file. Each version's "What's new" text is `release
 
 Translated wording uses the same terms as the in-app catalogs (`HubDisplaySwitch/Localization/Catalogs`) so the listing matches what people see. Every translation, in the listing and in the release notes, was drafted without native-speaker review.
 
-`npm run check:listing` (part of `npm run validate`) checks this file and the current version's notes: the locales and aliases, every field, the limits below, matching caption counts, no em dashes, and that the README tagline is the first sentence of the `en-US` short description.
+`npm run check:listing` (part of `npm run validate`) runs winui-app-kit's shared listing check, set up by the `listing` block in `windows-build.json`. It checks this file and the current version's notes: the locales and aliases, every field, the limits below, matching caption counts, no em dashes, and that the README tagline is the first sentence of the `en-US` short description.
 
 ## Limits
 
@@ -37,7 +37,7 @@ Translated wording uses the same terms as the in-app catalogs (`HubDisplaySwitch
 | Category | Not set; suggested Utilities & tools > Display |
 | Pricing | Paid, US $0.99 (price tier Tier1012), with the same free trial as the other paid apps; the trial length is set in Partner Center |
 | Age rating | Questionnaire not completed |
-| Privacy policy URL | Not available yet; it comes from Ryan (D-017) |
+| Privacy policy URL | https://www.dynamic-solutions.ca/privacy/hub-display-switch (D-017) |
 
 ## Screenshots (not captured yet)
 
@@ -45,5 +45,5 @@ Planned set, in caption order: tray flyout above the taskbar, a setup page (TV),
 
 ## Open questions before submission
 
-- Category, age rating and the privacy policy URL (above).
+- Category and age rating (above).
 - Add the product ID to the shared promo catalog (apps-promo) once the listing is live.

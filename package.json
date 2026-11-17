@@ -12,7 +12,7 @@
     "format": "scripts/format",
     "format:check": "scripts/format --check",
     "check:l10n": "python3 scripts/check-localization.py",
-    "check:listing": "python3 scripts/check-listing.py",
+    "check:listing": "python3 external/winui-app-kit/scripts/check-listing.py",
     "check:gitignore": "external/winui-app-kit/scripts/check-gitignore ."
   }
 }

@@ -33,7 +33,7 @@ The app icon and MSIX images come from `HubDisplaySwitchMSIX/generate-msix-image
 
 - `npm run format:check`: every C# project outside `external/` matches the root `.editorconfig`, which is winui-app-kit's file copied unchanged from the tag the app pins; never hand-edit it. `npm run format` rewrites the files.
 - `npm run check:l10n`: every key the code and XAML use exists in the English catalog, and every other catalog has exactly the same keys, no empty values and the same `{{placeholders}}`. It does not check the languages declared in the package manifest.
-- `npm run check:listing`: the Store listing source and the release notes for the current `<Version>`, checked as `store-assets/microsoft/listings.md` describes.
+- `npm run check:listing`: the Store listing source and the release notes for the current `<Version>`, checked by winui-app-kit's shared listing check as `store-assets/microsoft/listings.md` describes.
 - `npm test`: every portable harness under `tests/`, found by winui-app-kit's `scripts/run-tests` without a hand-kept list (it fails if it finds none). Each has a README saying what it covers and does not prove. Today there are two: the switching policy, and the settings file (loading, upgrading old files, reset) against the kit's real store.
 
 Formatting and tests run through winui-app-kit's `scripts/dotnet`, which uses the .NET SDK pinned in `global.json` when it is installed and otherwise its Docker image, capped at 3 GB (`KIT_DOTNET_MEMORY`). Run them as a non-root user. Run `npm run validate` and `npm run verify:desktop` before finishing a change.

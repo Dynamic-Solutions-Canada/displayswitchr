@@ -92,7 +92,6 @@ public sealed partial class MainWindow : Window
         TechnicallyReal.Promo.PromoLocalization.LocaleProvider = () => UiText.Locale;
         UiText.Changed += TechnicallyReal.Promo.PromoLocalization.Refresh;
         _uiSettings.ColorValuesChanged += (_, _) => DispatcherQueue.TryEnqueue(UpdateTrayIcon);
-        UpdateTrayIcon();
 
         // Exit steps run in this order when the user picks Exit (HostWindow.Exit).
         _host.AddExitStep("save settings", SettingsManager.SaveSettings);
@@ -109,6 +108,10 @@ public sealed partial class MainWindow : Window
         Logger.Info("Started v{Version}, {Count} setup(s), packaged={Packaged}",
             AppEnvironment.Version, SettingsManager.Current.Setups.Count, AppEnvironment.IsPackaged);
         Engine.Start();
+
+        // The icon is added on its first Update, and Explorer keeps that first tooltip as the icon's
+        // screen-reader name, so it is added only once the engine knows the active setup (kit gotcha).
+        UpdateTrayIcon();
 
         // Also after the settings file had to be reset, so the user sees their setups were recreated.
         if (!Startup.IsSilentLaunch() || SettingsManager.IsFirstRun || SettingsManager.WasReset)
