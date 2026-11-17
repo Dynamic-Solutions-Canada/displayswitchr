@@ -89,9 +89,6 @@
   "{{display}} isn't connected or is switched off": "{{display}} が未接続か、電源がオフです",
   "{{setup}} (paused)": "{{setup}}（一時停止中）",
   "Reset": "リセット",
-  "Replace every setup and setting with the defaults. Your current settings are kept in a backup file in the logs folder.": "すべての構成と設定を既定値に戻します。現在の設定はログ フォルダーにバックアップ ファイルとして保存されます。",
-  "Reset settings": "設定をリセット",
-  "Reset all settings?": "すべての設定をリセットしますか?",
-  "Your setups are replaced by one default setup for the displays and audio in use now, and the theme and language go back to the defaults. Start with Windows stays as it is.": "構成は現在使用中のディスプレイとオーディオによる既定の構成 1 つに置き換えられ、テーマと言語も既定値に戻ります。Windows と同時に起動する設定は変わりません。",
+  "Your setups are replaced by one default setup for the displays and audio in use now.": "構成は現在使用中のディスプレイとオーディオによる既定の構成 1 つに置き換えられます。",
   "No setups yet. Add one in Settings.": "構成はまだありません。設定で追加してください。"
 }

@@ -1,5 +1,5 @@
 > **Scope:** Building, checking and installing Hub Display Switch, and where it stores data.
-> **Governs:** `Directory.Build.props`, `package.json`, `windows-build.json`, `scripts/**`, `HubDisplaySwitchMSIX/**`
+> **Governs:** `Directory.Build.props`, `package.json`, `windows-build.json`, `HubDisplaySwitchMSIX/**`
 
 # Hub Display Switch development
 
@@ -31,7 +31,7 @@ The app icon and MSIX images come from `HubDisplaySwitchMSIX/generate-msix-image
 
 `npm run validate` is the Linux gate. It runs, in order:
 
-- `npm run format:check`: every C# project outside `external/` matches the root `.editorconfig`, which is winui-app-kit's file copied unchanged from the tag the app pins; never hand-edit it. `npm run format` rewrites the files.
+- `npm run format:check`: winui-app-kit's `scripts/format` checks that every C# project outside `external/` matches the root `.editorconfig`, which is winui-app-kit's file copied unchanged from the tag the app pins; never hand-edit it. `npm run format` rewrites the files.
 - `npm run check:l10n`: winui-app-kit's catalog check, configured by the `localization` block in `windows-build.json`. Every key the code and XAML use exists, every catalog has the same keys, no empty values and the same `{{placeholders}}`, no key is unused, the shared `kit.*` labels are the kit's own, and the manifest languages match the family list.
 - `npm run check:listing`: the Store listing source and the release notes for the current `<Version>`, checked by winui-app-kit's shared listing check as `store-assets/microsoft/listings.md` describes.
 - `npm run check:notices`: `HubDisplaySwitch/THIRD-PARTY-NOTICES.txt` matches the packages the last restore resolved (`format:check` restores first). After adding, removing or updating a package, run `npm run generate:notices` and commit the file with the change. The file ships in the package and the About page links to it (HYG-3); a licence the script has no text for fails the run.
@@ -50,6 +50,7 @@ The harness cannot see the screen, the USB hubs or the audio devices. Before a r
 - The tray: a click opens the flyout with one tile per setup and the auto-switch toggle; a tile switches by hand; the right-click menu lists the setups, Pause, Settings, Open logs folder and Exit.
 - Settings: add, rename, change the icon of and delete a setup; "Detect by unplugging" finds a hub; start with Windows, switching on start, the popup toggle, theme, and a language change that relabels the windows and tray without reopening them.
 - Upgrading over an earlier build keeps every setup and setting, and leaves one `settings.json.v0.bak` beside `settings.json`.
+- The settings window can't be made smaller than 500 x 500; below about 860 wide its menu becomes an icon rail, and "Our other apps" cards put their button under the text when narrow.
 - Reset settings (General page) asks first, then shows one default setup for the displays in use, the default theme and language, and leaves Start with Windows as it was; a `settings.json.<time>.reset` file holds the old settings.
 - Exit from the tray menu removes the tray icon and the log ends with "Exit requested".
 - About: the icon, the version, "Check for updates" opens the Store's updates page, the five links open (source, privacy policy, support, licence, third-party notices), and "Open logs folder" opens the folder with the current log.

@@ -5,10 +5,8 @@ using HubDisplaySwitch.Pages;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using WinUIAppKit.Localization;
-using WinUIAppKit.Theming;
 using WinUIAppKit.Windowing;
 
 namespace HubDisplaySwitch;
@@ -55,14 +53,10 @@ public sealed partial class SettingsWindow : Window
         _instance = this;
         Closed += SettingsWindow_Closed;
 
-        SystemBackdrop = new MicaBackdrop();
-        ExtendsContentIntoTitleBar = true;
-        SetTitleBar(AppTitleBar);
-
-        WindowIcon.Apply(this, App.IconPath);
+        // The kit's settings-window setup (UI-1): Mica, the custom title bar, the icon, the 500 x 500
+        // minimum, the saved placement and the theme.
+        WindowChrome.SetUpSettingsWindow(this, AppTitleBar, App.IconPath, SettingsManager.Current.SettingsWindow, 980, 760);
         try { TitleBarIcon.Source = new BitmapImage(new Uri(App.IconPngPath)); } catch { }
-        WindowChrome.RestorePlacement(this, SettingsManager.Current.SettingsWindow, 980, 760);
-        AppTheme.Track(this);
 
         RebuildSetupItems(MainWindow.Engine?.Active?.Id ?? SettingsManager.Current.Setups.FirstOrDefault()?.Id);
         RootNavigation.Loaded += (_, _) =>

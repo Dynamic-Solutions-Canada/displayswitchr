@@ -89,9 +89,6 @@
   "{{display}} isn't connected or is switched off": "{{display}} ist nicht verbunden oder ausgeschaltet",
   "{{setup}} (paused)": "{{setup}} (pausiert)",
   "Reset": "Zurücksetzen",
-  "Replace every setup and setting with the defaults. Your current settings are kept in a backup file in the logs folder.": "Ersetzt alle Setups und Einstellungen durch die Standardwerte. Ihre aktuellen Einstellungen bleiben als Sicherungsdatei im Protokollordner erhalten.",
-  "Reset settings": "Einstellungen zurücksetzen",
-  "Reset all settings?": "Alle Einstellungen zurücksetzen?",
-  "Your setups are replaced by one default setup for the displays and audio in use now, and the theme and language go back to the defaults. Start with Windows stays as it is.": "Ihre Setups werden durch ein Standard-Setup mit den jetzt verwendeten Bildschirmen und Audiogeräten ersetzt, und Design und Sprache kehren zu den Standardwerten zurück. Mit Windows starten bleibt unverändert.",
+  "Your setups are replaced by one default setup for the displays and audio in use now.": "Ihre Setups werden durch ein Standard-Setup mit den jetzt verwendeten Bildschirmen und Audiogeräten ersetzt.",
   "No setups yet. Add one in Settings.": "Noch keine Setups. Fügen Sie eines in den Einstellungen hinzu."
 }

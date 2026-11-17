@@ -33,8 +33,15 @@ public sealed partial class GeneralPage : Page
             NoticeHost.Content = SettingsResetNotice.Create(notice.BackupPath);
         }
 
+        // The kit's "Reset settings" row asks and reports; the reset itself, and what it says about the
+        // setups being replaced, are the app's (CONF-4).
+        ResetRow.ResetAsync = ResetSettingsAsync;
+        ResetRow.KeptNote = () => UiText.Get("Your setups are replaced by one default setup for the displays and audio in use now.");
+        ResetRow.ResetCompleted += ShowResetSetups;
+
         Loaded += (_, _) =>
         {
+            ResetRow.Window = SettingsWindow.GetCurrent();
             AutoSwitch.IsOn = !Settings.Paused;
             _initializing = false;
         };
@@ -72,30 +79,23 @@ public sealed partial class GeneralPage : Page
     }
 
     /// <summary>
-    /// "Reset settings" (CONF-4): asks first (the kit's dialog defaults to Cancel), then resets and
-    /// lets the engine and the settings window pick up the new setups. The settings window rebuilds its
-    /// menu and opens the new default setup, which also leaves this page and its bindings to the old
-    /// settings object.
+    /// The reset the kit's row runs after the user confirms: new defaults (one default setup for the
+    /// displays and audio in use now), then the engine picks up the new setups. Start with Windows is
+    /// left as it is.
     /// </summary>
-    private async void ResetSettings_Click(object sender, RoutedEventArgs e)
+    private static Task ResetSettingsAsync()
     {
-        if (SettingsWindow.GetCurrent() is not { } window)
-        {
-            return;
-        }
-
-        bool confirmed = await WinUIAppKit.Windowing.ConfirmDialog.ConfirmAsync(
-            window,
-            UiText.Get("Reset all settings?"),
-            UiText.Get("Your setups are replaced by one default setup for the displays and audio in use now, and the theme and language go back to the defaults. Start with Windows stays as it is."),
-            UiText.Get("Reset"));
-        if (!confirmed)
-        {
-            return;
-        }
-
         SettingsManager.Reset();
         MainWindow.Engine.SettingsChanged();
-        window.RebuildSetupItems(null);
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// After a reset, the settings window rebuilds its menu and opens the new default setup, which also
+    /// leaves this page and its bindings to the old settings object.
+    /// </summary>
+    private static void ShowResetSetups()
+    {
+        SettingsWindow.GetCurrent()?.RebuildSetupItems(null);
     }
 }

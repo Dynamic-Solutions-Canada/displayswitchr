@@ -36,17 +36,7 @@
 
             <TextBlock l10n:Localize.Text="Reset" Style="{StaticResource SectionHeaderStyle}" />
             <Border Style="{StaticResource CardBorderStyle}">
-                <StackPanel Spacing="8">
-                    <TextBlock l10n:Localize.Text="Replace every setup and setting with the defaults. Your current settings are kept in a backup file in the logs folder."
-                               Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="Wrap"
-                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
-                    <Button Click="ResetSettings_Click">
-                        <StackPanel Style="{StaticResource IconLabelStyle}">
-                            <FontIcon Glyph="&#xE777;" Style="{StaticResource ButtonGlyphStyle}" />
-                            <TextBlock l10n:Localize.Text="Reset settings" />
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
+                <kitc:ResetSetting x:Name="ResetRow" />
             </Border>
         </StackPanel>
     </ScrollViewer>
