@@ -7,9 +7,9 @@
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   IgnorableNamespaces="uap desktop rescap">
 
-  <!-- PLACEHOLDER identity until the app is reserved in Partner Center. When it is, replace Name
-       (e.g. 27766TechnicallyReal.HubDisplaySwitch) here AND dev_identity in windows-build.json.
-       The build script swaps Publisher to the signing cert subject for local dev builds. -->
+  <!-- The Store identity reserved in Partner Center (Store ID 9P1S2QJFXZFW), also store_identity and
+       store_publisher in windows-build.json. Signed dev builds are stamped with dev_identity and the
+       signing certificate's publisher by the kit's build-msix.ps1; Store uploads (-NoSign) keep these values. -->
   <Identity
     Name="DynamicSolutionsCA.HubDisplaySwitch"
     Publisher="CN=C21E6CEF-D0D1-4497-93F9-3718D054DA0E"

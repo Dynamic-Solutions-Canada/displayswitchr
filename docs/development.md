@@ -23,7 +23,7 @@ Run these from the repository root in WSL. The build platform defaults to the Wi
 
 `npm run install:desktop -- --skip-build` reinstalls the last successful dev package, and `-- --no-launch` installs without launching. Never uninstall to get past an update error.
 
-`<Version>` in `Directory.Build.props` is the only version source. Dev builds raise the revision only in the staged copy, so the tracked version changes only for a release.
+Packaging runs winui-app-kit's `build/build-msix.ps1`, configured by `windows-build.json` (the project, `msix_dir`, the output folder and the dev and Store identities). `<Version>` in `Directory.Build.props` is the only version source. Dev builds raise the revision only in the staged copy, so the tracked version changes only for a release.
 
 The app icon and MSIX images come from `HubDisplaySwitchMSIX/generate-msix-images.ps1`; its output is committed.
 
@@ -63,7 +63,7 @@ The full procedure is the [`release` skill](../.agents/skills/release/SKILL.md).
 
 The Store submission is not automated yet. The app is reserved in Partner Center as `DynamicSolutionsCA.HubDisplaySwitch` (Store ID 9P1S2QJFXZFW) but not yet published.
 
-Signed dev builds (`package:desktop:dev`, `install:desktop`) install under the separate dev identity `TechnicallyReal.HubDisplaySwitch`, so they never replace a Store install; `npm run install:desktop -- --store-identity` signs with the Store identity to test over one. `npm run package:desktop` keeps the Store identity for upload.
+Signed dev builds (`package:desktop:dev`, `install:desktop`) install under the separate dev identity `TechnicallyReal.HubDisplaySwitch`, so they never replace a Store install; `npm run install:desktop -- --store-identity` builds a signed bundle with the Store identity to test an update over one (Windows rejects a plain MSIX over an installed bundle). `npm run package:desktop` keeps the Store identity for upload.
 
 ## Where the app stores data
 

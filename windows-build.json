@@ -1,6 +1,7 @@
 {
   "project": "HubDisplaySwitch/HubDisplaySwitch.csproj",
-  "package_script": "HubDisplaySwitchMSIX/build-msix.ps1",
+  "package_script": "external/winui-app-kit/build/build-msix.ps1",
+  "msix_dir": "HubDisplaySwitchMSIX",
   "package_output": "HubDisplaySwitchMSIX/bin/msix-output",
   "certificate": ".windows-build/signing.pfx",
   "version_file": "Directory.Build.props",
@@ -9,7 +10,7 @@
   "trusted_certificate": true,
   "store_identity": "DynamicSolutionsCA.HubDisplaySwitch",
   "store_publisher": "CN=C21E6CEF-D0D1-4497-93F9-3718D054DA0E",
-  "store_identity_switch": "-UseStoreIdentity",
+  "store_identity_switch": "-StoreIdentity",
   "localization": {
     "catalog_dir": "HubDisplaySwitch/Localization/Catalogs",
     "english_keys": true,
