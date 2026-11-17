@@ -70,7 +70,7 @@ Before finishing a change, run `npm run validate` and `npm run verify:desktop`. 
 
 ## Release
 
-Releases follow the `release` skill. `<Version>` in `Directory.Build.props` is the only version source.
+Releases follow the `release` skill. `<Version>` in `Directory.Build.props` is the only version source. A `v*` tag makes `build-msix.yml` create a notes-only GitHub Release (a paid Store app attaches no package) and `store-publish.yml` upload a Store draft through winui-app-kit's reusable workflow; submitting the draft is a separate manual run.
 
 ## Guidance map
 
@@ -83,7 +83,7 @@ Releases follow the `release` skill. `<Version>` in `Directory.Build.props` is t
 | [WinUI App Kit README](external/winui-app-kit/README.md), including its Gotchas | Using the kit's tray, host, flyout, dialogs, settings store, startup, theme, logging or localization, or its build files | `external/winui-app-kit/**` (read only) |
 | [Windows build tools README](https://github.com/Dynamic-Solutions-Canada/windows-build-tools) | A Windows build, install or packaging problem | `windows-build.json` |
 | `desktop` skill | Building, verifying or installing locally | Local Windows builds |
-| `release` skill | Releasing a version | `release-notes/**`, `Directory.Build.props` `<Version>`, `.github/workflows/build-msix.yml` |
+| `release` skill | Releasing a version | `release-notes/**`, `Directory.Build.props` `<Version>`, `.github/workflows/build-msix.yml`, `.github/workflows/store-publish.yml` |
 | [store-assets/microsoft/listings.md](store-assets/microsoft/listings.md) | Changing the Store listing or a claim it makes | `store-assets/microsoft/**` |
 
 ## Keeping docs current
@@ -98,7 +98,7 @@ Releases follow the `release` skill. `<Version>` in `Directory.Build.props` is t
 | App source, packaging or build configuration moved to a new top-level path | The Windows path filter in `.github/workflows/ci.yml` |
 | Where the app writes data, or a new kind of data | The data table in `docs/development.md` |
 | How settings load, save or migrate | `.agents/guides/settings.md`, `tests/HubDisplaySwitch.Settings.Tests/` |
-| winui-app-kit pin bumped | Copy the kit's `.editorconfig` and `build/shared.gitignore` (the last part of `.gitignore`) at that tag unchanged, then `npm run format` |
+| winui-app-kit pin bumped | The `uses:` tag in both Store workflows (`store-publish.yml`, `credential-expiry.yml`); copy the kit's `.editorconfig` and `build/shared.gitignore` (the last part of `.gitignore`) at that tag unchanged, then `npm run format` |
 | Behaviour a Store listing claim describes | `store-assets/microsoft/listings.json` and "Claims to keep true" in `listings.md` |
 | The README tagline or the en-US short description | Both together; `npm run check:listing` compares them |
 | A language or catalog rule | `.agents/guides/localization.md`, the `localization` block in `windows-build.json` |
