@@ -30,7 +30,7 @@
                 </Button>
                 <TextBox x:Name="NameBox" Grid.Column="1" FontSize="24" FontWeight="SemiBold" VerticalAlignment="Center"
                          l10n:Localize.Placeholder="Setup name" TextChanged="NameBox_TextChanged" />
-                <Button Grid.Column="2" VerticalAlignment="Center" Click="Delete_Click">
+                <Button l10n:Localize.Name="Delete" Grid.Column="2" VerticalAlignment="Center" Click="Delete_Click">
                     <StackPanel Style="{StaticResource IconLabelStyle}">
                         <FontIcon Glyph="&#xE74D;" Style="{StaticResource ButtonGlyphStyle}" />
                         <TextBlock l10n:Localize.Text="Delete" />
@@ -59,7 +59,7 @@
                     <StackPanel x:Name="HubSection" Margin="28,8,0,0" Spacing="6">
                         <StackPanel x:Name="HubsPanel" Spacing="6" />
                         <StackPanel Orientation="Horizontal" Spacing="8">
-                            <DropDownButton x:Name="AddHubButton">
+                            <DropDownButton x:Name="AddHubButton" l10n:Localize.Name="Add hub">
                                 <StackPanel Style="{StaticResource IconLabelStyle}">
                                     <FontIcon Glyph="&#xE710;" Style="{StaticResource ButtonGlyphStyle}" />
                                     <TextBlock l10n:Localize.Text="Add hub" />
@@ -68,7 +68,7 @@
                                     <MenuFlyout x:Name="AddHubMenu" Placement="BottomEdgeAlignedLeft" Opening="AddHubMenu_Opening" />
                                 </DropDownButton.Flyout>
                             </DropDownButton>
-                            <Button Click="DetectHub_Click">
+                            <Button l10n:Localize.Name="Detect by unplugging…" Click="DetectHub_Click">
                                 <StackPanel Style="{StaticResource IconLabelStyle}">
                                     <FontIcon Glyph="&#xE721;" Style="{StaticResource ButtonGlyphStyle}" />
                                     <TextBlock l10n:Localize.Text="Detect by unplugging…" />
@@ -116,7 +116,7 @@
                 </StackPanel>
             </Border>
 
-            <Button Style="{StaticResource AccentButtonStyle}" Margin="0,16,0,0" Click="SwitchNow_Click">
+            <Button l10n:Localize.Name="Switch to this setup now" Style="{StaticResource AccentButtonStyle}" Margin="0,16,0,0" Click="SwitchNow_Click">
                 <StackPanel Style="{StaticResource IconLabelStyle}">
                     <FontIcon Glyph="&#xE768;" Style="{StaticResource ButtonGlyphStyle}" />
                     <TextBlock l10n:Localize.Text="Switch to this setup now" />

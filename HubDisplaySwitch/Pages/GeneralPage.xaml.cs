@@ -36,7 +36,7 @@ public sealed partial class GeneralPage : Page
         // The kit's "Reset settings" row asks and reports; the reset itself, and what it says about the
         // setups being replaced, are the app's (CONF-4).
         ResetRow.ResetAsync = ResetSettingsAsync;
-        ResetRow.KeptNote = () => UiText.Get("Your setups are replaced by one default setup for the displays and audio in use now.");
+        ResetRow.KeptNote = () => UiText.Get("Your setups are replaced by one default setup for the displays and audio in use now. Start with Windows stays as it is.");
         ResetRow.ResetCompleted += ShowResetSetups;
 
         Loaded += (_, _) =>

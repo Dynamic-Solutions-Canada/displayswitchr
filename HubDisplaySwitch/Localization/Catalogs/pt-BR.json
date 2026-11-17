@@ -89,6 +89,6 @@
   "{{display}} isn't connected or is switched off": "{{display}} não está conectada ou está desligada",
   "{{setup}} (paused)": "{{setup}} (pausado)",
   "Reset": "Redefinir",
-  "Your setups are replaced by one default setup for the displays and audio in use now.": "Suas configurações são substituídas por uma configuração padrão com as telas e o áudio em uso agora.",
+  "Your setups are replaced by one default setup for the displays and audio in use now. Start with Windows stays as it is.": "Suas configurações são substituídas por uma configuração padrão com as telas e o áudio em uso agora. “Iniciar com o Windows” não muda.",
   "No setups yet. Add one in Settings.": "Nenhuma configuração ainda. Adicione uma em Configurações."
 }

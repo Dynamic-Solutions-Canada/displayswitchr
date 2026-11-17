@@ -36,7 +36,7 @@
             </Grid.ColumnDefinitions>
             <TextBlock x:Name="StatusText" Style="{StaticResource CaptionTextBlockStyle}" VerticalAlignment="Center"
                        Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis" />
-            <Button x:Name="SettingsButton" Grid.Column="1" Click="Settings_Click">
+            <Button x:Name="SettingsButton" l10n:Localize.Name="kit.settings.title" Grid.Column="1" Click="Settings_Click">
                 <StackPanel Style="{StaticResource IconLabelStyle}">
                     <FontIcon Glyph="&#xE713;" Style="{StaticResource ButtonGlyphStyle}" />
                     <TextBlock l10n:Localize.Text="kit.settings.title" />

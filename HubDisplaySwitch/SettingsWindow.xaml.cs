@@ -3,26 +3,34 @@ using HubDisplaySwitch.Classes.Settings;
 using HubDisplaySwitch.Models;
 using HubDisplaySwitch.Pages;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media.Imaging;
 using WinUIAppKit.Localization;
+using WinUIAppKit.Pages;
 using WinUIAppKit.Windowing;
 
 namespace HubDisplaySwitch;
 
 /// <summary>
-/// Settings window (Mica + NavigationView). Each setup is a navigation item; the built-in Settings item
-/// is the General page. Edits apply and save immediately (Windows Settings style). Icon, saved placement
-/// and theme come from the app kit.
+/// The settings window, hosted in the kit's <see cref="SettingsShell"/> (UI-1, UI-2): one page per setup,
+/// an "Add setup" action, Settings (the General page), Our other apps and About. Edits apply and save
+/// immediately (Windows Settings style). One instance at a time.
 /// </summary>
 public sealed partial class SettingsWindow : Window
 {
-    private static SettingsWindow? _instance;
+    // The "Add setup" action item's tag. Setup items are tagged with the setup's id (a GUID), so neither
+    // can collide with each other or with the shell's own tags.
     private const string AddTag = "add";
 
+    private static SettingsWindow? _instance;
+
+    /// <summary>Set while the menu is rebuilt for a language change, so re-selecting an item doesn't navigate.</summary>
+    private bool _rebuildingQuietly;
+
+    /// <summary>The open window, or null when it is closed. Pages use it to ask questions on it.</summary>
     public static SettingsWindow? GetCurrent() => _instance;
 
+    // ── Opening ─────────────────────────────────────────────────────────
+    /// <summary>Show the window (creating it if needed) on its current page (the active setup for a new window).</summary>
     public static void ShowInstance()
     {
         if (_instance != null)
@@ -30,22 +38,20 @@ public sealed partial class SettingsWindow : Window
             WindowChrome.BringToFront(_instance);
             return;
         }
+
         new SettingsWindow().Activate();
     }
 
     /// <summary>
     /// Open the window on the Settings page. Used on the launch that found the settings file unreadable,
-    /// so the page can show the kit's reset notice (CONF-2) even when the app started silently.
+    /// so the page can show the kit's reset notice (CONF-2) even when the app started silently. The shell
+    /// applies the selection once it has loaded.
     /// </summary>
     public static void ShowSettings()
     {
-        _openOnSettings = true;
         ShowInstance();
-        _instance?.SelectSettingsPage();
+        _instance?.Shell.Select(SettingsShell.SettingsTag);
     }
-
-    /// <summary>Set by <see cref="ShowSettings"/> before the window exists: select Settings once it has loaded.</summary>
-    private static bool _openOnSettings;
 
     private SettingsWindow()
     {
@@ -53,70 +59,45 @@ public sealed partial class SettingsWindow : Window
         _instance = this;
         Closed += SettingsWindow_Closed;
 
-        // The kit's settings-window setup (UI-1): Mica, the custom title bar, the icon, the 500 x 500
-        // minimum, the saved placement and the theme.
-        WindowChrome.SetUpSettingsWindow(this, AppTitleBar, App.IconPath, SettingsManager.Current.SettingsWindow, 980, 760);
-        try { TitleBarIcon.Source = new BitmapImage(new Uri(App.IconPngPath)); } catch { }
+        Shell.Caption = "Hub Display Switch";
+        Shell.IconPngPath = App.IconPngPath;
+        WindowChrome.SetUpSettingsWindow(this, Shell.TitleBar, App.IconPath, SettingsManager.Current.SettingsWindow, 980, 760);
+        Shell.PageSelected += OnPageSelected;
+        Shell.ActionInvoked += OnActionInvoked;
 
         RebuildSetupItems(MainWindow.Engine?.Active?.Id ?? SettingsManager.Current.Setups.FirstOrDefault()?.Id);
-        RootNavigation.Loaded += (_, _) =>
-        {
-            LocalizeSettingsItem();
-            if (_openOnSettings)
-            {
-                SelectSettingsPage();
-            }
-        };
         UiText.Changed += OnLanguageChanged;
     }
 
-    // ── Navigation ───────────────────────────────────────────────────────
-    /// <summary>Rebuild the setup items (after add/delete/rename) and select one.</summary>
+    // ── Menu ────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Rebuild the setup items (after add, delete, rename or reset) and select one: the setup with
+    /// <paramref name="selectId"/>, else the first setup, else Settings when there are no setups.
+    /// </summary>
+    /// <param name="selectId">The id of the setup to show, or null for the first.</param>
     public void RebuildSetupItems(string? selectId)
     {
-        RootNavigation.MenuItems.Clear();
-        RootNavigation.MenuItems.Add(new NavigationViewItemHeader { Content = UiText.Get("Setups") });
-        NavigationViewItem? select = null;
-        foreach (var s in SettingsManager.Current.Setups)
-        {
-            var item = new NavigationViewItem
-            {
-                Content = s.Name,
-                Tag = s.Id,
-                Icon = new FontIcon { Glyph = s.Glyph },
-            };
-            RootNavigation.MenuItems.Add(item);
-            if (s.Id == selectId)
-            {
-                select = item;
-            }
-        }
-        RootNavigation.MenuItems.Add(new NavigationViewItem
-        {
-            Content = UiText.Get("Add setup"),
-            Tag = AddTag,
-            SelectsOnInvoked = false,
-            Icon = new FontIcon { Glyph = "" },
-        });
+        BuildMenu();
 
-        if (select != null)
+        var setups = SettingsManager.Current.Setups;
+        if (setups.Any(s => s.Id == selectId))
         {
-            RootNavigation.SelectedItem = select;
+            Shell.Select(selectId!);
         }
-        else if (SettingsManager.Current.Setups.Count == 0)
+        else if (setups.Count == 0)
         {
-            RootNavigation.SelectedItem = RootNavigation.SettingsItem;
+            Shell.Select(SettingsShell.SettingsTag);
         }
         else
         {
-            RootNavigation.SelectedItem = RootNavigation.MenuItems.OfType<NavigationViewItem>().First();
+            Shell.Select(setups[0].Id);
         }
     }
 
-    /// <summary>Update a setup's nav item text/icon in place (no reselect, keeps the page).</summary>
+    /// <summary>Update a setup's nav item text and icon in place (no reselect, keeps the page).</summary>
     public void UpdateSetupItem(Setup s)
     {
-        foreach (var item in RootNavigation.MenuItems.OfType<NavigationViewItem>())
+        foreach (var item in Shell.MenuItems.OfType<NavigationViewItem>())
         {
             if (item.Tag as string == s.Id)
             {
@@ -126,9 +107,35 @@ public sealed partial class SettingsWindow : Window
         }
     }
 
-    private void RootNavigation_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
+    /// <summary>A "Setups" header, one item per setup, then the "Add setup" action item.</summary>
+    private void BuildMenu()
     {
-        if (args.InvokedItemContainer?.Tag as string != AddTag)
+        Shell.MenuItems.Clear();
+        Shell.MenuItems.Add(new NavigationViewItemHeader { Content = UiText.Get("Setups") });
+        foreach (var s in SettingsManager.Current.Setups)
+        {
+            Shell.MenuItems.Add(new NavigationViewItem
+            {
+                Content = s.Name,
+                Tag = s.Id,
+                Icon = new FontIcon { Glyph = s.Glyph },
+            });
+        }
+
+        // An action item: the shell reports it through ActionInvoked and never selects it.
+        Shell.MenuItems.Add(new NavigationViewItem
+        {
+            Content = UiText.Get("Add setup"),
+            Tag = AddTag,
+            SelectsOnInvoked = false,
+            Icon = new FontIcon { Glyph = "\uE710" },
+        });
+    }
+
+    /// <summary>"Add setup": a new setup (the default one when it is the first), saved and shown.</summary>
+    private void OnActionInvoked(string tag)
+    {
+        if (tag != AddTag)
         {
             return;
         }
@@ -145,90 +152,77 @@ public sealed partial class SettingsWindow : Window
         RebuildSetupItems(setup.Id);
     }
 
-    private void RootNavigation_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+    // ── Navigation ──────────────────────────────────────────────────────
+    private void OnPageSelected(string tag)
     {
         if (_rebuildingQuietly)
         {
             return;
         }
 
-        if (args.IsSettingsSelected) { Navigate(typeof(GeneralPage), null); return; }
-        if ((args.SelectedItem as NavigationViewItem)?.Tag is not string tag || tag == AddTag)
+        if (tag == SettingsShell.SettingsTag)
         {
-            return;
+            Navigate(typeof(GeneralPage), null);
         }
-
-        if (tag == "AboutPage") { Navigate(typeof(WinUIAppKit.Pages.AboutPage), AboutContent.Create()); return; }
-        if (tag == "PromoPage") { Navigate(typeof(TechnicallyReal.Promo.PromotedAppsPage), null); return; }
-        Navigate(typeof(SetupPage), tag);
+        else if (tag == SettingsShell.AboutTag)
+        {
+            Navigate(typeof(WinUIAppKit.Pages.AboutPage), AboutContent.Create());
+        }
+        else if (tag == SettingsShell.OtherAppsTag)
+        {
+            Navigate(typeof(TechnicallyReal.Promo.PromotedAppsPage), null);
+        }
+        else
+        {
+            Navigate(typeof(SetupPage), tag);
+        }
     }
 
     /// <summary>Show a page, unless that exact page (and setup) is already showing or <paramref name="force"/> is set.</summary>
     /// <param name="parameter">The setup id for a setup page, the <see cref="WinUIAppKit.Pages.AboutInfo"/> for About, otherwise null.</param>
     private void Navigate(Type page, object? parameter, bool force = false)
     {
-        if (!force && ContentFrame.Content is SetupPage current && page == typeof(SetupPage) && current.SetupId == parameter as string)
+        var frame = Shell.ContentFrame;
+        if (!force && frame.Content is SetupPage current && page == typeof(SetupPage) && current.SetupId == parameter as string)
         {
             return;
         }
 
-        if (!force && ContentFrame.Content?.GetType() == page && page != typeof(SetupPage))
+        if (!force && frame.Content?.GetType() == page && page != typeof(SetupPage))
         {
             return;
         }
 
-        ContentFrame.Navigate(page, parameter);
-    }
-
-    /// <summary>Select the built-in Settings item once it exists (it appears when the navigation view loads).</summary>
-    private void SelectSettingsPage()
-    {
-        if (RootNavigation.SettingsItem is not null)
-        {
-            _openOnSettings = false;
-            RootNavigation.SelectedItem = RootNavigation.SettingsItem;
-        }
+        frame.Navigate(page, parameter);
     }
 
     /// <summary>
-    /// WinUI's built-in Settings item takes its label, tooltip and screen-reader name from the Windows
-    /// language; give all three the kit's shared label so they follow the app's language (UI-14).
+    /// The interface language changed. The shell relabels its own items and XAML text refreshes itself;
+    /// the setup menu and the setup page's code-built rows hold text too, so rebuild the menu with the
+    /// same item selected and reload a setup page.
     /// </summary>
-    private void LocalizeSettingsItem()
-    {
-        if (RootNavigation.SettingsItem is NavigationViewItem item)
-        {
-            string label = UiText.Get("kit.settings.title");
-            item.Content = label;
-            ToolTipService.SetToolTip(item, label);
-            AutomationProperties.SetName(item, label);
-        }
-    }
-
-    /// <summary>Re-label the navigation and reload the current page (its code-built rows hold text too).</summary>
     private void OnLanguageChanged() => DispatcherQueue.TryEnqueue(() =>
     {
-        LocalizeSettingsItem();
-        string? setupId = (ContentFrame.Content as SetupPage)?.SetupId;
-        var selected = RootNavigation.SelectedItem;
+        string? tag = Shell.SelectedTag;
         _rebuildingQuietly = true;
         try
         {
-            RebuildSetupItems(setupId);
-            if (setupId == null)
+            BuildMenu();
+            if (tag != null)
             {
-                RootNavigation.SelectedItem = selected;   // Settings / About / promo stay selected
+                Shell.Select(tag);
             }
         }
-        finally { _rebuildingQuietly = false; }
-        // XAML text refreshes itself (Localize); setup pages also build rows in code, so reload those.
-        if (setupId != null)
+        finally
         {
-            Navigate(typeof(SetupPage), setupId, force: true);
+            _rebuildingQuietly = false;
+        }
+
+        if (Shell.ContentFrame.Content is SetupPage page)
+        {
+            Navigate(typeof(SetupPage), page.SetupId, force: true);
         }
     });
-
-    private bool _rebuildingQuietly;
 
     private void SettingsWindow_Closed(object sender, WindowEventArgs e)
     {

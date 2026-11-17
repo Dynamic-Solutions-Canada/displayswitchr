@@ -89,6 +89,6 @@
   "{{display}} isn't connected or is switched off": "{{display}} が未接続か、電源がオフです",
   "{{setup}} (paused)": "{{setup}}（一時停止中）",
   "Reset": "リセット",
-  "Your setups are replaced by one default setup for the displays and audio in use now.": "構成は現在使用中のディスプレイとオーディオによる既定の構成 1 つに置き換えられます。",
+  "Your setups are replaced by one default setup for the displays and audio in use now. Start with Windows stays as it is.": "構成は現在使用中のディスプレイとオーディオによる既定の構成 1 つに置き換えられます。「Windows の起動時に開始」は変わりません。",
   "No setups yet. Add one in Settings.": "構成はまだありません。設定で追加してください。"
 }

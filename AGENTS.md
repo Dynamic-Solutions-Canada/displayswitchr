@@ -14,7 +14,7 @@ This repo follows the shared standards at https://github.com/Dynamic-Solutions-C
 | Host (hidden, resident, owns tray + engine, exit steps) | `MainWindow.xaml(.cs)` (kit `HostWindow`) |
 | Tray flyout (click tray icon) | `Windows/SwitcherWindow.xaml(.cs)` |
 | On-screen popup | `Windows/OsdWindow.xaml(.cs)` |
-| Settings window + pages | `SettingsWindow.xaml(.cs)`, `Pages/SetupPage`, `Pages/GeneralPage` (kit Startup, Language and Theme rows), `Pages/DetectHubDialog.cs` |
+| Settings window (kit `SettingsShell`) + pages | `SettingsWindow.xaml(.cs)`, `Pages/SetupPage`, `Pages/GeneralPage` (kit Startup, Language and Theme rows), `Pages/DetectHubDialog.cs` |
 | Setup model | `Models/Setup.cs` |
 | Arbitration and switch sequence | `Services/SwitchEngine.cs` |
 | Displays (CCD `SetDisplayConfig`, `ChangeDisplaySettingsEx`) | `Services/DisplayConfig.cs` |
