@@ -9,6 +9,6 @@
 
   <ItemGroup>
     <!-- USB device enumeration and change events (WMI) -->
-    <PackageVersion Include="System.Management" Version="10.0.0" />
+    <PackageVersion Include="System.Management" Version="10.0.15" />
   </ItemGroup>
 </Project>
