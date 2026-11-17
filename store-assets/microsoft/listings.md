@@ -23,7 +23,7 @@ Translated wording uses the same terms as the in-app catalogs (`HubDisplaySwitch
 
 - Displays and audio only change while the user is signed in; the sign-in screen keeps the last layout. Don't promise switching at boot or while signed out.
 - Audio: separate output and input pickers, each with "Don't change". Setting the default endpoint uses Windows' undocumented policy interface, so recheck it on new Windows builds before release notes claim audio switching.
-- Privacy: no account, ads, analytics or telemetry. Settings and logs are local. The only network request is the "Our other apps" page fetching the public promo manifest from GitHub.
+- Privacy: no account, ads, analytics or telemetry. Settings and logs are local. The app makes network requests only when the user asks: the "Our other apps" page fetches the public promo manifest from GitHub, and "Check for updates" on the About page opens the Store's updates page (a copy run without a package asks GitHub for the latest release instead).
 - The "Our other apps" page follows the app's language; only the app descriptions it downloads (from the shared apps-promo catalog) are in English.
 - The interface is in English, Spanish, French, German, Simplified Chinese, Brazilian Portuguese and Japanese, following Windows or a choice in Settings. Device and setup names are never translated.
 - Requires Windows 11 (the manifest's minimum version).
@@ -41,7 +41,7 @@ Translated wording uses the same terms as the in-app catalogs (`HubDisplaySwitch
 
 ## Screenshots (not captured yet)
 
-Planned set, in caption order: tray flyout above the taskbar, a setup page (TV), the on-screen popup mid-switch, and the General settings page. English captures can serve every listing, or capture each language by switching Interface language in Settings. Capture the real installed app with no personal device names, hub IDs or network names visible, and alternate light and dark themes. Files, their order and alt text go in `store-assets/manifest.json` when they exist (LIST-8). Microsoft requires at least one 1366 x 768 or larger PNG; see [screenshots and images](https://learn.microsoft.com/en-us/windows/apps/publish/publish-your-app/msix/screenshots-and-images).
+Planned set, in caption order: tray flyout above the taskbar, a setup page (TV), the on-screen popup mid-switch, and the General settings page. English captures can serve every listing, or capture each language by switching Language in Settings. Capture the real installed app with no personal device names, hub IDs or network names visible, and alternate light and dark themes. Files, their order and alt text go in `store-assets/manifest.json` when they exist (LIST-8). Microsoft requires at least one 1366 x 768 or larger PNG; see [screenshots and images](https://learn.microsoft.com/en-us/windows/apps/publish/publish-your-app/msix/screenshots-and-images).
 
 ## Open questions before submission
 

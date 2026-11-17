@@ -10,8 +10,15 @@
   "store_identity": "DynamicSolutionsCA.HubDisplaySwitch",
   "store_publisher": "CN=C21E6CEF-D0D1-4497-93F9-3718D054DA0E",
   "store_identity_switch": "-UseStoreIdentity",
+  "localization": {
+    "catalog_dir": "HubDisplaySwitch/Localization/Catalogs",
+    "english_keys": true,
+    "extra_key_patterns": [
+      "\\b(?:Manual|AppStarted|HubConnected|HubDisconnected|PreviousSetup)\\s*=\\s*\"([^\"]+)\"",
+      "DescriptionKey\\s*=\\s*\"([^\"]+)\""
+    ]
+  },
   "listing": {
-    "product_name": "Hub Display Switch",
-    "catalog_dir": "HubDisplaySwitch/Localization/Catalogs"
+    "product_name": "Hub Display Switch"
   }
 }

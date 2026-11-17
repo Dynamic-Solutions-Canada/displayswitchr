@@ -10,13 +10,14 @@ The app ships the nine-locale set from the standards' [locales.md](https://githu
 - UI text lives in `Localization/Catalogs/*.json`, keyed by the English text and embedded in the exe.
 - In code, use `UiText.Get("English text")` or `UiText.Format("... {{name}} ...", ("name", value))`.
 - In XAML, use `l10n:Localize.Text|Content|Header|ToolTip|...="English text"` with `xmlns:l10n="using:WinUIAppKit.Localization"`; it relabels live on a language change.
-- Add every new key to all seven catalogs, then run `npm run check:l10n`.
+- Shared labels (Settings, On and Off, About, the About page, the Settings rows, Cancel) are winui-app-kit's `kit.*` keys, translated in the kit; use them and never define a `kit.` key here.
+- Add every new key to all seven catalogs, then run `npm run check:l10n` (winui-app-kit's check, configured by the `localization` block in `windows-build.json`). Keys the code builds from constants (`SwitchReason`, the About description) are listed there as `extra_key_patterns`.
 - Never translate logs, settings values, device names or setup names. Switch reasons are `SwitchReason` keys, translated only in the popup.
 
 ## Language choice
 
-- The language follows Windows unless `UserSettings.Language` is set (General page).
-- Don't set `ApplicationLanguages.PrimaryLanguageOverride`: the kit resolves "Match Windows" from the package language list, and `App` clears one left by 1.0.0.10 to 1.0.0.11.
+- The language follows Windows unless `UserSettings.Language` is set with the kit's Language row on the Settings page (empty means "Use system setting").
+- Don't set `ApplicationLanguages.PrimaryLanguageOverride`: the kit resolves "Use system setting" from the package language list, and `App` clears one left by 1.0.0.10 to 1.0.0.11.
 - The "Our other apps" page follows the app's language through `PromoLocalization.LocaleProvider`, set in `MainWindow`.
 
 ## Adding a locale

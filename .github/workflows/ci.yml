@@ -38,7 +38,7 @@ jobs:
         with:
           global-json-file: global.json
 
-      # format:check, check:l10n, then the portable harnesses under tests/.
+      # format:check, check:gitignore, check:l10n, check:listing, check:notices, then the portable harnesses under tests/.
       - name: Validate
         run: npm run validate
 

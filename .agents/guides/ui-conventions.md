@@ -9,7 +9,10 @@ This app's own interface conventions. The shared family rules are in the standar
 
 - `SettingsWindow` has a custom 48 px title bar (16 px icon, caption-style title) over a left `NavigationView`. The menu is built in code by `RebuildSetupItems`: a "Setups" header, one item per setup (its name and glyph), then "Add setup", which opens a new setup and never stays selected. Settings is the built-in settings item; "Our other apps" and About are footer items, in that order.
 - Renaming a setup or changing its icon updates its menu item in place (`UpdateSetupItem`); only adding or deleting a setup rebuilds the menu, so the open page is kept.
-- Every page is `ScrollViewer` then a `StackPanel` with `Padding="36,12,36,36"`, `Spacing="8"` and `MaxWidth="960"`, a `TitleTextBlockStyle` title, then sections. A section is a `BodyStrongTextBlockStyle` heading (`Margin="2,16,0,2"`; `2,0,0,2` or `2,8,0,2` for the first under the title) above a `Border Style="{StaticResource CardBorderStyle}"` card. `CardBorderStyle` lives in `App.xaml`; use it rather than repeating brushes. These page values are repeated per page today and move to the kit's shared styles later.
+- Every page is `ScrollViewer` then `StackPanel Style="{StaticResource PageContentStyle}"`, a `PageTitleStyle` title, then sections. A section is a `SectionHeaderStyle` heading (`FirstSectionHeaderStyle` for the first one under the title or the setup header row) above a `CardBorderStyle` card. These styles come from winui-app-kit's shared XAML (merged in `App.xaml`); never write page padding, card brushes or header margins inline.
+- The Settings page uses the kit's `StartupSetting`, `LanguageSetting` and `ThemeSetting` rows and saves what they report; app-specific controls sit in the same cards with their own `Header`. After an unreadable settings file, the kit's `SettingsResetNotice` sits under the title.
+- About is the kit's `AboutPage`, filled from `AboutContent.Create()`; never build an app About page or restyle its cards. Product-specific cards go in `AboutInfo.ExtraCards`.
+- The footer items and the built-in Settings item use the kit's labels (`kit.nav.other-apps`, `kit.nav.about`, `kit.settings.title`).
 - The setup page replaces the title with a header row: a 56 px icon button (opens the glyph picker flyout), the name `TextBox` in 24 px semibold, and Delete on the right.
 - Settings controls sit inside the card with their own `Header` (`ToggleSwitch`, `ComboBox`); a note under a control, or under a radio option, is a `CaptionTextBlockStyle` text block in `TextFillColorSecondaryBrush`.
 - Settings apply and save on change. There is no Save or Cancel button.
@@ -27,7 +30,7 @@ This app's own interface conventions. The shared family rules are in the standar
 
 ## Buttons
 
-- Button content with an icon is a horizontal `StackPanel` (`Spacing="8"`) with a 14 px `FontIcon`, then the label.
+- Button content with an icon is `StackPanel Style="{StaticResource IconLabelStyle}"` holding a `FontIcon Style="{StaticResource ButtonGlyphStyle}"`, then the label.
 - An icon-only button has both `l10n:Localize.ToolTip` and `l10n:Localize.Name` (its automation name).
 
 ## Text

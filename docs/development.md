@@ -32,8 +32,9 @@ The app icon and MSIX images come from `HubDisplaySwitchMSIX/generate-msix-image
 `npm run validate` is the Linux gate. It runs, in order:
 
 - `npm run format:check`: every C# project outside `external/` matches the root `.editorconfig`, which is winui-app-kit's file copied unchanged from the tag the app pins; never hand-edit it. `npm run format` rewrites the files.
-- `npm run check:l10n`: every key the code and XAML use exists in the English catalog, and every other catalog has exactly the same keys, no empty values and the same `{{placeholders}}`. It does not check the languages declared in the package manifest.
+- `npm run check:l10n`: winui-app-kit's catalog check, configured by the `localization` block in `windows-build.json`. Every key the code and XAML use exists, every catalog has the same keys, no empty values and the same `{{placeholders}}`, no key is unused, the shared `kit.*` labels are the kit's own, and the manifest languages match the family list.
 - `npm run check:listing`: the Store listing source and the release notes for the current `<Version>`, checked by winui-app-kit's shared listing check as `store-assets/microsoft/listings.md` describes.
+- `npm run check:notices`: `HubDisplaySwitch/THIRD-PARTY-NOTICES.txt` matches the packages the last restore resolved (`format:check` restores first). After adding, removing or updating a package, run `npm run generate:notices` and commit the file with the change. The file ships in the package and the About page links to it (HYG-3); a licence the script has no text for fails the run.
 - `npm test`: every portable harness under `tests/`, found by winui-app-kit's `scripts/run-tests` without a hand-kept list (it fails if it finds none). Each has a README saying what it covers and does not prove. Today there are two: the switching policy, and the settings file (loading, upgrading old files, reset) against the kit's real store.
 
 Formatting and tests run through winui-app-kit's `scripts/dotnet`, which uses the .NET SDK pinned in `global.json` when it is installed and otherwise its Docker image, capped at 3 GB (`KIT_DOTNET_MEMORY`). Run them as a non-root user. Run `npm run validate` and `npm run verify:desktop` before finishing a change.
@@ -51,7 +52,9 @@ The harness cannot see the screen, the USB hubs or the audio devices. Before a r
 - Upgrading over an earlier build keeps every setup and setting, and leaves one `settings.json.v0.bak` beside `settings.json`.
 - Reset settings (General page) asks first, then shows one default setup for the displays in use, the default theme and language, and leaves Start with Windows as it was; a `settings.json.<time>.reset` file holds the old settings.
 - Exit from the tray menu removes the tray icon and the log ends with "Exit requested".
-- About: the version, and "Open logs folder" opens the folder with the current log.
+- About: the icon, the version, "Check for updates" opens the Store's updates page, the five links open (source, privacy policy, support, licence, third-party notices), and "Open logs folder" opens the folder with the current log.
+- A settings file that can't be read (replace `settings.json` with text that isn't JSON, then start the app): the settings window opens on Settings with a "Settings were reset" bar naming `settings.json.bad`, and the next start shows no bar.
+- Narrator reads the tray icon as "Hub Display Switch" followed by the active setup, not "no setup".
 - Light, dark and high contrast.
 
 ## Releases
@@ -64,7 +67,7 @@ Signed dev builds (`package:desktop:dev`, `install:desktop`) install under the s
 
 ## Where the app stores data
 
-Hub Display Switch collects no telemetry or crash reports. The only network request is the "Our other apps" page, which downloads a public list of apps and their icons from GitHub when it is opened.
+Hub Display Switch collects no telemetry or crash reports. It makes network requests only when the user asks: the "Our other apps" page downloads a public list of apps and their icons from GitHub when it is opened, and "Check for updates" on the About page asks GitHub for the latest release in a copy run without a package (a packaged copy opens the Microsoft Store's updates page instead).
 
 It writes:
 

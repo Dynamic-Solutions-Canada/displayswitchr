@@ -1,3 +1,4 @@
+using HubDisplaySwitch.Classes;
 using HubDisplaySwitch.Classes.Settings;
 using WinUIAppKit.Localization;
 using HubDisplaySwitch.Models;
@@ -183,13 +184,7 @@ public sealed partial class SetupPage : Page
         }
         if (_setup.Hubs.Count == 0)
         {
-            HubsPanel.Children.Add(new TextBlock
-            {
-                Text = UiText.Get("No hubs yet. Add one from the list, or detect it by unplugging it."),
-                TextWrapping = TextWrapping.Wrap,
-                Style = (Style)Application.Current.Resources["CaptionTextBlockStyle"],
-                Foreground = (Brush)Application.Current.Resources["TextFillColorSecondaryBrush"],
-            });
+            HubsPanel.Children.Add(EmptyState.Create(UiText.Get("No hubs yet. Add one from the list, or detect it by unplugging it.")));
         }
     }
 

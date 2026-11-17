@@ -26,20 +26,28 @@ public static class SettingsManager
     private static readonly JsonSettingsStore<UserSettings> Store =
         new(Path.Combine(AppEnvironment.DataDirectory(DataFolderName), "settings.json"), SettingsMigrations.Steps);
 
-    /// <summary>
-    /// The real on-disk folder for settings and logs, for handing to another process (e.g. Explorer):
-    /// packaged %AppData% writes land in the package's LocalCache\Roaming.
-    /// </summary>
-    internal static string PhysicalSettingsDir => AppEnvironment.PhysicalDataDirectory(DataFolderName);
-
     /// <summary>The current user settings. Valid after <see cref="RestoreSettings"/>; replaced by <see cref="Reset"/>.</summary>
     public static UserSettings Current { get; private set; } = new();
 
     /// <summary>True when no settings file existed and first-run defaults were created.</summary>
     public static bool IsFirstRun { get; private set; }
 
-    /// <summary>True when the file couldn't be used and defaults replaced it (shown to the user; not a first run).</summary>
-    public static bool WasReset { get; private set; }
+    /// <summary>
+    /// The load result when the file was unreadable and the user has not been told yet (CONF-2); null
+    /// otherwise. Taken once by the Settings page through <see cref="TakeResetNotice"/>.
+    /// </summary>
+    private static SettingsLoadResult<UserSettings>? _pendingResetNotice;
+
+    /// <summary>True on the launch that found the settings file unreadable, until the Settings page shows the notice.</summary>
+    public static bool NeedsResetNotice => _pendingResetNotice != null;
+
+    /// <summary>Hand the pending reset notice to the page that shows it, once; null when there is none.</summary>
+    public static SettingsLoadResult<UserSettings>? TakeResetNotice()
+    {
+        var notice = _pendingResetNotice;
+        _pendingResetNotice = null;
+        return notice;
+    }
 
     /// <summary>
     /// Restores settings from disk, upgrading older files, or creates first-run defaults; applies the
@@ -64,7 +72,7 @@ public static class SettingsManager
 
             case SettingsLoadOutcome.Unreadable:
                 Logger.Warn("Settings unusable; recreating defaults");
-                WasReset = true;
+                _pendingResetNotice = result.NeedsResetNotice ? result : null;
                 Current = CreateDefaults();
                 changed = true;
                 break;

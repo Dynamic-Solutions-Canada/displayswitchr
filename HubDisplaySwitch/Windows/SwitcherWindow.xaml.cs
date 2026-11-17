@@ -1,3 +1,4 @@
+using HubDisplaySwitch.Classes;
 using HubDisplaySwitch.Classes.Settings;
 using HubDisplaySwitch.Models;
 using HubDisplaySwitch.Services;
@@ -61,6 +62,13 @@ public sealed partial class SwitcherWindow : Window
         foreach (var setup in s.Setups)
         {
             TilesPanel.Children.Add(BuildTile(engine, setup));
+        }
+
+        if (s.Setups.Count == 0)
+        {
+            var empty = EmptyState.Create(UiText.Get("No setups yet. Add one in Settings."));
+            empty.Margin = new Thickness(10, 4, 10, 8);
+            TilesPanel.Children.Add(empty);
         }
 
         StatusText.Text = engine == null ? ""
@@ -145,6 +153,10 @@ public sealed partial class SwitcherWindow : Window
         {
             button.Background = (Brush)res["SubtleFillColorSecondaryBrush"];
         }
+
+        // The content is a layout, not text, so give screen readers the name and state explicitly (UI-14).
+        string spoken = badge.Length > 0 ? $"{setup.Name}, {badge}" : setup.Name;
+        Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(button, spoken);
 
         button.Click += (_, _) =>
         {

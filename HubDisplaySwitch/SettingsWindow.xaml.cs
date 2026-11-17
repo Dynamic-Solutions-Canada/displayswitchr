@@ -1,7 +1,9 @@
+using HubDisplaySwitch.Classes;
 using HubDisplaySwitch.Classes.Settings;
 using HubDisplaySwitch.Models;
 using HubDisplaySwitch.Pages;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -33,6 +35,20 @@ public sealed partial class SettingsWindow : Window
         new SettingsWindow().Activate();
     }
 
+    /// <summary>
+    /// Open the window on the Settings page. Used on the launch that found the settings file unreadable,
+    /// so the page can show the kit's reset notice (CONF-2) even when the app started silently.
+    /// </summary>
+    public static void ShowSettings()
+    {
+        _openOnSettings = true;
+        ShowInstance();
+        _instance?.SelectSettingsPage();
+    }
+
+    /// <summary>Set by <see cref="ShowSettings"/> before the window exists: select Settings once it has loaded.</summary>
+    private static bool _openOnSettings;
+
     private SettingsWindow()
     {
         InitializeComponent();
@@ -49,7 +65,14 @@ public sealed partial class SettingsWindow : Window
         AppTheme.Track(this);
 
         RebuildSetupItems(MainWindow.Engine?.Active?.Id ?? SettingsManager.Current.Setups.FirstOrDefault()?.Id);
-        RootNavigation.Loaded += (_, _) => LocalizeSettingsItem();
+        RootNavigation.Loaded += (_, _) =>
+        {
+            LocalizeSettingsItem();
+            if (_openOnSettings)
+            {
+                SelectSettingsPage();
+            }
+        };
         UiText.Changed += OnLanguageChanged;
     }
 
@@ -141,14 +164,16 @@ public sealed partial class SettingsWindow : Window
             return;
         }
 
-        if (tag == "AboutPage") { Navigate(typeof(AboutPage), null); return; }
+        if (tag == "AboutPage") { Navigate(typeof(WinUIAppKit.Pages.AboutPage), AboutContent.Create()); return; }
         if (tag == "PromoPage") { Navigate(typeof(TechnicallyReal.Promo.PromotedAppsPage), null); return; }
         Navigate(typeof(SetupPage), tag);
     }
 
-    private void Navigate(Type page, string? parameter, bool force = false)
+    /// <summary>Show a page, unless that exact page (and setup) is already showing or <paramref name="force"/> is set.</summary>
+    /// <param name="parameter">The setup id for a setup page, the <see cref="WinUIAppKit.Pages.AboutInfo"/> for About, otherwise null.</param>
+    private void Navigate(Type page, object? parameter, bool force = false)
     {
-        if (!force && ContentFrame.Content is SetupPage current && page == typeof(SetupPage) && current.SetupId == parameter)
+        if (!force && ContentFrame.Content is SetupPage current && page == typeof(SetupPage) && current.SetupId == parameter as string)
         {
             return;
         }
@@ -161,18 +186,35 @@ public sealed partial class SettingsWindow : Window
         ContentFrame.Navigate(page, parameter);
     }
 
-    /// <summary>WinUI's built-in Settings item follows the Windows language; label it ourselves.</summary>
+    /// <summary>Select the built-in Settings item once it exists (it appears when the navigation view loads).</summary>
+    private void SelectSettingsPage()
+    {
+        if (RootNavigation.SettingsItem is not null)
+        {
+            _openOnSettings = false;
+            RootNavigation.SelectedItem = RootNavigation.SettingsItem;
+        }
+    }
+
+    /// <summary>
+    /// WinUI's built-in Settings item takes its label, tooltip and screen-reader name from the Windows
+    /// language; give all three the kit's shared label so they follow the app's language (UI-14).
+    /// </summary>
     private void LocalizeSettingsItem()
     {
         if (RootNavigation.SettingsItem is NavigationViewItem item)
         {
-            Localize.SetContent(item, "Settings");
+            string label = UiText.Get("kit.settings.title");
+            item.Content = label;
+            ToolTipService.SetToolTip(item, label);
+            AutomationProperties.SetName(item, label);
         }
     }
 
     /// <summary>Re-label the navigation and reload the current page (its code-built rows hold text too).</summary>
     private void OnLanguageChanged() => DispatcherQueue.TryEnqueue(() =>
     {
+        LocalizeSettingsItem();
         string? setupId = (ContentFrame.Content as SetupPage)?.SetupId;
         var selected = RootNavigation.SelectedItem;
         _rebuildingQuietly = true;

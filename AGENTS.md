@@ -14,7 +14,7 @@ This repo follows the shared standards at https://github.com/Dynamic-Solutions-C
 | Host (hidden, resident, owns tray + engine, exit steps) | `MainWindow.xaml(.cs)` (kit `HostWindow`) |
 | Tray flyout (click tray icon) | `Windows/SwitcherWindow.xaml(.cs)` |
 | On-screen popup | `Windows/OsdWindow.xaml(.cs)` |
-| Settings window + pages | `SettingsWindow.xaml(.cs)`, `Pages/SetupPage`, `Pages/GeneralPage`, `Pages/AboutPage`, `Pages/DetectHubDialog.cs` |
+| Settings window + pages | `SettingsWindow.xaml(.cs)`, `Pages/SetupPage`, `Pages/GeneralPage` (kit Startup, Language and Theme rows), `Pages/DetectHubDialog.cs` |
 | Setup model | `Models/Setup.cs` |
 | Arbitration and switch sequence | `Services/SwitchEngine.cs` |
 | Displays (CCD `SetDisplayConfig`, `ChangeDisplaySettingsEx`) | `Services/DisplayConfig.cs` |
@@ -25,6 +25,8 @@ This repo follows the shared standards at https://github.com/Dynamic-Solutions-C
 | Shared build settings, package versions, NLog config | `Directory.Build.props`, `Directory.Build.targets` and `Directory.Packages.props` import the kit's `build/` files; the app adds only `<Version>` and `System.Management` |
 | UI P/Invoke | kit `WinUIAppKit.Interop.NativeMethods`, plus the popup's extras in `Classes/NativeMethods.cs` (both via `using static`; never redeclare a kit name) |
 | UI text / languages | `Classes/AppLanguages.cs`, `Localization/Catalogs/*.json` (kit `UiText` / `Localize`) |
+| About page (kit `AboutPage`), repository, privacy policy and update check | `Classes/AboutContent.cs` |
+| Third-party notices (generated, shipped in the package) | `scripts/generate-notices.py` writes `HubDisplaySwitch/THIRD-PARTY-NOTICES.txt` |
 | Tray icon artwork | `Classes/TrayIconRenderer.cs` (kit `TrayIconRasterizer`) |
 | "Our other apps" page | `external/promo` submodule (shared apps-promo catalog), imported in the csproj |
 | MSIX packaging, app icon and MSIX images | `HubDisplaySwitchMSIX/build-msix.ps1`, `HubDisplaySwitchMSIX/generate-msix-images.ps1` (committed output) |
@@ -56,11 +58,12 @@ Clone with `--recurse-submodules` (or run `git submodule update --init`) so `ext
 | `npm run package:desktop:dev` | A signed dev package builds | That it installs or runs |
 | `npm run install:desktop` | The dev package updates in place and launches | Behaviour; check it in the running app |
 | `npm run package:desktop` | An unsigned Store package builds, with every declared language in one `resources.pri` | Signing; that it runs |
-| `npm run check:l10n` | Every catalog has the same keys and placeholders | That the text is translated well |
+| `npm run check:l10n` | winui-app-kit's catalog check: every key the code uses exists, every catalog has the same keys and placeholders, `kit.*` keys are the kit's, and the manifest languages match the family list | That the text is translated well |
 | `npm run check:listing` | The Store listing and the current version's notes are complete and within store limits; the README tagline matches | That the text reads well, or the live listing |
+| `npm run check:notices` | `HubDisplaySwitch/THIRD-PARTY-NOTICES.txt` matches the restored packages (`npm run generate:notices` rewrites it) | That a licence was read correctly; review new entries |
 | `npm test` | Every portable harness under `tests/` passes on Linux: the switching policy and the settings file | Anything needing Windows or real devices; see each harness README |
 | `npm run check:gitignore` | `.gitignore` ends with winui-app-kit's shared block, unchanged | Anything else in the file |
-| `npm run validate` | The whole Linux gate passes: `format:check`, `check:gitignore`, `check:l10n`, `check:listing`, then `npm test` | A Windows compile; also run `verify:desktop` |
+| `npm run validate` | The whole Linux gate passes: `format:check`, `check:gitignore`, `check:l10n`, `check:listing`, `check:notices`, then `npm test` | A Windows compile; also run `verify:desktop` |
 | `npm run format` | Rewrites C# (not `external/`) to the root `.editorconfig`, winui-app-kit's copied unchanged | Behaviour; review the diff |
 
 Before finishing a change, run `npm run validate` and `npm run verify:desktop`. Use the `desktop` skill for build and install requests.
@@ -98,5 +101,6 @@ Releases follow the `release` skill. `<Version>` in `Directory.Build.props` is t
 | winui-app-kit pin bumped | Copy the kit's `.editorconfig` and `build/shared.gitignore` (the last part of `.gitignore`) at that tag unchanged, then `npm run format` |
 | Behaviour a Store listing claim describes | `store-assets/microsoft/listings.json` and "Claims to keep true" in `listings.md` |
 | The README tagline or the en-US short description | Both together; `npm run check:listing` compares them |
-| A language or catalog rule | `.agents/guides/localization.md`, `scripts/check-localization.py` |
+| A language or catalog rule | `.agents/guides/localization.md`, the `localization` block in `windows-build.json` |
+| A package added, removed or updated | `npm run generate:notices`, and commit the notices with the change |
 | A guide or skill moved or removed | The guidance map above and every skill that names it |

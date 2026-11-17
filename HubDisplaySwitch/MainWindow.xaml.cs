@@ -113,8 +113,13 @@ public sealed partial class MainWindow : Window
         // screen-reader name, so it is added only once the engine knows the active setup (kit gotcha).
         UpdateTrayIcon();
 
-        // Also after the settings file had to be reset, so the user sees their setups were recreated.
-        if (!Startup.IsSilentLaunch() || SettingsManager.IsFirstRun || SettingsManager.WasReset)
+        // An unreadable settings file was replaced by defaults: say so on this launch, even a silent one,
+        // because the next launch loads the new file normally (CONF-2). The Settings page shows the notice.
+        if (SettingsManager.NeedsResetNotice)
+        {
+            SettingsWindow.ShowSettings();
+        }
+        else if (!Startup.IsSilentLaunch() || SettingsManager.IsFirstRun)
         {
             SettingsWindow.ShowInstance();
         }
@@ -144,14 +149,12 @@ public sealed partial class MainWindow : Window
 
         menu.AddSeparator()
             .Add(UiText.Get(s.Paused ? "Resume auto-switching" : "Pause auto-switching"), () => Engine.SetPaused(!SettingsManager.Current.Paused))
-            .Add(UiText.Get("Settings"), SettingsWindow.ShowInstance)
-            .Add(UiText.Get("Open logs folder"), OpenLogsFolder)
+            .Add(UiText.Get("kit.settings.title"), SettingsWindow.ShowInstance)
+            .Add(UiText.Get("kit.about.open-logs-folder"), AppLogging.OpenLogsFolder)
             .AddSeparator()
             .Add(UiText.Get("Exit"), ExitApp)
             .Show(_host.Hwnd, x, y);
     }
-
-    public static void OpenLogsFolder() => AppLogging.OpenLogsFolder();
 
     /// <summary>Exits through the host: the exit steps run in order, the log is flushed, then the process ends.</summary>
     public void ExitApp() => _host.Exit();

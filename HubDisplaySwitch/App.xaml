@@ -6,20 +6,9 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+                <!-- The family's page, card and button styles (UI-3), from winui-app-kit's shared XAML -->
+                <ResourceDictionary Source="ms-appx:///WinUIAppKit/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
-
-            <!-- Override default NavigationView background to transparent for Mica -->
-            <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent" />
-            <SolidColorBrush x:Key="NavigationViewContentGridBorderBrush" Color="Transparent" />
-
-            <!-- Settings card (matches Little Launcher / Repilot pages) -->
-            <Style x:Key="CardBorderStyle" TargetType="Border">
-                <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
-                <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
-                <Setter Property="BorderThickness" Value="1" />
-                <Setter Property="CornerRadius" Value="8" />
-                <Setter Property="Padding" Value="16,14" />
-            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
