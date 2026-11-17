@@ -27,6 +27,8 @@
     <PackageDependency Name="Microsoft.WindowsAppRuntime.1.8" MinVersion="8000.770.947.0" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" />
   </Dependencies>
 
+  <!-- The languages match the app's catalogs (npm run check:l10n). ms-resource:Resources/<Key> strings
+       come from those catalogs: manifest_strings in windows-build.json, written by the kit's build-msix.ps1. -->
   <Resources>
     <Resource Language="en-US" />
     <Resource Language="en-CA" />
@@ -48,7 +50,7 @@
         BackgroundColor="transparent"
         Square150x150Logo="Images\Square150x150Logo.png"
         Square44x44Logo="Images\Square44x44Logo.png"
-        Description="Switch displays, refresh rates and audio when the USB hub for your keyboard, mouse or controller connects.">
+        Description="ms-resource:Resources/AppDescription">
         <uap:SplashScreen Image="Images\SplashScreen.png" />
       </uap:VisualElements>
       <Extensions>

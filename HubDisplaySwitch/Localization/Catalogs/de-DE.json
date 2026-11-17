@@ -71,7 +71,7 @@
   "Switch to the right setup when the app starts (for example after you sign in)": "Beim Start der App zum passenden Setup wechseln (zum Beispiel nach der Anmeldung)",
   "Switch to this setup now": "Jetzt zu diesem Setup wechseln",
   "Switched manually": "Manuell umgeschaltet",
-  "Switches your displays, refresh rates and default audio device when the USB hub for your keyboard, mouse or controller connects or disconnects.": "Schaltet Bildschirme, Bildwiederholraten und Standard-Audiogeräte um, wenn der USB-Hub für Tastatur, Maus oder Controller verbunden oder getrennt wird.",
+  "AppDescription": "Schaltet Bildschirme, Bildwiederholraten und Standard-Audiogeräte um, wenn der USB-Hub für Tastatur, Maus oder Controller verbunden oder getrennt wird.",
   "Switching to {{setup}}…": "Wechsel zu {{setup}}…",
   "This port only": "Nur dieser Anschluss",
   "This removes the setup. Your displays and audio aren't changed.": "Das Setup wird entfernt. Bildschirme und Audio bleiben unverändert.",

@@ -15,6 +15,12 @@ internal static class AboutContent
     /// <summary>The repository name.</summary>
     public const string RepoName = "hub-display-switch";
 
+    /// <summary>
+    /// The repo-relative path of the generated third-party notices (HYG-3); <c>check:notices</c> holds it
+    /// to the file the kit's generator writes (windows-build.json notices.about_source names this file).
+    /// </summary>
+    public const string NoticesPath = "HubDisplaySwitch/THIRD-PARTY-NOTICES.txt";
+
     /// <summary>The product's registered privacy policy (DOCS-8, D-017). Permanent once the app ships (BRAND-11).</summary>
     public static readonly Uri PrivacyPolicy = new("https://www.dynamic-solutions.ca/privacy/hub-display-switch");
 
@@ -31,7 +37,7 @@ internal static class AboutContent
         return new AboutInfo
         {
             ProductName = "Hub Display Switch",
-            DescriptionKey = "Switches your displays, refresh rates and default audio device when the USB hub for your keyboard, mouse or controller connects or disconnects.",
+            DescriptionKey = "AppDescription",
             IconPngPath = App.IconPngPath,
             PrivacyPolicy = PrivacyPolicy,
             Updates = Updates,
@@ -41,7 +47,7 @@ internal static class AboutContent
 
             // The generated notices ship in the package (HYG-3); the link opens the same file in the
             // repo, since a packaged app cannot hand a file inside its install folder to the browser.
-            ThirdPartyNotices = new Uri(source + "/blob/main/HubDisplaySwitch/THIRD-PARTY-NOTICES.txt"),
+            ThirdPartyNotices = new Uri(source + "/blob/main/" + NoticesPath),
         };
     }
 }

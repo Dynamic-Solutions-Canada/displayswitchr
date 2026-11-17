@@ -71,7 +71,7 @@
   "Switch to the right setup when the app starts (for example after you sign in)": "Switch to the right setup when the app starts (for example after you sign in)",
   "Switch to this setup now": "Switch to this setup now",
   "Switched manually": "Switched manually",
-  "Switches your displays, refresh rates and default audio device when the USB hub for your keyboard, mouse or controller connects or disconnects.": "Switches your displays, refresh rates and default audio device when the USB hub for your keyboard, mouse or controller connects or disconnects.",
+  "AppDescription": "Switches your displays, refresh rates and default audio device when the USB hub for your keyboard, mouse or controller connects or disconnects.",
   "Switching to {{setup}}…": "Switching to {{setup}}…",
   "This port only": "This port only",
   "This removes the setup. Your displays and audio aren't changed.": "This removes the setup. Your displays and audio aren't changed.",

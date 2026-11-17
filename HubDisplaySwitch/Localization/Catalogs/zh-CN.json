@@ -71,7 +71,7 @@
   "Switch to the right setup when the app starts (for example after you sign in)": "应用启动时切换到合适的方案（例如登录后）",
   "Switch to this setup now": "立即切换到此方案",
   "Switched manually": "手动切换",
-  "Switches your displays, refresh rates and default audio device when the USB hub for your keyboard, mouse or controller connects or disconnects.": "当键盘、鼠标或手柄所用的 USB 集线器连接或断开时，自动切换显示器、刷新率和默认音频设备。",
+  "AppDescription": "当键盘、鼠标或手柄所用的 USB 集线器连接或断开时，自动切换显示器、刷新率和默认音频设备。",
   "Switching to {{setup}}…": "正在切换到 {{setup}}…",
   "This port only": "仅此端口",
   "This removes the setup. Your displays and audio aren't changed.": "这会删除该方案。你的显示器和音频不会改变。",

@@ -12,6 +12,7 @@ The app ships the nine-locale set from the standards' [locales.md](https://githu
 - In XAML, use `l10n:Localize.Text|Content|Header|ToolTip|...="English text"` with `xmlns:l10n="using:WinUIAppKit.Localization"`; it relabels live on a language change.
 - Shared labels (Settings, On and Off, About, the About page, the Settings rows, Cancel) are winui-app-kit's `kit.*` keys, translated in the kit; use them and never define a `kit.` key here.
 - Add every new key to all seven catalogs, then run `npm run check:l10n` (winui-app-kit's check, configured by the `localization` block in `windows-build.json`). Keys the code builds from constants (`SwitchReason`, the About description) are listed there as `extra_key_patterns`.
+- `AppDescription` is the one identifier key: the package manifest's `ms-resource:Resources/<Key>` syntax needs one, and the kit's check exempts manifest keys from the English-key rule. It is both the About page description and the manifest description, written into `resources.pri` for every language at packaging.
 - Never translate logs, settings values, device names or setup names. Switch reasons are `SwitchReason` keys, translated only in the popup.
 
 ## Language choice
