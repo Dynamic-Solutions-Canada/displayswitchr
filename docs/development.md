@@ -67,7 +67,7 @@ The same tag runs "Publish to Microsoft Store" (`.github/workflows/store-publish
 
 The app is reserved in Partner Center as `DynamicSolutionsCA.HubDisplaySwitch` (Store ID 9P1S2QJFXZFW), paid at Tier1012, and not yet published. `credential-expiry.yml` fails weekly from 60 days before the Store secret expires (the organisation variable `STORE_SECRET_EXPIRES`). Both Store workflows call the kit's reusable ones; their `uses:` tag must equal the `external/winui-app-kit` pin.
 
-Signed dev builds (`package:desktop:dev`, `install:desktop`) install under the separate dev identity `TechnicallyReal.HubDisplaySwitch`, so they never replace a Store install; `npm run install:desktop -- --store-identity` builds a signed bundle with the Store identity to test an update over one (Windows rejects a plain MSIX over an installed bundle). `npm run package:desktop` keeps the Store identity for upload.
+Signed dev builds (`package:desktop:dev`, `install:desktop`) install under the separate dev identity `TechnicallyReal.HubDisplaySwitch`, so they never replace a Store install; `npm run install:desktop -- --store-identity` builds a signed bundle with the Store identity to test an update over one (Windows rejects a plain MSIX over an installed bundle). That mode needs a signing certificate whose subject is the Store publisher (`store_publisher` in `windows-build.json`); the shared dev certificate's is the older 27766TechnicallyReal publisher, so it does not work for Hub for now. `npm run package:desktop` keeps the Store identity for upload.
 
 ## Where the app stores data
 
