@@ -1,5 +1,6 @@
 using HubDisplaySwitch.Classes;
 using HubDisplaySwitch.Classes.Settings;
+using WinUIAppKit;
 using WinUIAppKit.Hosting;
 using WinUIAppKit.Localization;
 using Microsoft.UI.Dispatching;
@@ -48,8 +49,7 @@ public partial class App : Application
     {
         if (!MainWindow.ClaimSingleInstance())
         {
-            Environment.Exit(0);
-            return;
+            SingleInstance.ExitThisLaunch();
         }
 
         // Builds 1.0.0.10-11 set the package's PrimaryLanguageOverride; the kit resolves "Match Windows"
