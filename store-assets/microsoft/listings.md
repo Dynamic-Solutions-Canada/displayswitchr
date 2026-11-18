@@ -35,7 +35,8 @@ Translated wording uses the same terms as the in-app catalogs (`HubDisplaySwitch
 | Store ID | 9P1S2QJFXZFW (https://apps.microsoft.com/detail/9P1S2QJFXZFW, live once the first submission is published) |
 | Package identity | `DynamicSolutionsCA.HubDisplaySwitch`, publisher `CN=C21E6CEF-D0D1-4497-93F9-3718D054DA0E` |
 | Category | Not set; suggested Utilities & tools > Display |
-| Pricing | Paid, US $0.99 (price tier Tier1012), with the same free trial as the other paid apps; the trial length is set in Partner Center |
+| Pricing | Paid, US $0.99 (price tier Tier1012, set by `store-publish.yml`; regional prices follow the tier), with a 7-day free trial, matching ImmichDrive; the trial is set in Partner Center |
+| Markets | Every market except Lebanon and Western Sahara, set in Partner Center |
 | Age rating | Questionnaire not completed |
 | Privacy policy URL | https://www.dynamic-solutions.ca/privacy/hub-display-switch (D-017) |
 
