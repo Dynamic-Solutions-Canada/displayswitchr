@@ -39,9 +39,9 @@ Translated wording uses the same terms as the in-app catalogs (`HubDisplaySwitch
 | Age rating | Questionnaire not completed |
 | Privacy policy URL | https://www.dynamic-solutions.ca/privacy/hub-display-switch (D-017) |
 
-## Screenshots (not captured yet)
+## Screenshots
 
-Planned set, in caption order: tray flyout above the taskbar, a setup page (TV), the on-screen popup mid-switch, and the General settings page. English captures can serve every listing, or capture each language by switching Language in Settings. Capture the real installed app with no personal device names, hub IDs or network names visible, and alternate light and dark themes. Files, their order and alt text go in `store-assets/manifest.json` when they exist (LIST-8). Microsoft requires at least one 1366 x 768 or larger PNG; see [screenshots and images](https://learn.microsoft.com/en-us/windows/apps/publish/publish-your-app/msix/screenshots-and-images).
+Four, in caption order: the tray flyout above the taskbar, the TV setup page, the on-screen popup mid-switch, and the General settings page, all in dark mode. They are captured from the real installed app on the test VM with synthetic settings and simulated devices that Windows enumerates as real; `store-assets/README.md` lists them and the capture steps, and `store-assets/manifest.json` holds the files, order and alt text (LIST-8). English captures serve every listing. Microsoft requires at least one 1366 x 768 or larger PNG; see [screenshots and images](https://learn.microsoft.com/en-us/windows/apps/publish/publish-your-app/msix/screenshots-and-images).
 
 ## Open questions before submission
 

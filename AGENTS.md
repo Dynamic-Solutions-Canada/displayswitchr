@@ -61,9 +61,11 @@ Clone with `--recurse-submodules` (or run `git submodule update --init`) so `ext
 | `npm run check:l10n` | winui-app-kit's catalog check: every key the code uses exists, every catalog has the same keys and placeholders, `kit.*` keys are the kit's, and the manifest languages match the family list | That the text is translated well |
 | `npm run check:listing` | The Store listing and the current version's notes are complete and within store limits; the README tagline matches | That the text reads well, or the live listing |
 | `npm run check:notices` | `HubDisplaySwitch/THIRD-PARTY-NOTICES.txt` matches the restored packages (`npm run generate:notices` rewrites it) | That a licence was read correctly; review new entries |
+| `npm run shots:render` | The Store screenshots are rendered from the raw captures in `store-assets/manifest.json` | That they match the current UI |
+| `npm run check:screenshots` | Captures and screenshots follow the Store rules and match the en-US captions | That the screenshots are approved or uploaded |
 | `npm test` | Every portable harness under `tests/` passes on Linux: the switching policy and the settings file | Anything needing Windows or real devices; see each harness README |
 | `npm run check:gitignore` | `.gitignore` ends with winui-app-kit's shared block, unchanged | Anything else in the file |
-| `npm run validate` | The whole Linux gate passes: `format:check`, `check:gitignore`, `check:l10n`, `check:listing`, `check:notices`, then `npm test` | A Windows compile; also run `verify:desktop` |
+| `npm run validate` | The whole Linux gate passes: `format:check`, `check:gitignore`, `check:l10n`, `check:listing`, `check:notices`, `check:screenshots`, then `npm test` | A Windows compile; also run `verify:desktop` |
 | `npm run format` | Rewrites C# (not `external/`) to the root `.editorconfig`, winui-app-kit's copied unchanged | Behaviour; review the diff |
 
 Before finishing a change, run `npm run validate` and `npm run verify:desktop`. Use the `desktop` skill for build and install requests.
@@ -84,7 +86,7 @@ Releases follow the `release` skill. `<Version>` in `Directory.Build.props` is t
 | [Windows build tools README](https://github.com/Dynamic-Solutions-Canada/windows-build-tools) | A Windows build, install or packaging problem | `windows-build.json` |
 | `desktop` skill | Building, verifying or installing locally | Local Windows builds |
 | `release` skill | Releasing a version | `release-notes/**`, `Directory.Build.props` `<Version>`, `.github/workflows/build-msix.yml`, `.github/workflows/store-publish.yml` |
-| [store-assets/microsoft/listings.md](store-assets/microsoft/listings.md) | Changing the Store listing or a claim it makes | `store-assets/microsoft/**` |
+| [store-assets/microsoft/listings.md](store-assets/microsoft/listings.md), [store-assets/README.md](store-assets/README.md) | Changing the Store listing, a claim it makes, or the screenshots | `store-assets/**` |
 
 ## Keeping docs current
 
@@ -99,6 +101,7 @@ Releases follow the `release` skill. `<Version>` in `Directory.Build.props` is t
 | Where the app writes data, or a new kind of data | The data table in `docs/development.md` |
 | How settings load, save or migrate | `.agents/guides/settings.md`, `tests/HubDisplaySwitch.Settings.Tests/` |
 | winui-app-kit pin bumped | The `uses:` tag in both Store workflows (`store-publish.yml`, `credential-expiry.yml`); copy the kit's `.editorconfig` and `build/shared.gitignore` (the last part of `.gitignore`) at that tag unchanged, then `npm run format` |
+| A UI change that shows in a Store screenshot | Recapture that shot as `store-assets/README.md` describes, and get it approved before committing |
 | Behaviour a Store listing claim describes | `store-assets/microsoft/listings.json` and "Claims to keep true" in `listings.md` |
 | The README tagline or the en-US short description | Both together; `npm run check:listing` compares them |
 | A language or catalog rule | `.agents/guides/localization.md`, the `localization` block in `windows-build.json` |
