@@ -4,6 +4,14 @@
   Plug in your couch hub and your PC switches to the TV, at its full refresh rate, with TV audio.
 </p>
 
+<p align="center">
+  <img src="store-assets/microsoft/screenshots/00-flyout-dark.png" alt="Hub Display Switch's tray flyout above the notification area in the dark theme: an Auto-switch toggle that is on, the Desk setup marked Active with the DELL U2723QE monitor and speakers, and the TV setup with the LG TV display and its audio, marked Hub not connected, above a Settings button." width="250">
+  &nbsp;
+  <img src="store-assets/microsoft/screenshots/01-setup-dark.png" alt="The TV setup's page in the dark theme: it is used when a Generic USB Hub, shown as connected, is plugged in; the LG TV display is on at 120 Hz as the only and main display, at its highest refresh rate, while the DELL U2723QE desk monitor is connected but off; and LG TV is the playback device." width="250">
+  &nbsp;
+  <img src="store-assets/microsoft/screenshots/02-popup-dark.png" alt="A small dark popup at the bottom centre of the screen, just above the taskbar, with a progress ring and the text Switching to TV, Audio: LG TV." width="250">
+</p>
+
 Moving a PC between a desk and a TV usually means changing the display layout, the refresh rate and the audio device by hand every time, and then again when the TV drops back to 60 Hz. Hub Display Switch does it for you: put the USB hub for your keyboard, mouse or controller where you play or watch, and the app switches your displays, refresh rates and audio to match whenever that hub connects or disconnects.
 
 ## Features
