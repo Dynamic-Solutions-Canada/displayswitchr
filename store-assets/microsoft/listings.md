@@ -32,7 +32,7 @@ Translated wording uses the same terms as the in-app catalogs (`HubDisplaySwitch
 
 | Field | Value |
 | --- | --- |
-| Store ID | 9P1S2QJFXZFW (https://apps.microsoft.com/detail/9P1S2QJFXZFW, live once the first submission is published) |
+| Store ID | 9P1S2QJFXZFW (https://apps.microsoft.com/detail/9P1S2QJFXZFW, live since 1.0.1) |
 | Package identity | `DynamicSolutionsCA.HubDisplaySwitch`, publisher `CN=B55B96A5-F10C-49D3-8D0B-7260EDBE7625` |
 | Category | Not set; suggested Utilities & tools > Display |
 | Pricing | Paid, US $0.99 (price tier Tier1012, set by `store-publish.yml`; regional prices follow the tier), with a 7-day free trial, matching ImmichDrive; the trial is set in Partner Center |

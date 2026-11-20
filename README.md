@@ -5,6 +5,12 @@
 </p>
 
 <p align="center">
+  <a href="https://apps.microsoft.com/detail/9P1S2QJFXZFW">
+    <img src="https://get.microsoft.com/images/en-us%20dark.svg" alt="Get Hub Display Switch from the Microsoft Store" height="56">
+  </a>
+</p>
+
+<p align="center">
   <img src="store-assets/microsoft/screenshots/00-flyout-dark.png" alt="Hub Display Switch's tray flyout above the notification area in the dark theme: an Auto-switch toggle that is on, the Desk setup marked Active with the DELL U2723QE monitor and speakers, and the TV setup with the LG TV display and its audio, marked Hub not connected, above a Settings button." width="250">
   &nbsp;
   <img src="store-assets/microsoft/screenshots/01-setup-dark.png" alt="The TV setup's page in the dark theme: it is used when a Generic USB Hub, shown as connected, is plugged in; the LG TV display is on at 120 Hz as the only and main display, at its highest refresh rate, while the DELL U2723QE desk monitor is connected but off; and LG TV is the playback device." width="250">
@@ -26,7 +32,7 @@ Moving a PC between a desk and a TV usually means changing the display layout, t
 
 ## Get it
 
-Hub Display Switch is not in the Microsoft Store yet. Until it is, you can build and install it yourself by following the [development guide](docs/development.md).
+Get Hub Display Switch from the **[Microsoft Store](https://apps.microsoft.com/detail/9P1S2QJFXZFW)**. It installs and stays up to date automatically. To build it yourself instead, follow the [development guide](docs/development.md).
 
 Hub Display Switch collects no telemetry or crash reports.
 
