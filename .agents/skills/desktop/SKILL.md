@@ -1,6 +1,6 @@
 ---
 name: desktop
-description: Build, verify, or install Hub Display Switch's Windows desktop app from WSL through the shared disposable Windows build bridge. Use for local desktop development, not releases or Store publishing.
+description: Build, verify, or install Display Switchr's Windows desktop app from WSL through the shared disposable Windows build bridge. Use for local desktop development, not releases or Store publishing.
 ---
 
 # Windows desktop development

@@ -53,7 +53,7 @@ public partial class App : Application
         }
 
         // Builds 1.0.0.10-11 set the package's PrimaryLanguageOverride; the kit resolves "Match Windows"
-        // from the package language list, which that override would pin. Hub no longer sets it.
+        // from the package language list, which that override would pin. The app no longer sets it.
         try
         {
             if (WinUIAppKit.AppEnvironment.IsPackaged && global::Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride.Length > 0)

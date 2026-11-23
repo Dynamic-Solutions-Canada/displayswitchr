@@ -1,68 +1,39 @@
 using HubDisplaySwitch.Services;
-using Microsoft.UI.Dispatching;
-using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
-using WinRT.Interop;
 using WinUIAppKit.Theming;
-using static HubDisplaySwitch.Classes.NativeMethods;
-using static WinUIAppKit.Interop.NativeMethods;
+using WinUIAppKit.Windowing;
 
 namespace HubDisplaySwitch.Windows;
 
 /// <summary>
 /// Volume/brightness-style popup at the bottom centre of the main display. While Working it shows a
-/// spinner and stays up; Done/Error hold for a moment, then fade (layered alpha) and park off-screen.
-/// Never activates, is click-through, and is re-centred on WM_DISPLAYCHANGE so it follows the desktop
-/// onto whichever display comes up.
+/// spinner and stays up; Done/Error hold for a moment, then fade. The window itself is the kit's
+/// <see cref="OsdController"/>: it never activates, is click-through, sizes to its text, parks off-screen
+/// between uses, and is re-centred on WM_DISPLAYCHANGE so it follows the desktop onto whichever display
+/// comes up. On Windows 10 it has square corners and a solid background instead of acrylic.
 /// </summary>
 public sealed partial class OsdWindow : Window
 {
-    private const double WidthDip = 340, MinWidthDip = 320, MaxWidthDip = 640, HeightDip = 68;
+    private const double MinWidthDip = 320, MaxWidthDip = 640, HeightDip = 68;
     private static readonly TimeSpan DoneHold = TimeSpan.FromSeconds(2.5), MaxWorking = TimeSpan.FromSeconds(90);
-    private const int FadeSteps = 12;
 
-    private readonly IntPtr _hwnd;
-    private readonly DispatcherQueueTimer _hold, _fade;
-    private int _fadeStep;
-    private bool _visible;
+    private readonly OsdController _osd;
 
     public OsdWindow()
     {
         InitializeComponent();
-        _hwnd = WindowNative.GetWindowHandle(this);
+        _osd = new OsdController(this, WindowRoot, HeightDip, MinWidthDip, MaxWidthDip);
 
-        var presenter = OverlappedPresenter.CreateForContextMenu();
-        presenter.SetBorderAndTitleBar(false, false);
-        presenter.IsAlwaysOnTop = true;
-        presenter.IsResizable = false;
-        var appWindow = AppWindow.GetFromWindowId(Microsoft.UI.Win32Interop.GetWindowIdFromWindow(_hwnd));
-        appWindow.SetPresenter(presenter);
-        appWindow.IsShownInSwitchers = false;
-
-        SystemBackdrop = new DesktopAcrylicBackdrop();
-        int corner = DWMWCP_ROUND;
-        DwmSetWindowAttribute(_hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, ref corner, sizeof(int));
-        var margins = new MARGINS { Left = 1, Right = 1, Top = 1, Bottom = 1 };
-        DwmExtendFrameIntoClientArea(_hwnd, ref margins);
-        AddExStyle(_hwnd, WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE | WS_EX_TRANSPARENT | WS_EX_LAYERED);
-        SetLayeredWindowAttributes(_hwnd, 0, 255, LWA_ALPHA);
-
+        // The spinner animates only while the popup can be seen.
+        _osd.Hidden += () => Spinner.IsActive = false;
         AppTheme.Track(this);
-
-        _hold = DispatcherQueue.CreateTimer();
-        _hold.IsRepeating = false;
-        _hold.Tick += (_, _) => StartFade();
-        _fade = DispatcherQueue.CreateTimer();
-        _fade.Interval = TimeSpan.FromMilliseconds(30);
-        _fade.Tick += (_, _) => FadeTick();
-
-        // Warm up cloaked and parked off-screen so the first popup is composed instantly.
-        Cloak(_hwnd, true);
-        appWindow.Show(false);
-        Park();
     }
 
+    /// <summary>
+    /// Show a switch's progress, or update the popup already showing. Working stays up (at most
+    /// <see cref="MaxWorking"/>) until the next state arrives; Done and Error hold briefly, then fade.
+    /// </summary>
     public void Present(string title, string subtitle, OsdState state)
     {
         TitleText.Text = title;
@@ -76,59 +47,10 @@ public sealed partial class OsdWindow : Window
         StateIcon.Foreground = (Brush)Application.Current.Resources[
             state == OsdState.Error ? "SystemFillColorCriticalBrush" : "AccentTextFillColorPrimaryBrush"];
 
-        _fade.Stop();
-        SetLayeredWindowAttributes(_hwnd, 0, 255, LWA_ALPHA);
-        _visible = true;
-        Reposition();
-
-        _hold.Stop();
-        _hold.Interval = working ? MaxWorking : DoneHold;
-        _hold.Start();
+        // Set the content first: the controller measures it for the width.
+        _osd.Show(working ? MaxWorking : DoneHold);
     }
 
-    /// <summary>Bottom centre of the main display, above everything, without activating.</summary>
-    public void Reposition()
-    {
-        // Hidden: re-park (a display switch makes Windows pull off-screen windows back into view).
-        if (!_visible) { Park(); return; }
-        var (bounds, _, scale) = PrimaryMonitorArea();
-        // Size to the text (single lines), within limits; longer text is trimmed with an ellipsis.
-        WindowRoot.Measure(new global::Windows.Foundation.Size(double.PositiveInfinity, HeightDip));
-        double widthDip = Math.Clamp(WindowRoot.DesiredSize.Width + 8, MinWidthDip, MaxWidthDip);
-        int w = (int)Math.Ceiling(widthDip * scale), h = (int)Math.Ceiling(HeightDip * scale);
-        int x = bounds.Left + (bounds.Right - bounds.Left - w) / 2;
-        int y = bounds.Bottom - h - (int)(64 * scale);
-        SetWindowPos(_hwnd, HWND_TOPMOST, x, y, w, h, SWP_NOACTIVATE | SWP_SHOWWINDOW);
-        Cloak(_hwnd, false);
-    }
-
-    private void StartFade()
-    {
-        _fadeStep = 0;
-        _fade.Start();
-    }
-
-    private void FadeTick()
-    {
-        _fadeStep++;
-        byte alpha = (byte)Math.Max(0, 255 - 255 * _fadeStep / FadeSteps);
-        SetLayeredWindowAttributes(_hwnd, 0, alpha, LWA_ALPHA);
-        if (_fadeStep < FadeSteps)
-        {
-            return;
-        }
-
-        _fade.Stop();
-        _visible = false;
-        Spinner.IsActive = false;
-        Park();
-        SetLayeredWindowAttributes(_hwnd, 0, 255, LWA_ALPHA);
-    }
-
-    private void Park()
-    {
-        Cloak(_hwnd, true);
-        var (x, y) = ParkingSpot((int)WidthDip, (int)HeightDip);
-        SetWindowPos(_hwnd, HWND_TOPMOST, x, y, (int)WidthDip, (int)HeightDip, SWP_NOACTIVATE | SWP_SHOWWINDOW);
-    }
+    /// <summary>Follow a display change: re-centre while showing, re-park while hidden.</summary>
+    public void Reposition() => _osd.Reposition();
 }

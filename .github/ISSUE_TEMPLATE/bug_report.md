@@ -1,9 +1,9 @@
 ---
 name: Bug report
-about: Something in Hub Display Switch does not work as expected
+about: Something in Display Switchr does not work as expected
 ---
 
-**Hub Display Switch version:** (About page)
+**Display Switchr version:** (About page)
 
 **Windows version:** (Settings > System > About, for example 11 24H2 build 26100)
 

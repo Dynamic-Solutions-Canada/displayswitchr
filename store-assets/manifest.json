@@ -6,7 +6,7 @@
       "theme": "dark",
       "crop": "tray",
       "caption": "Tray flyout: switch between your setups or pause automatic switching.",
-      "alt": "Hub Display Switch's tray flyout above the notification area in the dark theme: an Auto-switch toggle that is on, the Desk setup marked Active with the DELL U2723QE monitor and speakers, and the TV setup with the LG TV display and its audio, marked Hub not connected, above a Settings button."
+      "alt": "Display Switchr's tray flyout above the notification area in the dark theme: an Auto-switch toggle that is on, the Desk setup marked Active with the DELL U2723QE monitor and speakers, and the TV setup with the LG TV display and its audio, marked Hub not connected, above a Settings button."
     },
     {
       "file": "screenshots/01-setup-dark.png",
@@ -28,7 +28,7 @@
       "source": "raw/microsoft/03-general-dark.png",
       "theme": "dark",
       "caption": "General settings: start with Windows, switch on start, popup, language and theme.",
-      "alt": "Hub Display Switch's Settings page in the dark theme: switches for Start with Windows, switching to the right setup when the app starts, showing a popup while switching and switching automatically, all on, and Language and App theme set to the system setting."
+      "alt": "Display Switchr's Settings page in the dark theme: switches for Start with Windows, switching to the right setup when the app starts, showing a popup while switching and switching automatically, all on, and Language and App theme set to the system setting."
     }
   ]
 }

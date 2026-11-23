@@ -59,7 +59,7 @@ public sealed partial class SettingsWindow : Window
         _instance = this;
         Closed += SettingsWindow_Closed;
 
-        Shell.Caption = "Hub Display Switch";
+        Shell.Caption = "Display Switchr";
         Shell.IconPngPath = App.IconPngPath;
         WindowChrome.SetUpSettingsWindow(this, Shell.TitleBar, App.IconPath, SettingsManager.Current.SettingsWindow, 980, 760);
         Shell.PageSelected += OnPageSelected;

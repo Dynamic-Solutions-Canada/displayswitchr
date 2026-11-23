@@ -3,7 +3,7 @@ using WinUIAppKit.Localization;
 namespace HubDisplaySwitch.Classes;
 
 /// <summary>
-/// The interface languages Hub Display Switch ships: the same nine identities, in the same order, as
+/// The interface languages Display Switchr ships: the same nine identities, in the same order, as
 /// Persistent and WSL Monitor. Canadian English reuses US wording and Canadian French reuses French
 /// wording; they stay separate choices so the picker and Windows' preferences match them exactly. Keep
 /// this list, <c>Localization/Catalogs/*.json</c>, the manifest's <c>&lt;Resource Language&gt;</c>
