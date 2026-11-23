@@ -66,8 +66,9 @@ Clone with `--recurse-submodules` (or run `git submodule update --init`) so `ext
 | `npm run check:screenshots` | Captures and screenshots follow the Store rules and match the en-US captions | That the screenshots are approved or uploaded |
 | `npm test` | Every portable harness under `tests/` passes on Linux: the switching policy and the settings file | Anything needing Windows or real devices; see each harness README |
 | `npm run check:gitignore` | `.gitignore` ends with winui-app-kit's shared block, unchanged | Anything else in the file |
-| `npm run validate` | The whole Linux gate passes: `format:check`, `check:gitignore`, `check:icons`, `check:l10n`, `check:listing`, `check:notices`, `check:screenshots`, then `npm test` | A Windows compile; also run `verify:desktop` |
+| `npm run validate` | The whole Linux gate passes: `format:check`, `check:gitignore`, `check:icons`, `check:l10n`, `check:listing`, `check:notices`, `check:screenshots`, `check:hero`, then `npm test` | A Windows compile; also run `verify:desktop` |
 | `npm run icons` | Writes every app icon from `assets/brand/` (devkit; `check:icons` in `validate` fails when a committed icon differs from what the masters make) | How the icon looks; check it on a light and a dark taskbar |
+| `npm run hero` | Draws the first Store screenshot in every listing locale (devkit; `check:hero` in `validate` compares the pixels) | That the text reads well; the maintainer approves new heroes |
 | `npm run format` | Rewrites C# (not `external/`) to the root `.editorconfig`, winui-app-kit's copied unchanged | Behaviour; review the diff |
 
 Before finishing a change, run `npm run validate` and `npm run verify:desktop`. Use the `desktop` skill for build and install requests.

@@ -30,11 +30,14 @@
         "couch gaming"
       ],
       "screenshotCaptions": [
+        "Displays, refresh rates and audio switch to match.",
         "Tray flyout: switch between your setups or pause automatic switching.",
         "A setup: the hub that triggers it, the displays, main display and refresh rates, and the audio devices to use.",
         "The on-screen popup while switching to the TV.",
         "General settings: start with Windows, switch on start, popup, language and theme."
-      ]
+      ],
+      "heroHeadline": "Plug in your couch hub. Your PC switches to the TV.",
+      "heroSubline": "Displays, refresh rates and audio switch to match."
     },
     "en-CA": {
       "copyFrom": "en-US"
@@ -68,11 +71,14 @@
         "jugar desde el sofá"
       ],
       "screenshotCaptions": [
+        "Pantallas, frecuencias y audio cambian en consecuencia.",
         "Panel de la bandeja: cambia entre tus configuraciones o pausa el cambio automático.",
         "Una configuración: el hub que la activa, las pantallas, la principal y sus frecuencias, y los dispositivos de audio.",
         "El aviso en pantalla mientras cambia a la tele.",
         "Ajustes generales: iniciar con Windows, cambiar al iniciar, aviso, idioma y tema."
-      ]
+      ],
+      "heroHeadline": "Conecta el hub del sofá. Tu PC cambia a la tele.",
+      "heroSubline": "Pantallas, frecuencias y audio cambian en consecuencia."
     },
     "fr-FR": {
       "title": "DisplaySwitchr",
@@ -103,11 +109,14 @@
         "jeu sur canapé"
       ],
       "screenshotCaptions": [
+        "Écrans, fréquences et audio s’adaptent en conséquence.",
         "Panneau de la zone de notification : passez d’une configuration à l’autre ou suspendez le basculement automatique.",
         "Une configuration : le hub qui la déclenche, les écrans, l’écran principal et les fréquences, et les appareils audio.",
         "La fenêtre à l’écran pendant le passage au téléviseur.",
         "Paramètres généraux : démarrage avec Windows, basculement au démarrage, fenêtre, langue et thème."
-      ]
+      ],
+      "heroHeadline": "Branchez le hub du canapé. Votre PC passe au téléviseur.",
+      "heroSubline": "Écrans, fréquences et audio s’adaptent en conséquence."
     },
     "fr-CA": {
       "copyFrom": "fr-FR"
@@ -141,11 +150,14 @@
         "Couch-Gaming"
       ],
       "screenshotCaptions": [
+        "Bildschirme, Bildwiederholraten und Audio schalten passend um.",
         "Infobereich-Menü: zwischen Setups wechseln oder das automatische Umschalten pausieren.",
         "Ein Setup: der auslösende Hub, die Bildschirme, Hauptbildschirm und Bildwiederholraten sowie die Audiogeräte.",
         "Das Popup beim Wechsel zum Fernseher.",
         "Allgemeine Einstellungen: Start mit Windows, Umschalten beim Start, Popup, Sprache und Design."
-      ]
+      ],
+      "heroHeadline": "Hub am Sofa anschließen. Der PC wechselt zum Fernseher.",
+      "heroSubline": "Bildschirme, Bildwiederholraten und Audio schalten passend um."
     },
     "zh-CN": {
       "title": "DisplaySwitchr",
@@ -176,11 +188,14 @@
         "沙发游戏"
       ],
       "screenshotCaptions": [
+        "显示器、刷新率和音频随之切换。",
         "托盘面板：在方案之间切换，或暂停自动切换。",
         "一个方案：触发它的集线器、显示器、主显示器和刷新率，以及要使用的音频设备。",
         "切换到电视时的屏幕弹窗。",
         "常规设置：随 Windows 启动、启动时切换、弹窗、语言和主题。"
-      ]
+      ],
+      "heroHeadline": "插上沙发旁的集线器，电脑就切换到电视。",
+      "heroSubline": "显示器、刷新率和音频随之切换。"
     },
     "pt-BR": {
       "title": "DisplaySwitchr",
@@ -211,11 +226,14 @@
         "jogar no sofá"
       ],
       "screenshotCaptions": [
+        "Telas, taxas de atualização e áudio mudam junto.",
         "Painel da bandeja: alterne entre suas configurações ou pause a troca automática.",
         "Uma configuração: o hub que a ativa, as telas, a principal e as taxas, e os dispositivos de áudio.",
         "O aviso na tela durante a troca para a TV.",
         "Configurações gerais: iniciar com o Windows, trocar ao iniciar, aviso, idioma e tema."
-      ]
+      ],
+      "heroHeadline": "Conecte o hub do sofá. O PC muda para a TV.",
+      "heroSubline": "Telas, taxas de atualização e áudio mudam junto."
     },
     "ja-JP": {
       "title": "DisplaySwitchr",
@@ -246,11 +264,14 @@
         "ソファでゲーム"
       ],
       "screenshotCaptions": [
+        "ディスプレイ、リフレッシュレート、オーディオも合わせて切り替え。",
         "トレイのパネル: 構成を切り替えたり、自動切り替えを一時停止したりできます。",
         "構成: 起動するハブ、ディスプレイ、メインディスプレイとリフレッシュレート、使うオーディオデバイス。",
         "テレビに切り替え中の画面ポップアップ。",
         "全般設定: Windows の起動時に開始、起動時の切り替え、ポップアップ、言語、テーマ。"
-      ]
+      ],
+      "heroHeadline": "ソファ側のハブを\n挿せば、PC は\nテレビに\n切り替わります。",
+      "heroSubline": "ディスプレイ、リフレッシュレート、オーディオも合わせて切り替え。"
     }
   }
 }
