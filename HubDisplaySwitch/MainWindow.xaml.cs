@@ -31,7 +31,7 @@ public sealed partial class MainWindow : Window
     private static readonly Guid TrayGuid = new("5b0f1c7e-3c1a-4e8e-9a35-6f1d2a7c4b11");
 
     /// <summary>"Start with Windows" (manifest task id / unpackaged Run value).</summary>
-    public static StartupRegistration Startup { get; } = new("HubDisplaySwitchStartup", "Display Switchr");
+    public static StartupRegistration Startup { get; } = new("HubDisplaySwitchStartup", "DisplaySwitchr");
 
     public static SwitchEngine Engine { get; private set; } = null!;
     public static MainWindow Instance { get; private set; } = null!;
@@ -104,7 +104,7 @@ public sealed partial class MainWindow : Window
             _ = Startup.RegisterOnFirstRunAsync();
         }
 
-        Startup.RemoveUnpackagedEntries("HubDisplaySwitch", "Hub Display Switch");   // the original watcher's Run value, and the name before the rename
+        Startup.RemoveUnpackagedEntries("HubDisplaySwitch", "Hub Display Switch", "Display Switchr");   // the original watcher's Run value, and the names before each rename
 
         Logger.Info("Started v{Version}, {Count} setup(s), packaged={Packaged}",
             AppEnvironment.Version, SettingsManager.Current.Setups.Count, AppEnvironment.IsPackaged);
@@ -136,7 +136,7 @@ public sealed partial class MainWindow : Window
     private static string TrayTooltip()
     {
         string setup = Engine.Active?.Name ?? UiText.Get("no setup");
-        return "Display Switchr – " + (SettingsManager.Current.Paused ? UiText.Format("{{setup}} (paused)", ("setup", setup)) : setup);
+        return "DisplaySwitchr – " + (SettingsManager.Current.Paused ? UiText.Format("{{setup}} (paused)", ("setup", setup)) : setup);
     }
 
     private void ShowContextMenu(int x, int y)

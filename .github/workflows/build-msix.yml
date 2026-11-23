@@ -6,7 +6,7 @@ name: Build and Package
 # On a v* tag: run the gate (CI-4), build the x64 and ARM64 packages, then create the GitHub Release
 # from the committed notes (REL-5, REL-6). workflow_dispatch runs the gate and the build only.
 #
-# This workflow publishes no binaries anywhere, on purpose (DIST-5). Display Switchr is a paid
+# This workflow publishes no binaries anywhere, on purpose (DIST-5). DisplaySwitchr is a paid
 # Microsoft Store app in a public repo, and an Actions artifact or Release asset on a public repo can
 # be downloaded by anyone, so attaching a signed package would give the paid app away. The install
 # route is the Microsoft Store; anyone who wants to run it from source can build it themselves
@@ -132,7 +132,7 @@ jobs:
             echo ""
             echo "## Get it"
             echo ""
-            echo "Get Display Switchr from the [Microsoft Store](https://apps.microsoft.com/detail/9P1S2QJFXZFW). It installs and stays up to date automatically."
+            echo "Get DisplaySwitchr from the [Microsoft Store](https://apps.microsoft.com/detail/9P1S2QJFXZFW). It installs and stays up to date automatically."
             echo ""
             echo "*AI disclosure: this release and the related code were written with the assistance of AI.*"
             echo "RELEASE_EOF"
@@ -142,7 +142,7 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
         with:
-          name: Display Switchr ${{ steps.notes.outputs.version }}
+          name: DisplaySwitchr ${{ steps.notes.outputs.version }}
           body: ${{ steps.notes.outputs.body }}
           make_latest: true
           generate_release_notes: false

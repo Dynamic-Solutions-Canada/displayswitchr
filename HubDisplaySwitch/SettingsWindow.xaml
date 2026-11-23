@@ -3,7 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:kit="using:WinUIAppKit.Pages"
-    Title="Display Switchr">
+    Title="DisplaySwitchr">
     <!-- The kit's window shell (UI-1, UI-2): title bar, navigation, the built-in Settings item and the
          fixed footer ("Our other apps", then "About"). This window adds the setups and "Add setup". -->
     <kit:SettingsShell x:Name="Shell" />

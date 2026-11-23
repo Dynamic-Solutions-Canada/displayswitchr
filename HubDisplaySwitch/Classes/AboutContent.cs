@@ -4,7 +4,7 @@ using WinUIAppKit.Updates;
 namespace HubDisplaySwitch.Classes;
 
 /// <summary>
-/// What the kit's shared About page shows for Display Switchr (UI-5, BRAND-8), and the one place the
+/// What the kit's shared About page shows for DisplaySwitchr (UI-5, BRAND-8), and the one place the
 /// repository and the privacy policy are named (BRAND-5): every link is built from these values.
 /// </summary>
 internal static class AboutContent
@@ -13,7 +13,7 @@ internal static class AboutContent
     public const string RepoOwner = "Dynamic-Solutions-Canada";
 
     /// <summary>The repository name.</summary>
-    public const string RepoName = "display-switchr";
+    public const string RepoName = "displayswitchr";
 
     /// <summary>
     /// The repo-relative path of the generated third-party notices (HYG-3); <c>check:notices</c> holds it
@@ -22,7 +22,7 @@ internal static class AboutContent
     public const string NoticesPath = "HubDisplaySwitch/THIRD-PARTY-NOTICES.txt";
 
     /// <summary>The product's registered privacy policy (DOCS-8, D-017). Permanent once the app ships (BRAND-11).</summary>
-    public static readonly Uri PrivacyPolicy = new("https://www.dynamic-solutions.ca/privacy/display-switchr");
+    public static readonly Uri PrivacyPolicy = new("https://www.dynamic-solutions.ca/privacy/displayswitchr");
 
     /// <summary>
     /// "Check for updates" (DIST-6): the Store's updates page when packaged, this repo's GitHub Releases
@@ -36,7 +36,7 @@ internal static class AboutContent
         var (source, support, license) = AboutInfo.GitHubLinks(RepoOwner, RepoName);
         return new AboutInfo
         {
-            ProductName = "Display Switchr",
+            ProductName = "DisplaySwitchr",
             DescriptionKey = "AppDescription",
             IconPngPath = App.IconPngPath,
             PrivacyPolicy = PrivacyPolicy,
