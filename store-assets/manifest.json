@@ -1,7 +1,20 @@
 {
   "microsoft": [
     {
-      "file": "screenshots/00-flyout-dark.png",
+      "file": "screenshots/{locale}/00-hero-dark.png",
+      "source": "raw/microsoft/00-flyout-dark.png",
+      "theme": "dark",
+      "hero": {
+        "layout": "split",
+        "icon": "assets/generated/icon-256.png",
+        "primary": "#EA580C",
+        "accent": "#FDBA74"
+      },
+      "caption": "Displays, refresh rates and audio switch to match.",
+      "alt": "DisplaySwitchr's name and the headline \"Plug in your couch hub. Your PC switches to the TV.\" on an orange panel, beside DisplaySwitchr's real tray flyout, enlarged: an Auto-switch toggle, the Desk setup marked Active with its monitor and speakers, and the TV setup marked Hub not connected."
+    },
+    {
+      "file": "screenshots/01-flyout-dark.png",
       "source": "raw/microsoft/00-flyout-dark.png",
       "theme": "dark",
       "crop": "tray",
@@ -9,14 +22,14 @@
       "alt": "DisplaySwitchr's tray flyout above the notification area in the dark theme: an Auto-switch toggle that is on, the Desk setup marked Active with the DELL U2723QE monitor and speakers, and the TV setup with the LG TV display and its audio, marked Hub not connected, above a Settings button."
     },
     {
-      "file": "screenshots/01-setup-dark.png",
+      "file": "screenshots/02-setup-dark.png",
       "source": "raw/microsoft/01-setup-dark.png",
       "theme": "dark",
       "caption": "A setup: the hub that triggers it, the displays, main display and refresh rates, and the audio devices to use.",
       "alt": "The TV setup's page in the dark theme: it is used when a Generic USB Hub, shown as connected, is plugged in; the LG TV display is on at 120 Hz as the only and main display, at its highest refresh rate, while the DELL U2723QE desk monitor is connected but off; and LG TV is the playback device."
     },
     {
-      "file": "screenshots/02-popup-dark.png",
+      "file": "screenshots/03-popup-dark.png",
       "source": "raw/microsoft/02-popup-dark.png",
       "theme": "dark",
       "crop": "bottom",
@@ -24,7 +37,7 @@
       "alt": "A small dark popup at the bottom centre of the screen, just above the taskbar, with a progress ring and the text Switching to TV, Audio: LG TV."
     },
     {
-      "file": "screenshots/03-general-dark.png",
+      "file": "screenshots/04-general-dark.png",
       "source": "raw/microsoft/03-general-dark.png",
       "theme": "dark",
       "caption": "General settings: start with Windows, switch on start, popup, language and theme.",
