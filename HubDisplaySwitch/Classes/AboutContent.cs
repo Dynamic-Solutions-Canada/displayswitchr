@@ -13,7 +13,7 @@ internal static class AboutContent
     public const string RepoOwner = "Dynamic-Solutions-Canada";
 
     /// <summary>The repository name.</summary>
-    public const string RepoName = "hub-display-switch";
+    public const string RepoName = "display-switchr";
 
     /// <summary>
     /// The repo-relative path of the generated third-party notices (HYG-3); <c>check:notices</c> holds it
