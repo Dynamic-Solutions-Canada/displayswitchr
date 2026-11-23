@@ -12,7 +12,7 @@ Translated wording uses the same terms as the in-app catalogs (`HubDisplaySwitch
 
 | Text | Limit | Longest draft |
 | --- | --- | --- |
-| Full description | 4,000 characters | 2,630 (fr-FR) |
+| Full description | 4,000 characters | 2,639 (fr-FR) |
 | Short description | 270 characters | 253 (fr-FR) |
 | Features | Up to 20, each up to 200 characters | 13, longest 146 (fr-FR) |
 | Keywords | Up to 7, each up to 40 characters, 21 words combined | 7 per locale, at most 17 words (es-ES, fr-FR) |
@@ -26,19 +26,20 @@ Translated wording uses the same terms as the in-app catalogs (`HubDisplaySwitch
 - Privacy: no account, ads, analytics or telemetry. Settings and logs are local. The app makes network requests only when the user asks: the "Our other apps" page fetches the public promo manifest from GitHub, and "Check for updates" on the About page opens the Store's updates page (a copy run without a package asks GitHub for the latest release instead).
 - The "Our other apps" page follows the app's language; only the app descriptions it downloads (from the shared apps-promo catalog) are in English.
 - The interface is in English, Spanish, French, German, Simplified Chinese, Brazilian Portuguese and Japanese, following Windows or a choice in Settings. Device and setup names are never translated.
-- Requires Windows 11 (the manifest's minimum version).
+- Requires Windows 10 (22H2) or Windows 11: the manifest's minimum is build 19045.5011 (D-018).
 
 ## Console-only fields
 
 | Field | Value |
 | --- | --- |
+| Product name | Display Switchr in every language (2026-11-23, reserved in Partner Center), renamed from Hub Display Switch following the WSL Status precedent (D-118); the identifiers below keep the old name so installs and settings carry over |
 | Store ID | 9P1S2QJFXZFW (https://apps.microsoft.com/detail/9P1S2QJFXZFW, live since 1.0.1) |
 | Package identity | `DynamicSolutionsCA.HubDisplaySwitch`, publisher `CN=B55B96A5-F10C-49D3-8D0B-7260EDBE7625` |
 | Category | Not set; suggested Utilities & tools > Display |
 | Pricing | Paid, US $0.99 (price tier Tier1012, set by `store-publish.yml`; regional prices follow the tier), with a 7-day free trial, matching ImmichDrive; the trial is set in Partner Center |
 | Markets | Every market except Lebanon and Western Sahara, set in Partner Center |
 | Age rating | Questionnaire not completed |
-| Privacy policy URL | https://www.dynamic-solutions.ca/privacy/hub-display-switch (D-017) |
+| Privacy policy URL | https://www.dynamic-solutions.ca/privacy/display-switchr (D-017; the old /privacy/hub-display-switch address redirects there with a 301; update the console field with the next submission) |
 
 ## Screenshots
 

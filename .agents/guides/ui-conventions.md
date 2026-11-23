@@ -26,7 +26,7 @@ This app's own interface conventions. The shared family rules are in the standar
 
 ## Popup
 
-- `OsdWindow` is one row: a 32 px column holding a `ProgressRing` while switching or a 24 px accent `FontIcon` when done, then a title (`BodyStrongTextBlockStyle`, 15 px) and a secondary caption, both single-line and trimmed. It never takes focus (see AGENTS.md).
+- `OsdWindow` is one row: a 32 px column holding a `ProgressRing` while switching or a 24 px accent `FontIcon` when done, then a title (`BodyStrongTextBlockStyle`, 15 px) and a secondary caption, both single-line and trimmed. The kit's `OsdController` sizes it to the text between 320 and 640 wide and gives it its background; never set one on its root, or Windows 10 loses the theme-following solid background. It never takes focus (see AGENTS.md).
 
 ## Buttons
 

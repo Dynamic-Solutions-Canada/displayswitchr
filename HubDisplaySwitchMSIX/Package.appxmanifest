@@ -17,13 +17,14 @@
     ProcessorArchitecture="ARCH_PLACEHOLDER" />
 
   <Properties>
-    <DisplayName>Hub Display Switch</DisplayName>
+    <DisplayName>Display Switchr</DisplayName>
     <PublisherDisplayName>Dynamic Solutions (CA)</PublisherDisplayName>
     <Logo>Images\StoreLogo.png</Logo>
   </Properties>
 
   <Dependencies>
-    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.22000.0" MaxVersionTested="10.0.26100.0" />
+    <!-- Windows 10 22H2 from build 19045.5011, and Windows 11: the family floor decided in the standards (D-018). -->
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19045.5011" MaxVersionTested="10.0.26100.0" />
     <PackageDependency Name="Microsoft.WindowsAppRuntime.2" MinVersion="2.7.0.0" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" />
   </Dependencies>
 
@@ -46,7 +47,7 @@
       Executable="HubDisplaySwitch.exe"
       EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements
-        DisplayName="Hub Display Switch"
+        DisplayName="Display Switchr"
         BackgroundColor="transparent"
         Square150x150Logo="Images\Square150x150Logo.png"
         Square44x44Logo="Images\Square44x44Logo.png"
@@ -56,7 +57,7 @@
       <Extensions>
         <!-- desktop: (not uap:) namespace - makeappx rejects uap: startup tasks for full-trust apps. -->
         <desktop:Extension Category="windows.startupTask">
-          <desktop:StartupTask TaskId="HubDisplaySwitchStartup" Enabled="true" DisplayName="Hub Display Switch" />
+          <desktop:StartupTask TaskId="HubDisplaySwitchStartup" Enabled="true" DisplayName="Display Switchr" />
         </desktop:Extension>
       </Extensions>
     </Application>

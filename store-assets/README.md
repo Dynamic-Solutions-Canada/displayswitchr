@@ -15,7 +15,7 @@ The test VM has no hub, TV or speakers, so the hardware is simulated with device
 
 | Element | Source |
 | --- | --- |
-| The hub ("Generic USB Hub") | A QEMU virtual USB hub (VID 0409, PID 55AA), plugged in live through the QEMU monitor; plugging it in makes Hub switch to the TV setup |
+| The hub ("Generic USB Hub") | A QEMU virtual USB hub (VID 0409, PID 55AA), plugged in live through the QEMU monitor; plugging it in makes the app switch to the TV setup |
 | The desk monitor ("DELL U2723QE") | The VM's VirtIO display, its EDID name set through QEMU's `virtio-vga` `outputs` property |
 | The TV ("LG TV", 60 and 120 Hz) | The signed Virtual Display Driver (VirtualDrivers/Virtual-Display-Driver) with a generated EDID, keeping the driver's own manufacturer ID |
 | The audio devices | Two QEMU HD Audio controllers on Windows' inbox driver; the TV's endpoint is renamed "LG TV" in the Sound control panel's Properties name box |

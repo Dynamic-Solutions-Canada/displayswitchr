@@ -1,6 +1,6 @@
-# Hub Display Switch: Agent Instructions
+# Display Switchr: Agent Instructions
 
-Hub Display Switch is a resident WinUI 3 tray app for Windows users who move between a desk and a TV: it switches the display layout, refresh rates and default audio device when the USB hub for a keyboard, mouse or controller connects or disconnects. It ships as an MSIX (`HubDisplaySwitchMSIX/`) built from WSL through the shared Windows build bridge. The tray, flyout, settings-file, startup, theme, window-chrome and localization plumbing come from the shared WinUI App Kit submodule at `external/winui-app-kit`, and the "Our other apps" page from the apps-promo submodule at `external/promo`.
+Display Switchr is a resident WinUI 3 tray app for Windows users who move between a desk and a TV: it switches the display layout, refresh rates and default audio device when the USB hub for a keyboard, mouse or controller connects or disconnects. It ships as an MSIX (`HubDisplaySwitchMSIX/`) built from WSL through the shared Windows build bridge. The tray, flyout, settings-file, startup, theme, window-chrome and localization plumbing come from the shared WinUI App Kit submodule at `external/winui-app-kit`, and the "Our other apps" page from the apps-promo submodule at `external/promo`.
 
 ## Standards
 
@@ -13,7 +13,7 @@ This repo follows the shared standards at https://github.com/Dynamic-Solutions-C
 | Startup order (crash logging, single instance, settings, host) | `App.xaml.cs` (kit `AppBootstrap`) |
 | Host (hidden, resident, owns tray + engine, exit steps) | `MainWindow.xaml(.cs)` (kit `HostWindow`) |
 | Tray flyout (click tray icon) | `Windows/SwitcherWindow.xaml(.cs)` |
-| On-screen popup | `Windows/OsdWindow.xaml(.cs)` |
+| On-screen popup | `Windows/OsdWindow.xaml(.cs)` (kit `OsdController`) |
 | Settings window (kit `SettingsShell`) + pages | `SettingsWindow.xaml(.cs)`, `Pages/SetupPage`, `Pages/GeneralPage` (kit Startup, Language and Theme rows), `Pages/DetectHubDialog.cs` |
 | Setup model | `Models/Setup.cs` |
 | Arbitration and switch sequence | `Services/SwitchEngine.cs` |
@@ -23,7 +23,7 @@ This repo follows the shared standards at https://github.com/Dynamic-Solutions-C
 | Settings, schema steps, reset | `ViewModels/UserSettings.cs`, `Classes/Settings/SettingsManager.cs` (kit versioned `JsonSettingsStore`), `Classes/Settings/SettingsMigrations.cs` |
 | Tray, flyout window, host, confirm dialog, single instance, startup, theme, window chrome, logging, localization mechanism | `external/winui-app-kit` submodule, `ProjectReference` in the csproj |
 | Shared build settings, package versions, NLog config | `Directory.Build.props`, `Directory.Build.targets` and `Directory.Packages.props` import the kit's `build/` files; the app adds only `<Version>` and `System.Management` |
-| UI P/Invoke | kit `WinUIAppKit.Interop.NativeMethods`, plus the popup's extras in `Classes/NativeMethods.cs` (both via `using static`; never redeclare a kit name) |
+| UI P/Invoke | kit `WinUIAppKit.Interop.NativeMethods` (via `using static`; an app-side `NativeMethods` must never redeclare a kit name) |
 | UI text / languages | `Classes/AppLanguages.cs`, `Localization/Catalogs/*.json` (kit `UiText` / `Localize`) |
 | About page (kit `AboutPage`), repository, privacy policy and update check | `Classes/AboutContent.cs` |
 | Third-party notices (generated, shipped in the package) | winui-app-kit's `scripts/generate-notices.py` (`npm run generate:notices`) writes `HubDisplaySwitch/THIRD-PARTY-NOTICES.txt`; `AboutContent.NoticesPath` names it for the About link |
@@ -40,12 +40,13 @@ This repo follows the shared standards at https://github.com/Dynamic-Solutions-C
 
 ## Conventions and gotchas
 
-- **WinUI App Kit** owns the shared plumbing and build configuration; its README "Gotchas" section applies here (identity values, single instance before settings, the `global::Windows` namespace shadowing, flyouts, paths for other processes, settings serialisation, startup, interface text) and is not repeated. Hub's identity values (tray GUID, mutex, message names, startup task id) live in `MainWindow` and never change. Behaviour Hub needs from the kit goes in as a general option or event in the kit's own repo, never as an edit under `external/`.
-- The popup must never activate: `WS_EX_NOACTIVATE | WS_EX_TRANSPARENT | WS_EX_TOOLWINDOW | WS_EX_LAYERED`; fade via `SetLayeredWindowAttributes`; re-centred on the tray's `DisplayChanged`.
+- **WinUI App Kit** owns the shared plumbing and build configuration; its README "Gotchas" section applies here (identity values, single instance before settings, the `global::Windows` namespace shadowing, flyouts, paths for other processes, settings serialisation, startup, interface text) and is not repeated. The app's identity values (tray GUID, mutex, message names, startup task id) live in `MainWindow` and never change. Behaviour the app needs from the kit goes in as a general option or event in the kit's own repo, never as an edit under `external/`.
+- The popup must never activate: it is driven only through the kit's `OsdController` (set the content, then `Show(hold)`), which owns the click-through window, the fade and the parking, and gives it acrylic and rounded corners on Windows 11 and a solid background with square corners on Windows 10; re-centred on the tray's `DisplayChanged` through `Reposition()`.
 - **Every user-visible string goes through the catalogs** (`Localization/Catalogs/*.json`, keyed by the English text): `UiText` in code, `l10n:Localize.*` in XAML, every key in all seven catalogs, then `npm run check:l10n`. Never translate logs, settings values, device names or setup names. Details in [.agents/guides/localization.md](.agents/guides/localization.md).
 - **Packaging** is winui-app-kit's `build/build-msix.ps1`, driven by `windows-build.json` (`msix_dir`, the identities). It keeps every scaled image and language in one `resources.pri` and fails if makepri splits it. `manifest_strings` writes the manifest's `ms-resource:Resources/<Key>` text (the description, `AppDescription`, shared with the About page) from the catalogs for every language; the product name is never translated.
 - **Settings** save on every edit; call `MainWindow.Engine.SettingsChanged()` after editing setups. A change to the file's shape is a new step in `SettingsMigrations`. Read [.agents/guides/settings.md](.agents/guides/settings.md) before changing `UserSettings` or `SettingsManager`.
 - **PowerShell build scripts must be ASCII.**
+- **Product name:** users see "Display Switchr" (renamed from "Hub Display Switch" on 2026-11-23, following the WSL Status precedent, D-118). The repo, package identities, Store ID, exe, project and namespace names, data folder `HubDisplaySwitch`, mutex, tray GUID, startup task id and hidden host window title "Hub Display Switch Host" keep the old name on purpose, so installs and settings carry over; never rename them. Release notes for versions before the rename stay as written.
 - **Package identities:** the manifest carries the Store identity (`DynamicSolutionsCA.HubDisplaySwitch`, Store ID 9P1S2QJFXZFW). Signed dev builds are stamped with the separate dev identity `TechnicallyReal.HubDisplaySwitch` (`dev_identity` in `windows-build.json`) by the kit's packaging script (DIST-3); `--store-identity` builds a signed bundle with the Store identity for testing over a Store install, but only with a certificate whose subject is the Store publisher; the shared dev certificate carries the older 27766TechnicallyReal publisher, so these builds do not work for Hub until a matching certificate exists. The Store identity is in the manifest and in `windows-build.json`; change both together.
 
 ## Commands
