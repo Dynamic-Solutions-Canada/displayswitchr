@@ -53,7 +53,7 @@ The harness cannot see the screen, the USB hubs or the audio devices. Before a r
 - Upgrading over an earlier build keeps every setup and setting, and leaves one `settings.json.v0.bak` beside `settings.json`.
 - The settings window can't be made smaller than 500 x 500; below about 860 wide its menu becomes an icon rail, and "Our other apps" cards put their button under the text when narrow.
 - Reset settings (General page) asks first, then shows one default setup for the displays in use, the default theme and language, and leaves Start with Windows as it was; a `settings.json.<time>.reset` file holds the old settings.
-- Exit from the tray menu removes the tray icon and the log ends with "Exit requested".
+- Exit from the tray menu ends the app at once, without a pause, and removes the tray icon; the log ends with "Exit requested" and has no "Orderly shutdown took longer" warning.
 - About: the icon, the version, "Check for updates" opens the Store's updates page, the five links open (source, privacy policy, support, licence, third-party notices), and "Open logs folder" opens the folder with the current log.
 - A settings file that can't be read (replace `settings.json` with text that isn't JSON, then start the app): the settings window opens on Settings with a "Settings were reset" bar naming `settings.json.bad`, and the next start shows no bar.
 - Narrator reads the tray icon as "Hub Display Switch" followed by the active setup, not "no setup".

@@ -74,6 +74,8 @@ public sealed partial class MainWindow : Window
 
         Engine = new SwitchEngine(DispatcherQueue);
         _osd = new OsdWindow();
+        // The popup is never activated, so WinUI's shutdown stalls while it is open; the host closes it on exit.
+        HostWindow.CloseOnExit(_osd);
         _switcher = new SwitcherWindow();
         Engine.Popup += (title, subtitle, state) => _osd.Present(title, subtitle, state);
         Engine.StateChanged += () => { UpdateTrayIcon(); _switcher.Refresh(); };
@@ -93,7 +95,8 @@ public sealed partial class MainWindow : Window
         UiText.Changed += TechnicallyReal.Promo.PromoLocalization.Refresh;
         _uiSettings.ColorValuesChanged += (_, _) => DispatcherQueue.TryEnqueue(UpdateTrayIcon);
 
-        // Exit steps run in this order when the user picks Exit (HostWindow.Exit).
+        // Exit steps run in this order when the user picks Exit (HostWindow.Exit), and when Windows signs out,
+        // shuts down or closes the app for an update.
         _host.AddExitStep("save settings", SettingsManager.SaveSettings);
         _host.AddExitStep("stop the switch engine", Engine.Dispose);
         _host.AddExitStep("remove the tray icon", _tray.Dispose);
