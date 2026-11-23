@@ -25,13 +25,14 @@ Run these from the repository root in WSL. The build platform defaults to the Wi
 
 Packaging runs winui-app-kit's `build/build-msix.ps1`, configured by `windows-build.json` (the project, `msix_dir`, the output folder and the dev and Store identities). `<Version>` in `Directory.Build.props` is the only version source. Dev builds raise the revision only in the staged copy, so the tracked version changes only for a release.
 
-The app icon and MSIX images come from `HubDisplaySwitchMSIX/generate-msix-images.ps1`; its output is committed.
+The app icon and MSIX images come from the SVG masters in `assets/brand/` (`icon.svg`, and `icon-mono.svg` for the light taskbar), sized by devkit through `npm run icons`, which writes `HubDisplaySwitchMSIX/Images/`, `HubDisplaySwitch/Resources/HubDisplaySwitch.ico` and `.png`, and `assets/generated/` (the README, website and promo icon). The output is committed; never edit it by hand.
 
 ## Checks
 
 `npm run validate` is the Linux gate. It runs, in order:
 
 - `npm run format:check`: winui-app-kit's `scripts/format` checks that every C# project outside `external/` matches the root `.editorconfig`, which is winui-app-kit's file copied unchanged from the tag the app pins; never hand-edit it. `npm run format` rewrites the files.
+- `npm run check:icons`: the committed app icons (`HubDisplaySwitchMSIX/Images/`, the `.ico` and `.png` and `assets/generated/`) are exactly what devkit makes from the masters in `assets/brand/`. After changing a master, run `npm run icons` and commit the output. It needs Node 22.12 or later, below 25.
 - `npm run check:l10n`: winui-app-kit's catalog check, configured by the `localization` block in `windows-build.json`. Every key the code and XAML use exists, every catalog has the same keys, no empty values and the same `{{placeholders}}`, no key is unused, the shared `kit.*` labels are the kit's own, and the manifest languages match the family list.
 - `npm run check:listing`: the Store listing source and the release notes for the current `<Version>`, checked by winui-app-kit's shared listing check as `store-assets/microsoft/listings.md` describes.
 - `npm run check:notices`: `HubDisplaySwitch/THIRD-PARTY-NOTICES.txt` matches the packages the last restore resolved (`format:check` restores first). After adding, removing or updating a package, run `npm run generate:notices` and commit the file with the change. The file ships in the package and the About page links to it (HYG-3); a licence the script has no text for fails the run.

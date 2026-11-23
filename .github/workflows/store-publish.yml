@@ -64,7 +64,7 @@ jobs:
       # Paid, US $0.99 with a 7-day free trial (D-014). The trial and the markets (all but Lebanon and
       # Western Sahara) are Partner Center settings, not inputs here.
       price_tier: Tier1012
-      # No steps of its own: the MSIX images are committed.
+      # No steps of its own: the MSIX images are committed (npm run icons output).
       pre_build: ''
       # The gate run first, on Linux (CI-4); this is the default.
       gate_command: 'npm run validate'

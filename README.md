@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/generated/icon-256.png" alt="Hub Display Switch" width="120">
+</p>
+
 <h1 align="center">Hub Display Switch</h1>
 
 <p align="center">

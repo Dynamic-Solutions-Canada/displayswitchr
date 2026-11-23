@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <clipPath id="badge-gap">
+      <path clip-rule="evenodd" d="M0 0H256V256H0ZM139.904 148.608A48.64 48.64 0 1 0 237.184 148.608A48.64 48.64 0 1 0 139.904 148.608Z"/>
+    </clipPath>
+    <clipPath id="badge-arrows">
+      <path clip-rule="evenodd" d="M0 0H256V256H0ZM169.544 134.108L194.544 134.108L194.544 126.608L208.544 138.608L194.544 150.608L194.544 143.108L169.544 143.108ZM207.544 163.108L182.544 163.108L182.544 170.608L168.544 158.608L182.544 146.608L182.544 154.108L207.544 154.108Z"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#badge-gap)">
+    <path fill-rule="evenodd" d="M56.32 51.2H199.68A12.8 12.8 0 0 1 212.48 64V151.04A12.8 12.8 0 0 1 199.68 163.84H56.32A12.8 12.8 0 0 1 43.52 151.04V64A12.8 12.8 0 0 1 56.32 51.2ZM61.44 69.12V145.92H194.56V69.12Z" fill="#000000"/>
+    <rect x="117.76" y="162.84" width="20.48" height="23.04" rx="2.56" fill="#000000"/>
+    <rect x="89.6" y="184.88" width="76.8" height="11.52" rx="5.76" fill="#000000"/>
+  </g>
+  <circle clip-path="url(#badge-arrows)" cx="188.544" cy="148.608" r="43.52" fill="#000000"/>
+</svg>

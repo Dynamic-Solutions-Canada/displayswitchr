@@ -29,7 +29,7 @@ This repo follows the shared standards at https://github.com/Dynamic-Solutions-C
 | Third-party notices (generated, shipped in the package) | winui-app-kit's `scripts/generate-notices.py` (`npm run generate:notices`) writes `HubDisplaySwitch/THIRD-PARTY-NOTICES.txt`; `AboutContent.NoticesPath` names it for the About link |
 | Tray icon artwork | `Classes/TrayIconRenderer.cs` (kit `TrayIconRasterizer`) |
 | "Our other apps" page | `external/promo` submodule (shared apps-promo catalog), imported in the csproj |
-| MSIX packaging, app icon and MSIX images | winui-app-kit's `build/build-msix.ps1`, driven by `windows-build.json`; `HubDisplaySwitchMSIX/Package.appxmanifest`, `HubDisplaySwitchMSIX/generate-msix-images.ps1` (committed output) |
+| MSIX packaging, app icon and MSIX images | winui-app-kit's `build/build-msix.ps1`, driven by `windows-build.json`; `HubDisplaySwitchMSIX/Package.appxmanifest`; the icon masters `assets/brand/icon.svg` and `icon-mono.svg` with `icons.json`, from which `npm run icons` (devkit) writes `HubDisplaySwitchMSIX/Images/`, the `.ico` and `.png` in `HubDisplaySwitch/Resources/`, and `assets/generated/` (committed output) |
 
 ## Behaviour
 
@@ -65,7 +65,8 @@ Clone with `--recurse-submodules` (or run `git submodule update --init`) so `ext
 | `npm run check:screenshots` | Captures and screenshots follow the Store rules and match the en-US captions | That the screenshots are approved or uploaded |
 | `npm test` | Every portable harness under `tests/` passes on Linux: the switching policy and the settings file | Anything needing Windows or real devices; see each harness README |
 | `npm run check:gitignore` | `.gitignore` ends with winui-app-kit's shared block, unchanged | Anything else in the file |
-| `npm run validate` | The whole Linux gate passes: `format:check`, `check:gitignore`, `check:l10n`, `check:listing`, `check:notices`, `check:screenshots`, then `npm test` | A Windows compile; also run `verify:desktop` |
+| `npm run validate` | The whole Linux gate passes: `format:check`, `check:gitignore`, `check:icons`, `check:l10n`, `check:listing`, `check:notices`, `check:screenshots`, then `npm test` | A Windows compile; also run `verify:desktop` |
+| `npm run icons` | Writes every app icon from `assets/brand/` (devkit; `check:icons` in `validate` fails when a committed icon differs from what the masters make) | How the icon looks; check it on a light and a dark taskbar |
 | `npm run format` | Rewrites C# (not `external/`) to the root `.editorconfig`, winui-app-kit's copied unchanged | Behaviour; review the diff |
 
 Before finishing a change, run `npm run validate` and `npm run verify:desktop`. Use the `desktop` skill for build and install requests.

@@ -1,0 +1,9 @@
+{
+  "targets": {
+    "windows": {
+      "images": "HubDisplaySwitchMSIX/Images",
+      "ico": "HubDisplaySwitch/Resources/HubDisplaySwitch.ico",
+      "tiles": false
+    }
+  }
+}

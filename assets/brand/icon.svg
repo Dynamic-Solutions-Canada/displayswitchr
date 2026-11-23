@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <clipPath id="badge-gap">
+      <path clip-rule="evenodd" d="M0 0H256V256H0ZM139.904 148.608A48.64 48.64 0 1 0 237.184 148.608A48.64 48.64 0 1 0 139.904 148.608Z"/>
+    </clipPath>
+    <clipPath id="screen">
+      <rect x="52.48" y="60.16" width="151.04" height="94.72" rx="6.4"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#badge-gap)">
+    <rect x="43.52" y="51.2" width="168.96" height="112.64" rx="12.8" fill="#8B93A1"/>
+    <rect x="52.48" y="60.16" width="151.04" height="94.72" rx="6.4" fill="#2563EB"/>
+    <path clip-path="url(#screen)" d="M136.448 60.16H203.52V90.624L94.208 154.88Z" fill="#FFFFFF" fill-opacity="0.275"/>
+    <rect x="117.76" y="162.84" width="20.48" height="23.04" rx="2.56" fill="#8B93A1"/>
+    <rect x="89.6" y="184.88" width="76.8" height="11.52" rx="5.76" fill="#8B93A1"/>
+  </g>
+  <circle cx="188.544" cy="148.608" r="43.52" fill="#10B981"/>
+  <path d="M166.784 136.422H210.304M199.859 125.977L210.304 136.422L199.859 146.867M210.304 160.794H166.784M177.229 150.349L166.784 160.794L177.229 171.239" fill="none" stroke="#FFFFFF" stroke-width="5.632" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
