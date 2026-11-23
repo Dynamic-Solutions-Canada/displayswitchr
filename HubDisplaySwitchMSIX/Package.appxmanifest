@@ -17,7 +17,7 @@
     ProcessorArchitecture="ARCH_PLACEHOLDER" />
 
   <Properties>
-    <DisplayName>Display Switchr</DisplayName>
+    <DisplayName>DisplaySwitchr</DisplayName>
     <PublisherDisplayName>Dynamic Solutions (CA)</PublisherDisplayName>
     <Logo>Images\StoreLogo.png</Logo>
   </Properties>
@@ -47,7 +47,7 @@
       Executable="HubDisplaySwitch.exe"
       EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements
-        DisplayName="Display Switchr"
+        DisplayName="DisplaySwitchr"
         BackgroundColor="transparent"
         Square150x150Logo="Images\Square150x150Logo.png"
         Square44x44Logo="Images\Square44x44Logo.png"
@@ -57,7 +57,7 @@
       <Extensions>
         <!-- desktop: (not uap:) namespace - makeappx rejects uap: startup tasks for full-trust apps. -->
         <desktop:Extension Category="windows.startupTask">
-          <desktop:StartupTask TaskId="HubDisplaySwitchStartup" Enabled="true" DisplayName="Display Switchr" />
+          <desktop:StartupTask TaskId="HubDisplaySwitchStartup" Enabled="true" DisplayName="DisplaySwitchr" />
         </desktop:Extension>
       </Extensions>
     </Application>

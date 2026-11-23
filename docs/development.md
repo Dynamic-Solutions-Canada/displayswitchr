@@ -1,7 +1,7 @@
-> **Scope:** Building, checking and installing Display Switchr, and where it stores data.
+> **Scope:** Building, checking and installing DisplaySwitchr, and where it stores data.
 > **Governs:** `Directory.Build.props`, `package.json`, `windows-build.json`, `HubDisplaySwitchMSIX/**`
 
-# Display Switchr development
+# DisplaySwitchr development
 
 ## Prerequisites
 
@@ -57,13 +57,13 @@ The harness cannot see the screen, the USB hubs or the audio devices. Before a r
 - Exit from the tray menu ends the app at once, without a pause, and removes the tray icon; the log ends with "Exit requested" and has no "Orderly shutdown took longer" warning.
 - About: the icon, the version, "Check for updates" opens the Store's updates page, the five links open (source, privacy policy, support, licence, third-party notices), and "Open logs folder" opens the folder with the current log.
 - A settings file that can't be read (replace `settings.json` with text that isn't JSON, then start the app): the settings window opens on Settings with a "Settings were reset" bar naming `settings.json.bad`, and the next start shows no bar.
-- Narrator reads the tray icon as "Display Switchr" followed by the active setup, not "no setup".
+- Narrator reads the tray icon as "DisplaySwitchr" followed by the active setup, not "no setup".
 - Light, dark and high contrast.
 - Windows 10 22H2 (the `windows10-test` VM): it installs and starts; the tray icon is among the hidden icons and opens the flyout from there; a tile switches by hand and the popup shows with square corners on a solid background, without taking focus; the settings window and its pages draw every icon. Windows 11 keeps acrylic and rounded corners on the popup and the flyout.
 
 ## Releases
 
-The full procedure is the [`release` skill](../.agents/skills/release/SKILL.md). In short: the notes for the new version are written as user-facing bullets in `release-notes/<version>.md` and one translation per other wording catalog, and approved first; then `<Version>` in `Directory.Build.props` and the notes are committed together as `Bump version to vX.Y.Z`, tagged `vX.Y.Z` (annotated) and pushed. The tag runs "Build and Package" (`.github/workflows/build-msix.yml`): the validate gate, an x64 and ARM64 package build, then a GitHub Release titled `Display Switchr X.Y.Z` with the notes as its body. It fails if the notes are missing.
+The full procedure is the [`release` skill](../.agents/skills/release/SKILL.md). In short: the notes for the new version are written as user-facing bullets in `release-notes/<version>.md` and one translation per other wording catalog, and approved first; then `<Version>` in `Directory.Build.props` and the notes are committed together as `Bump version to vX.Y.Z`, tagged `vX.Y.Z` (annotated) and pushed. The tag runs "Build and Package" (`.github/workflows/build-msix.yml`): the validate gate, an x64 and ARM64 package build, then a GitHub Release titled `DisplaySwitchr X.Y.Z` with the notes as its body. It fails if the notes are missing.
 
 The same tag runs "Publish to Microsoft Store" (`.github/workflows/store-publish.yml`): winui-app-kit's reusable Store workflow runs the gate, builds both architectures, uploads them to Partner Center with each locale's "What's new" from the notes files, and stops at a draft (REL-7). Its summary names the draft ID. Submitting the draft for certification is a separate, deliberate step: run "Publish to Microsoft Store" manually on the same tag with `submit_draft` set to that ID and `no_commit` unchecked. A manual run with `dry_run` checks everything without any Store call or secret.
 
@@ -73,7 +73,7 @@ Signed dev builds (`package:desktop:dev`, `install:desktop`) install under the s
 
 ## Where the app stores data
 
-Display Switchr collects no telemetry or crash reports. It makes network requests only when the user asks: the "Our other apps" page downloads a public list of apps and their icons from GitHub when it is opened, and "Check for updates" on the About page asks GitHub for the latest release in a copy run without a package (a packaged copy opens the Microsoft Store's updates page instead).
+DisplaySwitchr collects no telemetry or crash reports. It makes network requests only when the user asks: the "Our other apps" page downloads a public list of apps and their icons from GitHub when it is opened, and "Check for updates" on the About page asks GitHub for the latest release in a copy run without a package (a packaged copy opens the Microsoft Store's updates page instead).
 
 It writes:
 

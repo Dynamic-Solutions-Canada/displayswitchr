@@ -32,14 +32,14 @@ Translated wording uses the same terms as the in-app catalogs (`HubDisplaySwitch
 
 | Field | Value |
 | --- | --- |
-| Product name | Display Switchr in every language (2026-11-23, reserved in Partner Center), renamed from Hub Display Switch following the WSL Status precedent (D-118); the identifiers below keep the old name so installs and settings carry over |
+| Product name | DisplaySwitchr, one word, in every language (reserved in Partner Center); renamed from Hub Display Switch on 2026-11-23 following the WSL Status precedent (D-118), written "Display Switchr" in 1.1.0 and joined into one word in 1.1.1; the identifiers below keep the old name so installs and settings carry over |
 | Store ID | 9P1S2QJFXZFW (https://apps.microsoft.com/detail/9P1S2QJFXZFW, live since 1.0.1) |
 | Package identity | `DynamicSolutionsCA.HubDisplaySwitch`, publisher `CN=B55B96A5-F10C-49D3-8D0B-7260EDBE7625` |
 | Category | Not set; suggested Utilities & tools > Display |
 | Pricing | Paid, US $0.99 (price tier Tier1012, set by `store-publish.yml`; regional prices follow the tier), with a 7-day free trial, matching ImmichDrive; the trial is set in Partner Center |
 | Markets | Every market except Lebanon and Western Sahara, set in Partner Center |
 | Age rating | Questionnaire not completed |
-| Privacy policy URL | https://www.dynamic-solutions.ca/privacy/display-switchr (D-017; the old /privacy/hub-display-switch address redirects there with a 301; update the console field with the next submission) |
+| Privacy policy URL | https://www.dynamic-solutions.ca/privacy/displayswitchr (D-017; the old /privacy/hub-display-switch and /privacy/display-switchr addresses redirect there with a 301; update the console field with the next submission) |
 
 ## Screenshots
 
