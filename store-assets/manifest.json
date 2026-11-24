@@ -11,15 +11,15 @@
         "accent": "#FDBA74"
       },
       "caption": "Displays, refresh rates and audio switch to match.",
-      "alt": "DisplaySwitchr's name and the headline \"Plug in your couch hub. Your PC switches to the TV.\" on an orange panel, beside DisplaySwitchr's real tray flyout, enlarged: an Auto-switch toggle, the Desk setup marked Active with its monitor and speakers, and the TV setup marked Hub not connected."
+      "alt": "DisplaySwitchr's name and the headline \"Plug in your couch hub. Your PC switches to the TV.\" on an orange panel, beside DisplaySwitchr's real tray popup, enlarged: an Auto-switch toggle, the Desk setup marked Active with its monitor and speakers, and the TV setup marked Hub not connected."
     },
     {
       "file": "screenshots/01-flyout-dark.png",
       "source": "raw/microsoft/00-flyout-dark.png",
       "theme": "dark",
       "crop": "tray",
-      "caption": "Tray flyout: switch between your setups or pause automatic switching.",
-      "alt": "DisplaySwitchr's tray flyout above the notification area in the dark theme: an Auto-switch toggle that is on, the Desk setup marked Active with the DELL U2723QE monitor and speakers, and the TV setup with the LG TV display and its audio, marked Hub not connected, above a Settings button."
+      "caption": "From the tray: switch between your setups or pause automatic switching.",
+      "alt": "DisplaySwitchr's tray popup above the notification area in the dark theme: an Auto-switch toggle that is on, the Desk setup marked Active with the DELL U2723QE monitor and speakers, and the TV setup with the LG TV display and its audio, marked Hub not connected, above a Settings button."
     },
     {
       "file": "screenshots/02-setup-dark.png",
@@ -34,7 +34,7 @@
       "theme": "dark",
       "crop": "bottom",
       "caption": "The on-screen popup while switching to the TV.",
-      "alt": "A small dark popup at the bottom centre of the screen, just above the taskbar, with a progress ring and the text Switching to TV, Audio: LG TV."
+      "alt": "A small dark popup at the bottom center of the screen, just above the taskbar, with a progress ring and the text Switching to TV, Audio: LG TV."
     },
     {
       "file": "screenshots/04-general-dark.png",

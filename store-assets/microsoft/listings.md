@@ -1,6 +1,6 @@
 # Microsoft Store listing text
 
-`listings.json` is the draft listing text in the shared `schemaVersion: 1` / `locales` shape (LIST-3), for the app's nine locale identities: `en-US`, `en-CA`, `es-ES`, `fr-FR`, `fr-CA`, `de-DE`, `zh-CN`, `pt-BR` and `ja-JP` (the same set the package manifest declares). Seven records hold wording; `en-CA` is `{ "copyFrom": "en-US" }` and `fr-CA` is `{ "copyFrom": "fr-FR" }`, matching the app's own catalogs. Fields are semantic names, not Partner Center CSV field IDs: when importing, merge into the real Partner Center export and keep its opaque `Field`/`ID` cells. No publisher reads this file yet, so it is a draft (LIST-9).
+`listings.json` is the listing text in the shared `schemaVersion: 1` / `locales` shape (LIST-3), for the app's nine locale identities: `en-US`, `en-CA`, `es-ES`, `fr-FR`, `fr-CA`, `de-DE`, `zh-CN`, `pt-BR` and `ja-JP` (the same set the package manifest declares). Seven records hold wording; `en-CA` is `{ "copyFrom": "en-US" }` and `fr-CA` is `{ "copyFrom": "fr-FR" }`, matching the app's own catalogs. Fields are semantic names, not Partner Center CSV field IDs: when importing, merge into the real Partner Center export and keep its opaque `Field`/`ID` cells. The Store workflow uploads packages, release notes, and the screenshots with each locale's captions from this file; the rest of the listing text is entered by hand in Partner Center from it (LIST-9).
 
 Release notes are not in this file. Each version's "What's new" text is `release-notes/<version>.md` (`en-US`) plus one `release-notes/<version>.<identity>.md` per other wording catalog, the same text the GitHub Release uses (REL-6, LIST-10).
 
@@ -12,11 +12,11 @@ Translated wording uses the same terms as the in-app catalogs (`HubDisplaySwitch
 
 | Text | Limit | Longest draft |
 | --- | --- | --- |
-| Full description | 4,000 characters | 2,639 (fr-FR) |
+| Full description | 4,000 characters | 2,213 (fr-FR) |
 | Short description | 270 characters | 253 (fr-FR) |
 | Features | Up to 20, each up to 200 characters | 13, longest 146 (fr-FR) |
 | Keywords | Up to 7, each up to 40 characters, 21 words combined | 7 per locale, at most 17 words (es-ES, fr-FR) |
-| Screenshot captions | One per screenshot, up to 200 characters | 4 per locale |
+| Screenshot captions | One per screenshot, up to 200 characters | 5 per locale |
 | Release notes (`release-notes/`) | 1,500 characters | 559 (1.0.0, de-DE) |
 
 ## Claims to keep true
@@ -35,17 +35,12 @@ Translated wording uses the same terms as the in-app catalogs (`HubDisplaySwitch
 | Product name | DisplaySwitchr, one word, in every language (reserved in Partner Center); renamed from Hub Display Switch on 2026-11-23 following the WSL Status precedent (D-118), written "Display Switchr" in 1.1.0 and joined into one word in 1.1.1; the identifiers below keep the old name so installs and settings carry over |
 | Store ID | 9P1S2QJFXZFW (https://apps.microsoft.com/detail/9P1S2QJFXZFW, live since 1.0.1) |
 | Package identity | `DynamicSolutionsCA.HubDisplaySwitch`, publisher `CN=B55B96A5-F10C-49D3-8D0B-7260EDBE7625` |
-| Category | Not set; suggested Utilities & tools > Display |
+| Category | Utilities & tools (live Store page, checked 2026-11-24) |
 | Pricing | Paid, US $0.99 (price tier Tier1012, set by `store-publish.yml`; regional prices follow the tier), with a 7-day free trial, matching ImmichDrive; the trial is set in Partner Center |
 | Markets | Every market except Lebanon and Western Sahara, set in Partner Center |
-| Age rating | Questionnaire not completed |
+| Age rating | ESRB Everyone (live Store page, checked 2026-11-24) |
 | Privacy policy URL | https://www.dynamic-solutions.ca/privacy/displayswitchr (D-017; the old /privacy/hub-display-switch and /privacy/display-switchr addresses redirect there with a 301; update the console field with the next submission) |
 
 ## Screenshots
 
 Five, in caption order. First, a generated hero in each locale (D-123): the headline and subline from `heroHeadline` and `heroSubline`, beside the real tray flyout, enlarged; its caption is the subline, and it claims only what the listing says (switching displays, refresh rates and audio when the hub connects). Then the tray flyout above the taskbar, the TV setup page, the on-screen popup mid-switch, and the General settings page, all in dark mode. They are captured from the real installed app on the test VM with synthetic settings and simulated devices that Windows enumerates as real; `store-assets/README.md` lists them and the capture steps, and `store-assets/manifest.json` holds the files, order and alt text (LIST-8). English captures serve every listing; the hero's text is translated. Microsoft requires at least one 1366 x 768 or larger PNG; see [screenshots and images](https://learn.microsoft.com/en-us/windows/apps/publish/publish-your-app/msix/screenshots-and-images).
-
-## Open questions before submission
-
-- Category and age rating (above).
-- Add the product ID to the shared promo catalog (apps-promo) once the listing is live.
