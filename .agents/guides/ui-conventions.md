@@ -26,7 +26,7 @@ This app's own interface conventions. The shared family rules are in the standar
 
 ## Popup
 
-- `OsdWindow` is one row: a 32 px column holding a `ProgressRing` while switching or a 24 px accent `FontIcon` when done, then a title (`BodyStrongTextBlockStyle`, 15 px) and a secondary caption, both single-line and trimmed. The kit's `OsdController` sizes it to the text between 320 and 640 wide and gives it its background; never set one on its root, or Windows 10 loses the theme-following solid background. It never takes focus (see AGENTS.md).
+- `OsdWindow` is one row: a 32 px column holding a `ProgressRing` while switching or a 24 px accent `FontIcon` when done, then a title (`BodyStrongTextBlockStyle`, 15 px) and a secondary caption, both single-line and trimmed. The kit's `OsdController` sizes it to the text between 320 and 640 wide and gives it its background; never set one on its root, or Windows 10 loses the theme-following solid background. It never takes focus: it is driven only through `OsdController` (set the content, then `Show(hold)`), which owns the click-through window, the fade and the parking, gives it acrylic and rounded corners on Windows 11 and a solid background with square corners on Windows 10, and re-centres it on the tray's `DisplayChanged` through `Reposition()`.
 
 ## Buttons
 
@@ -35,4 +35,4 @@ This app's own interface conventions. The shared family rules are in the standar
 
 ## Text
 
-- Visible text follows the catalog rule under "Conventions and gotchas" in [AGENTS.md](../../AGENTS.md).
+- Visible text follows [localization.md](localization.md).

@@ -23,7 +23,7 @@ Run these from the repository root in WSL. The build platform defaults to the Wi
 
 `npm run install:desktop -- --skip-build` reinstalls the last successful dev package, and `-- --no-launch` installs without launching. Never uninstall to get past an update error.
 
-Packaging runs winui-app-kit's `build/build-msix.ps1`, configured by `windows-build.json` (the project, `msix_dir`, the output folder and the dev and Store identities). `<Version>` in `Directory.Build.props` is the only version source. Dev builds raise the revision only in the staged copy, so the tracked version changes only for a release.
+Packaging runs winui-app-kit's `build/build-msix.ps1`, configured by `windows-build.json` (the project, `msix_dir`, the output folder and the dev and Store identities). It keeps every scaled image and language in one `resources.pri` and fails if makepri splits it. `Directory.Build.props`, `Directory.Build.targets` and `Directory.Packages.props` import the kit's `build/` files; the app adds only `<Version>` and `System.Management`. `<Version>` in `Directory.Build.props` is the only version source. Dev builds raise the revision only in the staged copy, so the tracked version changes only for a release.
 
 The app icon and MSIX images come from the SVG masters in `assets/brand/` (`icon.svg`, and `icon-mono.svg` for the light taskbar), sized by devkit through `npm run icons`, which writes `HubDisplaySwitchMSIX/Images/`, `HubDisplaySwitch/Resources/HubDisplaySwitch.ico` and `.png`, and `assets/generated/` (the README, website and promo icon). The output is committed; never edit it by hand.
 

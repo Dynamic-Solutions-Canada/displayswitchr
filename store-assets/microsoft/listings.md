@@ -32,7 +32,7 @@ Translated wording uses the same terms as the in-app catalogs (`HubDisplaySwitch
 
 | Field | Value |
 | --- | --- |
-| Product name | DisplaySwitchr, one word, in every language (reserved in Partner Center); renamed from Hub Display Switch on 2026-11-23 following the WSL Status precedent (D-118), written "Display Switchr" in 1.1.0 and joined into one word in 1.1.1; the identifiers below keep the old name so installs and settings carry over |
+| Product name | DisplaySwitchr, one word, in every language (reserved in Partner Center); renamed from Hub Display Switch on 2026-11-23 following the WSL Status precedent (D-118), written "Display Switchr" in 1.1.0 and joined into one word in 1.1.1; the repo is `displayswitchr`, and the earlier `hub-display-switch` and `display-switchr` repo names redirect there; the identifiers below keep the old name so installs and settings carry over |
 | Store ID | 9P1S2QJFXZFW (https://apps.microsoft.com/detail/9P1S2QJFXZFW, live since 1.0.1) |
 | Package identity | `DynamicSolutionsCA.HubDisplaySwitch`, publisher `CN=B55B96A5-F10C-49D3-8D0B-7260EDBE7625` |
 | Category | Utilities & tools (live Store page, checked 2026-11-24) |
