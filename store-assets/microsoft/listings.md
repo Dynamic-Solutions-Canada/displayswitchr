@@ -24,7 +24,7 @@ Translated wording uses the same terms as the in-app catalogs (`HubDisplaySwitch
 - Displays and audio only change while the user is signed in; the sign-in screen keeps the last layout. Don't promise switching at boot or while signed out.
 - Audio: separate output and input pickers, each with "Don't change". Setting the default endpoint uses Windows' undocumented policy interface, so recheck it on new Windows builds before release notes claim audio switching.
 - Privacy: no account, ads, analytics or telemetry. Settings and logs are local. The app makes network requests only when the user asks: the "Our other apps" page fetches the public promo manifest from GitHub, and "Check for updates" on the About page opens the Store's updates page (a copy run without a package asks GitHub for the latest release instead).
-- The "Our other apps" page follows the app's language; only the app descriptions it downloads (from the shared apps-promo catalog) are in English.
+- The "Our other apps" page follows the app's language, including the app descriptions it downloads from the shared apps-promo catalog.
 - The interface is in English, Spanish, French, German, Simplified Chinese, Brazilian Portuguese and Japanese, following Windows or a choice in Settings. Device and setup names are never translated.
 - Requires Windows 10 (22H2) or Windows 11: the manifest's minimum is build 19045.5011 (D-018).
 
