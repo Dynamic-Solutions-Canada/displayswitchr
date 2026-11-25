@@ -25,7 +25,7 @@
   "Displays": "Écrans",
   "Don't change": "Ne pas changer",
   "Don't change refresh rate": "Ne pas changer la fréquence",
-  "Each device you pick becomes the Windows default, for calls too. A TV's HDMI audio appears a few seconds after its display turns on; the switch waits for it.": "Chaque appareil choisi devient celui par défaut de Windows, y compris pour les appels. L’audio HDMI d’un téléviseur apparaît quelques secondes après l’allumage de son écran ; le basculement l’attend.",
+  "Each device you pick becomes the Windows default, for calls too. A TV's HDMI audio appears a few seconds after its display turns on; the switch waits for it. Choose \"Don't change\" if another app picks your audio device.": "Chaque appareil choisi devient celui par défaut de Windows, y compris pour les appels. L’audio HDMI d’un téléviseur apparaît quelques secondes après l’allumage de son écran ; le basculement l’attend. Choisissez « Ne pas changer » si une autre application choisit votre appareil audio.",
   "Exit": "Quitter",
   "For devices plugged straight into the PC, like at your desk. Only one setup can be the default.": "Pour les appareils branchés directement sur le PC, comme à votre bureau. Une seule configuration peut être celle par défaut.",
   "Got it. These devices disappeared, with the hub selected. Plug it back in, then choose \"{{button}}\".": "C’est noté. Ces appareils ont disparu, et le hub est sélectionné. Rebranchez-le, puis choisissez « {{button}} ».",

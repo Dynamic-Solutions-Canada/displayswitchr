@@ -25,7 +25,7 @@
   "Displays": "显示器",
   "Don't change": "不更改",
   "Don't change refresh rate": "不更改刷新率",
-  "Each device you pick becomes the Windows default, for calls too. A TV's HDMI audio appears a few seconds after its display turns on; the switch waits for it.": "所选设备会成为 Windows 默认设备，通话时也使用它。电视的 HDMI 音频会在画面亮起几秒后才出现，切换时会等待它。",
+  "Each device you pick becomes the Windows default, for calls too. A TV's HDMI audio appears a few seconds after its display turns on; the switch waits for it. Choose \"Don't change\" if another app picks your audio device.": "所选设备会成为 Windows 默认设备，通话时也使用它。电视的 HDMI 音频会在画面亮起几秒后才出现，切换时会等待它。如果其他应用会选择你的音频设备，请选择“不更改”。",
   "Exit": "退出",
   "For devices plugged straight into the PC, like at your desk. Only one setup can be the default.": "用于直接插在电脑上的设备，比如在书桌前时。只能有一个默认方案。",
   "Got it. These devices disappeared, with the hub selected. Plug it back in, then choose \"{{button}}\".": "已检测到。以下设备已断开，集线器已选中。请重新插上它，然后选择“{{button}}”。",

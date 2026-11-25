@@ -95,7 +95,7 @@
             <TextBlock l10n:Localize.Text="Audio" Style="{StaticResource SectionHeaderStyle}" />
             <Border Style="{StaticResource CardBorderStyle}">
                 <StackPanel Spacing="12">
-                    <TextBlock l10n:Localize.Text="Each device you pick becomes the Windows default, for calls too. A TV's HDMI audio appears a few seconds after its display turns on; the switch waits for it."
+                    <TextBlock l10n:Localize.Text="Each device you pick becomes the Windows default, for calls too. A TV's HDMI audio appears a few seconds after its display turns on; the switch waits for it. Choose &quot;Don't change&quot; if another app picks your audio device."
                                Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
                     <Grid ColumnSpacing="12" RowSpacing="12">
                         <Grid.ColumnDefinitions>

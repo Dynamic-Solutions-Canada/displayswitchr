@@ -25,7 +25,7 @@
   "Displays": "ディスプレイ",
   "Don't change": "変更しない",
   "Don't change refresh rate": "リフレッシュレートを変更しない",
-  "Each device you pick becomes the Windows default, for calls too. A TV's HDMI audio appears a few seconds after its display turns on; the switch waits for it.": "選んだデバイスは通話用も含めて Windows の既定になります。テレビの HDMI オーディオは画面がついてから数秒後に現れるため、切り替え時はそれを待ちます。",
+  "Each device you pick becomes the Windows default, for calls too. A TV's HDMI audio appears a few seconds after its display turns on; the switch waits for it. Choose \"Don't change\" if another app picks your audio device.": "選んだデバイスは通話用も含めて Windows の既定になります。テレビの HDMI オーディオは画面がついてから数秒後に現れるため、切り替え時はそれを待ちます。別のアプリがオーディオデバイスを選ぶ場合は「変更しない」を選んでください。",
   "Exit": "終了",
   "For devices plugged straight into the PC, like at your desk. Only one setup can be the default.": "デスクなどで PC に直接つないだデバイス用です。既定にできる構成は 1 つだけです。",
   "Got it. These devices disappeared, with the hub selected. Plug it back in, then choose \"{{button}}\".": "検出しました。以下のデバイスが切断され、ハブが選択されています。ハブを再び接続してから「{{button}}」を選んでください。",

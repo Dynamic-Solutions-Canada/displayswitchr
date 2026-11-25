@@ -25,7 +25,7 @@
   "Displays": "Displays",
   "Don't change": "Don't change",
   "Don't change refresh rate": "Don't change refresh rate",
-  "Each device you pick becomes the Windows default, for calls too. A TV's HDMI audio appears a few seconds after its display turns on; the switch waits for it.": "Each device you pick becomes the Windows default, for calls too. A TV's HDMI audio appears a few seconds after its display turns on; the switch waits for it.",
+  "Each device you pick becomes the Windows default, for calls too. A TV's HDMI audio appears a few seconds after its display turns on; the switch waits for it. Choose \"Don't change\" if another app picks your audio device.": "Each device you pick becomes the Windows default, for calls too. A TV's HDMI audio appears a few seconds after its display turns on; the switch waits for it. Choose \"Don't change\" if another app picks your audio device.",
   "Exit": "Exit",
   "For devices plugged straight into the PC, like at your desk. Only one setup can be the default.": "For devices plugged straight into the PC, like at your desk. Only one setup can be the default.",
   "Got it. These devices disappeared, with the hub selected. Plug it back in, then choose \"{{button}}\".": "Got it. These devices disappeared, with the hub selected. Plug it back in, then choose \"{{button}}\".",
