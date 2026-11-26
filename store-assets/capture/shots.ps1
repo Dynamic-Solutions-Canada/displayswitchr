@@ -21,8 +21,8 @@ never by translated text, so the same script captures every language. Lengths ar
 pixels (the 1920 x 1080 desktop) and multiplied by the display scale, because UI Automation, the cursor
 and the window helpers all work in physical pixels.
 
-Not yet run on the VM: the scroll targets in the setup phase were tuned on the English 100% capture and
-may need adjusting at 200%.
+Run on the VM at 200% in en-US and ja-JP (November 26, 2026); the setup phase scrolls until the
+playback device is in view, so a longer translation moves the page rather than hiding the row.
 #>
 param(
     # The listing locale to capture, such as de-DE: picks fixtures\<Locale>.json and the output folder.
@@ -35,6 +35,7 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 . C:\apptest\ui-lib.ps1
+. (Join-Path $PSScriptRoot 'windows-strings.ps1')
 
 # This script's folder: settings.base.json and fixtures\ sit beside it, as in the repo.
 $here = $PSScriptRoot
@@ -98,9 +99,11 @@ Write the app's settings.json for this locale, as a user of that language would 
 - settings.base.json gives the capture VM's displays (their EDID names are the same in every language),
   the hub's device ID and the setups' ids, glyphs and options;
 - the locale's fixture gives the app's language and the setup names, the synthetic text a user typed;
-- Windows gives the names it shows in its own language: the playback endpoints (the desk speakers, and
-  the TV endpoint renamed LG TV by rename-tv-audio.ps1) and the hub, which must have been plugged in
-  once this session so Windows knows it (see store-assets/README.md).
+- Windows gives the names it shows in its own language: the playback endpoints (named by
+  name-audio-devices.ps1: the desk speakers, and the TV's renamed LG TV) and the hub, which must have
+  been plugged in once this session so Windows knows it (see store-assets/README.md). The hub's name
+  is Windows' own description for it in the display language (windows-strings.ps1), since the VM's
+  Windows keeps the English name it gave the device when it was installed in English.
 
 The app's language is set explicitly, so it does not depend on Windows' own preferences.
 #>
@@ -130,11 +133,11 @@ function Write-LocaleSettings {
         $setup.AudioId = $audio.Id
         $setup.AudioName = $audio.FullName
 
-        # The hub's name, as Windows shows it in this language (also for a device that is unplugged now).
+        # The hub's name, as Windows names it in this language (also for a device that is unplugged now).
         foreach ($hub in $setup.Hubs) {
             $device = Get-PnpDevice -InstanceId $hub.DeviceId -ErrorAction SilentlyContinue
             if (-not $device) { throw "Windows does not know the hub $($hub.DeviceId) yet: plug the virtual hub in and out once first" }
-            $hub.Name = $device.FriendlyName
+            $hub.Name = Resolve-DeviceText (Get-DeviceDescReference $hub.DeviceId) (Get-DisplayLanguage)
         }
     }
 
@@ -289,6 +292,22 @@ function Save-LocaleCapture([string]$Name, $Window) {
     Note "$Name frame $($f.X),$($f.Y) $($f.Width)x$($f.Height)"
 }
 
+<#
+The Playback (output) box on the setup page: the first combo box below the Audio heading (found by its
+automation ID), or $null while either is scrolled out of view. Its own name is translated text.
+#>
+function Get-PlaybackBox($Window) {
+    $header = Find-ById $Window 'AudioHeader'
+    if (-not $header) { return $null }
+    $top = $header.Current.BoundingRectangle.Y
+    if ($header.Current.IsOffscreen -or [double]::IsInfinity($top)) { return $null }
+    $combo = New-Object System.Windows.Automation.PropertyCondition($UiA::ControlTypeProperty, [System.Windows.Automation.ControlType]::ComboBox)
+    $Window.FindAll('Descendants', $combo) |
+        Where-Object { -not $_.Current.IsOffscreen -and $_.Current.BoundingRectangle.Y -gt $top } |
+        Sort-Object { $_.Current.BoundingRectangle.Y } |
+        Select-Object -First 1
+}
+
 # ---- Phases ------------------------------------------------------------------------------------------
 
 switch ($Phase) {
@@ -406,34 +425,32 @@ switch ($Phase) {
         $win = Open-Settings
         Select-Nav $win "SetupNavItem_$tvSetupId"
 
-        # Scroll to the top, then down until the hub trigger ("One of these USB hubs is connected") sits
-        # just below the title bar, so the hub, the displays and the playback device are all in view.
+        # Scroll to the top, then down in small steps until the playback device (named in the alt
+        # text) sits just inside the window's bottom edge, as in the approved English shot: the hub,
+        # the displays and the playback device are all in view. Anchored on the playback box rather
+        # than the hub trigger, because translated captions wrap to different heights.
         $b = $win.Current.BoundingRectangle
         [UiNative]::SetCursorPos([int]($b.X + (P 1000)), [int]($b.Y + (P 400))) | Out-Null
         for ($i = 0; $i -lt 20; $i++) { Send-Wheel 120 }
         Start-Sleep -Seconds 1
 
-        $top = $b.Y + (P 70)
-        for ($i = 0; $i -lt 20; $i++) {
-            $hub = Find-ById $win 'HubTrigger'
-            if (-not $hub) { throw 'no HubTrigger: the installed build predates the automation IDs' }
-            $y = $hub.Current.BoundingRectangle.Y
-            if ([double]::IsInfinity($y) -or $y -le $top) { break }
-            Send-Wheel -120 700
+        # Just inside the frame: the Recording box's label, 12 px below, stays out of view.
+        $limit = $b.Bottom - (P 10)
+        $playback = $null
+        for ($i = 0; $i -lt 60; $i++) {
+            $playback = Get-PlaybackBox $win
+            if ($playback -and $playback.Current.BoundingRectangle.Bottom -le $limit) { break }
+            $gap = if ($playback) { $playback.Current.BoundingRectangle.Bottom - $limit } else { [double]::PositiveInfinity }
+            # Coarse, then finer as the box nears the edge, so it stops within a few pixels of it and
+            # the Recording box's label below stays hidden.
+            if ($gap -gt (P 100)) { Send-Wheel -120 700 }
+            elseif ($gap -gt (P 30)) { Send-Wheel -20 500 }
+            else { Send-Wheel -10 500 }
         }
-
-        # One notch too far hides the trigger: step back, then fine-tune in small steps so the page's
-        # top edge falls in the card's padding above it.
-        $hub = Find-ById $win 'HubTrigger'
-        if ([double]::IsInfinity($hub.Current.BoundingRectangle.Y) -or $hub.Current.BoundingRectangle.Y -lt ($b.Y + (P 50))) {
-            Send-Wheel 120 1000
-        }
-        for ($i = 0; $i -lt 12; $i++) {
-            $hub = Find-ById $win 'HubTrigger'
-            if ($hub.Current.BoundingRectangle.Y -ge $top) { break }
-            Send-Wheel 20 500
-        }
-        Note "hub trigger y $((Find-ById $win 'HubTrigger').Current.BoundingRectangle.Y), window y $($b.Y)"
+        if (-not $playback) { throw 'the playback device never came into view' }
+        $hubY = (Find-ById $win 'HubTrigger').Current.BoundingRectangle.Y
+        Note "playback bottom $($playback.Current.BoundingRectangle.Bottom), limit $limit; hub trigger y $hubY, window y $($b.Y)"
+        if ([double]::IsInfinity($hubY) -or $hubY -lt $b.Y + (P 48)) { throw 'the hub trigger scrolled out of view: the page no longer fits hub, displays and playback' }
 
         Clear-Focus $win 'AudioHeader'
         Park-Pointer
