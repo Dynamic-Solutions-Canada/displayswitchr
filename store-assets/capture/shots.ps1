@@ -21,7 +21,7 @@ never by translated text, so the same script captures every language. Lengths ar
 pixels (the 1920 x 1080 desktop) and multiplied by the display scale, because UI Automation, the cursor
 and the window helpers all work in physical pixels.
 
-Run on the VM at 200% in en-US and ja-JP (November 26, 2026); the setup phase scrolls until the
+Run on the VM at 200% in every listing locale (November 26, 2026); the setup phase scrolls until the
 playback device is in view, so a longer translation moves the page rather than hiding the row.
 #>
 param(
