@@ -133,7 +133,10 @@ function Set-AudioDeviceNames([string]$Language) {
     if ($devices.Count -lt 2) { throw "expected two HD Audio devices, found $($devices.Count)" }
     foreach ($device in $devices) {
         $name = Resolve-DeviceText (Get-DeviceDescReference $device.InstanceId) $Language
-        if ($device.FriendlyName -eq $name) {
+        # Compare with the stored friendly name, not Get-PnpDevice's, which falls back to the
+        # description resolved in the session's own language and would hide an unset name.
+        $stored = (Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Enum\$($device.InstanceId)" -Name FriendlyName -ErrorAction SilentlyContinue).FriendlyName
+        if ($stored -eq $name) {
             Note "device $($device.InstanceId): already '$name'"
             continue
         }
