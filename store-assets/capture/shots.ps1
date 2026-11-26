@@ -248,7 +248,11 @@ function Clear-Focus($Window, [string]$HeadingId) {
         [UiNative]::SetCursorPos([int]($w.Right - (P 40)), [int]($w.Y + (P 120))) | Out-Null
     }
     else {
-        [UiNative]::SetCursorPos([int]($r.X + $r.Width + (P 300)), [int]($r.Y + $r.Height / 2)) | Out-Null
+        # Right of the heading, but inside the window: section headings stretch across the page, so
+        # 300 px past one's end lands on the desktop at 200%, which leaves the focus rectangle showing.
+        $w = $Window.Current.BoundingRectangle
+        $x = [Math]::Min($r.X + $r.Width + (P 300), $w.Right - (P 40))
+        [UiNative]::SetCursorPos([int]$x, [int]($r.Y + $r.Height / 2)) | Out-Null
     }
     Start-Sleep -Milliseconds 200
     [UiNative]::mouse_event(2, 0, 0, 0, [UIntPtr]::Zero)
