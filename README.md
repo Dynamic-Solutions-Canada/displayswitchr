@@ -15,11 +15,11 @@
 </p>
 
 <p align="center">
-  <img src="store-assets/microsoft/screenshots/01-flyout-dark.png" alt="DisplaySwitchr's tray popup above the notification area in the dark theme: an Auto-switch toggle that is on, the Desk setup marked Active with the DELL U2723QE monitor and speakers, and the TV setup with the LG TV display and its audio, marked Hub not connected, above a Settings button." width="250">
+  <img src="store-assets/microsoft/screenshots/en-US/01-flyout-dark.png" alt="DisplaySwitchr's tray popup above the notification area in the dark theme: an Auto-switch toggle that is on, the Desk setup marked Active with the DELL U2723QE monitor and speakers, and the TV setup with the LG TV display and its audio, marked Hub not connected, above a Settings button." width="250">
   &nbsp;
-  <img src="store-assets/microsoft/screenshots/02-setup-dark.png" alt="The TV setup's page in the dark theme: it is used when a Generic USB Hub, shown as connected, is plugged in; the LG TV display is on at 120 Hz as the only and main display, at its highest refresh rate, while the DELL U2723QE desk monitor is connected but off; and LG TV is the playback device." width="250">
+  <img src="store-assets/microsoft/screenshots/en-US/02-setup-dark.png" alt="The TV setup's page in the dark theme: it is used when a Generic USB Hub, shown as connected, is plugged in; the LG TV display is on at 120 Hz as the only and main display, at its highest refresh rate, while the DELL U2723QE desk monitor is connected but off; and LG TV is the playback device." width="250">
   &nbsp;
-  <img src="store-assets/microsoft/screenshots/03-popup-dark.png" alt="A small dark popup at the bottom center of the screen, just above the taskbar, with a progress ring and the text Switching to TV, Audio: LG TV." width="250">
+  <img src="store-assets/microsoft/screenshots/en-US/03-popup-dark.png" alt="A small dark popup at the bottom center of the screen, just above the taskbar, with a progress ring and the text Switching to TV, Audio: LG TV." width="250">
 </p>
 
 For anyone who uses one PC at a desk and on a TV. Put the USB hub for your keyboard, mouse or controller where you play or watch. When that hub connects or disconnects, DisplaySwitchr switches your displays, refresh rates and audio to match, so you never change them by hand.
