@@ -1,0 +1,59 @@
+{
+  "SchemaVersion": 1,
+  "AppTheme": 0,
+  "Language": "en-US",
+  "Startup": true,
+  "ApplyOnStart": true,
+  "ShowOsd": true,
+  "Paused": false,
+  "Setups": [
+    {
+      "Id": "0f0dfe8e67354567a400efd71501e37d",
+      "Name": "Desk",
+      "Glyph": "",
+      "IsDefault": true,
+      "Hubs": [],
+      "Displays": [
+        {
+          "Id": "\\\\?\\DISPLAY#RHT1234#4&320cebab&0&UID0#{e6f07b5f-ee97-4a90-b076-33f57bf4eaa7}",
+          "Name": "DELL U2723QE",
+          "RefreshRate": 0
+        }
+      ],
+      "MainDisplayId": "\\\\?\\DISPLAY#RHT1234#4&320cebab&0&UID0#{e6f07b5f-ee97-4a90-b076-33f57bf4eaa7}",
+      "Mirror": false,
+      "AudioId": "{0.0.0.00000000}.{40dd834a-9fff-4f49-b322-8e1ec4bc1ee8}",
+      "AudioName": "Speakers (2- High Definition Audio Device)",
+      "MicId": "",
+      "MicName": ""
+    },
+    {
+      "Id": "7d1e4b0c2f9a4e6b8c3d5a1f0e2b4c6d",
+      "Name": "TV",
+      "Glyph": "",
+      "IsDefault": false,
+      "Hubs": [
+        {
+          "DeviceId": "USB\\VID_0409&PID_55AA\\MSFT20314159-0000:00:02.0-2",
+          "Name": "Generic USB Hub",
+          "ExactPort": false
+        }
+      ],
+      "Displays": [
+        {
+          "Id": "\\\\?\\DISPLAY#MTT1337#1&28a6823a&0&UID256#{e6f07b5f-ee97-4a90-b076-33f57bf4eaa7}",
+          "Name": "LG TV",
+          "RefreshRate": 0
+        }
+      ],
+      "MainDisplayId": "\\\\?\\DISPLAY#MTT1337#1&28a6823a&0&UID256#{e6f07b5f-ee97-4a90-b076-33f57bf4eaa7}",
+      "Mirror": false,
+      "AudioId": "{0.0.0.00000000}.{6436cf1d-b090-4e40-9114-33431f972c3b}",
+      "AudioName": "LG TV (High Definition Audio Device)",
+      "MicId": "",
+      "MicName": ""
+    }
+  ],
+  "RefreshRates": {},
+  "LastKnownVersion": ""
+}

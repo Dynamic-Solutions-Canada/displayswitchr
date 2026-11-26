@@ -49,7 +49,7 @@
                                        Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
                         </StackPanel>
                     </RadioButton>
-                    <RadioButton x:Name="HubRadio" GroupName="Trigger" Checked="Trigger_Checked">
+                    <RadioButton x:Name="HubRadio" AutomationProperties.AutomationId="HubTrigger" GroupName="Trigger" Checked="Trigger_Checked">
                         <StackPanel>
                             <TextBlock l10n:Localize.Text="One of these USB hubs is connected" TextWrapping="Wrap" />
                             <TextBlock l10n:Localize.Text="If several hubs are connected, the one connected most recently wins."
@@ -92,7 +92,7 @@
             </Border>
 
             <!-- Audio -->
-            <TextBlock l10n:Localize.Text="Audio" Style="{StaticResource SectionHeaderStyle}" />
+            <TextBlock l10n:Localize.Text="Audio" AutomationProperties.AutomationId="AudioHeader" Style="{StaticResource SectionHeaderStyle}" />
             <Border Style="{StaticResource CardBorderStyle}">
                 <StackPanel Spacing="12">
                     <TextBlock l10n:Localize.Text="Each device you pick becomes the Windows default, for calls too. A TV's HDMI audio appears a few seconds after its display turns on; the switch waits for it. Choose &quot;Don't change&quot; if another app picks your audio device."

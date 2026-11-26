@@ -3,6 +3,7 @@ using HubDisplaySwitch.Classes.Settings;
 using HubDisplaySwitch.Models;
 using HubDisplaySwitch.Pages;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using WinUIAppKit.Localization;
 using WinUIAppKit.Pages;
@@ -114,12 +115,17 @@ public sealed partial class SettingsWindow : Window
         Shell.MenuItems.Add(new NavigationViewItemHeader { Content = UiText.Get("Setups") });
         foreach (var s in SettingsManager.Current.Setups)
         {
-            Shell.MenuItems.Add(new NavigationViewItem
+            var item = new NavigationViewItem
             {
                 Content = s.Name,
                 Tag = s.Id,
                 Icon = new FontIcon { Glyph = s.Glyph },
-            });
+            };
+
+            // A language-neutral handle for UI automation (the Store capture script selects a setup by
+            // its id, since the name is user text and differs per language).
+            AutomationProperties.SetAutomationId(item, $"SetupNavItem_{s.Id}");
+            Shell.MenuItems.Add(item);
         }
 
         // An action item: the shell reports it through ActionInvoked and never selects it.

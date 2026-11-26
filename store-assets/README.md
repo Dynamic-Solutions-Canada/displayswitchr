@@ -4,12 +4,13 @@
 | --- | --- |
 | `microsoft/listings.json`, `listings.md` | The Store listing text in every locale, and the claims it makes (see `listings.md`) |
 | `manifest.json` | Every Store screenshot in listing order: its raw source, theme, crop, en-US caption and alt text (LIST-8) |
+| `capture/` | The capture script (`shots.ps1`), its guest helpers, the synthetic settings (`settings.base.json`) and each locale's translated sample data (`fixtures/<locale>.json`) |
 | `raw/microsoft/` | The raw captures: the test VM's whole desktop at 1:1, each with the `.json` sidecar the capture helper writes |
 | `microsoft/screenshots/` | The listing screenshots, rendered from the raw captures; the generated first screenshot is in a folder per locale (`<locale>/00-hero-dark.png`) |
 
 ## Screenshots
 
-Captured from the real installed app with synthetic settings, never from a personal machine (LIST-8). Every shot is in dark mode on the Windows 11 dark wallpaper (`img19.jpg`), at 1920 x 1080 and 100% scale. The captions in `manifest.json` are the en-US `screenshotCaptions` in `listings.json`, in the same order and count; each other locale has its own translation there. A new or changed screenshot is approved by the maintainer before it is committed.
+Captured from the real installed app with synthetic settings, never from a personal machine (LIST-8). Every shot is in dark mode on the Windows 11 dark wallpaper (`img19.jpg`). The current captures are English, at 1920 x 1080 and 100% scale; they are being replaced by localized captures at 200% (below). The captions in `manifest.json` are the en-US `screenshotCaptions` in `listings.json`, in the same order and count; each other locale has its own translation there. A new or changed screenshot is approved by the maintainer before it is committed.
 
 The test VM has no hub, TV or speakers, so the hardware is simulated with devices Windows enumerates as real, and the app does the rest for real:
 
@@ -28,6 +29,22 @@ Shot 01 shows the tray flyout and uses the `tray` crop; 03 shows the switching p
 4. **Sync** with the next Store release: the Store workflow's `screenshots` input uploads every locale's set, its hero first, with that locale's captions from `listings.json`, and keeps the listing's logos. Check the draft in Partner Center before submitting it.
 
 A UI change that shows in a screenshot means recapturing that shot.
+
+## Localized captures
+
+Every screenshot is moving to a capture per listing locale (en-US, es-ES, fr-FR, de-DE, zh-CN, pt-BR and ja-JP; en-CA and fr-CA reuse en-US's and fr-FR's through `copyFrom`), so Windows, the app and its sample data all show the listing's language, at 200% display scale (3840 x 2160 for the 1920 x 1080 desktop). The kit's renderer crops a 200% capture in logical pixels and halves it to 1366 x 768. Status: the scripts below are not yet run on the VM; the en-US and one other locale go to the maintainer for approval, the rest must pass the checks.
+
+- **What is translated:** the setup names, the text a user typed, come from `capture/fixtures/<locale>.json` (Desk and TV; for example Schreibtisch and Fernseher in de-DE). The names Windows gives, the hub (Generic USB Hub in English) and the desk speakers, are read from Windows at capture time, so they are in its display language exactly as a user of that language would see them; nothing is translated by hand. The monitor names (DELL U2723QE, LG TV) are the displays' own EDID names and the TV's audio endpoint is renamed LG TV, so they stay the same in every language.
+- **What the app does not translate:** nothing in these screens; every catalog string has its translation in all six languages. Device names come from Windows and the hardware.
+- **The app's language** is set by the script in `settings.json` (`Language`), from the fixture, so it never depends on Windows' language list.
+- **No translated text in the script:** `shots.ps1` finds everything by automation ID (`SetupNavItem_<setup id>`, `HubTrigger`, `BehaviourHeader`, `AudioHeader`, and WinUI's own `SettingsItem`), the popup's window title or the tray tooltip's app name. `rename-tv-audio.ps1` and `set-display-scale.ps1` use window classes, control IDs and the display API, so they work in any language.
+
+For each locale, in a throwaway session:
+
+1. **Language:** on the base disk, install the language pack once (`Install-Language <locale> -ExcludeFeatures`, about 26 minutes, then `guest-slim.ps1 -Step Clean`), set Windows' display language, input and format to the locale (`Set-WinUILanguageOverride`, `Set-WinUserLanguageList`, `Set-Culture`), then cold-cycle the VM (`vm/remote.sh down`, then a `-snapshot` start: about 80 seconds to a desktop in that language). Set it back to en-US the same way when done.
+2. **Desktop:** in the `-snapshot` session (the compose override with the named VirtIO display at 3840 x 2160 and the two audio controllers), install the Release dev package, the display driver (its EDID needs a 3840 x 2160 mode) and the audio rename (`capture/rename-tv-audio.ps1`), plug the virtual hub in and out once (so Windows knows its name; the capture script reads it), run `screenshot-desktop.ps1 -Mode Prepare`, then `capture/set-display-scale.ps1 -Percent 200`.
+3. **Capture:** copy `capture/` to `C:\apptest\capture`, then run `shots.ps1 -Locale <locale> -Phase base`, `-Phase popup` while the host plugs in the virtual hub, and `-Phase setup` once the switch is done. Keep the popup frame that shows the spinner and the full text as `02-popup-dark`. Copy each `.png` and `.json` from `C:\apptest\out\<locale>\` into `raw/microsoft/<locale>/` under the manifest's names.
+4. **Render and check** with `npm run shots:render`, `npm run hero` and `npm run validate`: the check fails for any listing locale without its capture, so a locale is done only when all of its captures are committed.
 
 ## The first screenshot: a generated hero
 

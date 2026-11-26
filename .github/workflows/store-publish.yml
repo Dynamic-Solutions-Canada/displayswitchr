@@ -58,7 +58,7 @@ concurrency:
 
 jobs:
   publish:
-    uses: Dynamic-Solutions-Canada/winui-app-kit/.github/workflows/store-publish.yml@v2.8.0
+    uses: Dynamic-Solutions-Canada/winui-app-kit/.github/workflows/store-publish.yml@v2.10.0
     with:
       store_product_id: 9P1S2QJFXZFW
       # Paid, US $0.99 with a 7-day free trial (D-014). The trial and the markets (all but Lebanon and
