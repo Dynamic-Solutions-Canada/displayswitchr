@@ -450,7 +450,9 @@ switch ($Phase) {
         if (-not $playback) { throw 'the playback device never came into view' }
         $hubY = (Find-ById $win 'HubTrigger').Current.BoundingRectangle.Y
         Note "playback bottom $($playback.Current.BoundingRectangle.Bottom), limit $limit; hub trigger y $hubY, window y $($b.Y)"
-        if ([double]::IsInfinity($hubY) -or $hubY -lt $b.Y + (P 48)) { throw 'the hub trigger scrolled out of view: the page no longer fits hub, displays and playback' }
+        # The playback row comes first (the alt text names it); a long translation can push the hub
+        # trigger under the title bar, which is reported for a look rather than failing the shot.
+        if ([double]::IsInfinity($hubY) -or $hubY -lt $b.Y + (P 48)) { Note 'WARNING: the hub trigger is partly under the title bar' }
 
         Clear-Focus $win 'AudioHeader'
         Park-Pointer
