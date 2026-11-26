@@ -45,19 +45,19 @@
     "es-ES": {
       "title": "DisplaySwitchr",
       "shortDescription": "Conecta el hub del sofá y tu PC cambia a la tele, a su frecuencia máxima y con el audio de la tele. Desconéctalo y vuelves al monitor y los altavoces del escritorio. Configura tantos hubs, pantallas y dispositivos de audio como quieras.",
-      "fullDescription": "DisplaySwitchr cambia tu PC de pantalla cuando tú cambias de sitio. Pon el hub USB de tu teclado, ratón o mando donde juegas o ves contenido, y la aplicación ajusta tus pantallas, frecuencias de actualización y audio cada vez que ese hub se conecta o se desconecta.\n\nConfiguraciones\nUna configuración describe una forma de usar tu PC:\n• Qué pantallas se encienden, cuál es la principal y si se duplican. Las demás pantallas se apagan.\n• La frecuencia de actualización de cada pantalla: la más alta que admita, una que elijas o sin cambios.\n• El dispositivo de reproducción y el micrófono predeterminados, o dejar cualquiera de los dos sin cambios.\n• Cuándo se aplica: como predeterminada, con los dispositivos conectados directamente al PC, o cuando se conecta uno de sus hubs USB.\n\nSi conectas varios hubs, gana el último que conectaste. Al desconectarlo vuelve la configuración del hub anterior y, después, la predeterminada.\n\nPensada para televisores\nDisplaySwitchr espera a que tu televisor se encienda y a que aparezca su audio HDMI, y sigue aplicando la frecuencia de actualización y el dispositivo de audio hasta que se mantienen. Se acabó encontrarte el televisor de nuevo a 60 Hz.\n\nSiempre a mano\n• Un pequeño aviso en pantalla muestra cada cambio mientras ocurre y confirma cuando todo está listo.\n• Haz clic en el icono de la bandeja para cambiar a cualquier configuración a mano o pausar el cambio automático.\n• Haz clic derecho para abrir un menú rápido con tus configuraciones, Pausar, Ajustes y Salir.\n• Detecta un hub desenchufándolo: la aplicación ve qué dispositivo ha desaparecido.\n• Puede iniciarse con Windows y aplicar la configuración adecuada en cuanto inicias sesión.\n\nTu idioma\nUsa DisplaySwitchr en inglés, español, francés, alemán, chino simplificado, portugués de Brasil o japonés. Sigue el idioma de Windows, o elige uno en Ajustes. Los nombres de dispositivos y configuraciones se muestran tal cual.\n\nConviene saber\nEl cambio empieza en cuanto inicias sesión en Windows.\n\nPrivacidad\nSin cuenta, sin anuncios y sin seguimiento. Tus ajustes y registros se quedan en tu PC.\n\nRequiere Windows 10 (22H2) o Windows 11.",
+      "fullDescription": "DisplaySwitchr cambia tu PC de pantalla cuando tú cambias de sitio. Pon el hub USB de tu teclado, ratón o mando donde juegas o ves contenido, y la aplicación ajusta tus pantallas, frecuencias de actualización y audio cada vez que ese hub se conecta o se desconecta.\n\nPerfiles\nUn perfil describe una forma de usar tu PC:\n• Qué pantallas se encienden, cuál es la principal y si se duplican. Las demás pantallas se apagan.\n• La frecuencia de actualización de cada pantalla: la más alta que admita, una que elijas o sin cambios.\n• El dispositivo de reproducción y el micrófono predeterminados, o dejar cualquiera de los dos sin cambios.\n• Cuándo se aplica: como predeterminado, con los dispositivos conectados directamente al PC, o cuando se conecta uno de sus hubs USB.\n\nSi conectas varios hubs, gana el último que conectaste. Al desconectarlo vuelve el perfil del hub anterior y, después, el predeterminado.\n\nPensada para televisores\nDisplaySwitchr espera a que tu televisor se encienda y a que aparezca su audio HDMI, y sigue aplicando la frecuencia de actualización y el dispositivo de audio hasta que se mantienen. Se acabó encontrarte el televisor de nuevo a 60 Hz.\n\nSiempre a mano\n• Un pequeño aviso en pantalla muestra cada cambio mientras ocurre y confirma cuando todo está listo.\n• Haz clic en el icono de la bandeja para cambiar a cualquier perfil a mano o pausar el cambio automático.\n• Haz clic derecho para abrir un menú rápido con tus perfiles, Pausar, Configuración y Salir.\n• Detecta un hub desenchufándolo: la aplicación ve qué dispositivo ha desaparecido.\n• Puede iniciarse con Windows y aplicar el perfil adecuado en cuanto inicias sesión.\n\nTu idioma\nUsa DisplaySwitchr en inglés, español, francés, alemán, chino simplificado, portugués de Brasil o japonés. Sigue el idioma de Windows, o elige uno en Configuración. Los nombres de dispositivos y perfiles se muestran tal cual.\n\nConviene saber\nEl cambio empieza en cuanto inicias sesión en Windows.\n\nPrivacidad\nSin cuenta, sin anuncios y sin seguimiento. Tu configuración y tus registros se quedan en tu PC.\n\nRequiere Windows 10 (22H2) o Windows 11.",
       "features": [
         "Cambia pantallas, pantalla principal, frecuencias y audio cuando un hub USB se conecta o se desconecta.",
-        "Tantas configuraciones, pantallas y hubs como necesites, más una predeterminada para los dispositivos conectados directamente al PC.",
-        "Gana el último hub conectado; al desconectarlo vuelve la configuración anterior.",
+        "Tantos perfiles, pantallas y hubs como necesites, más uno predeterminado para los dispositivos conectados directamente al PC.",
+        "Gana el último hub conectado; al desconectarlo vuelve el perfil anterior.",
         "Frecuencia por pantalla: la más alta disponible, la que elijas o sin cambios.",
         "Reproducción y micrófono por separado, cada uno con la opción No cambiar.",
         "Espera a que la tele se encienda y vuelve a aplicar frecuencia y audio hasta que se mantienen.",
         "Un aviso en pantalla muestra cada cambio y confirma cuando termina.",
-        "Haz clic en el icono de la bandeja para cambiar de configuración a mano o pausar el cambio automático.",
+        "Haz clic en el icono de la bandeja para cambiar de perfil a mano o pausar el cambio automático.",
         "Detecta un hub desenchufándolo, o reconócelo solo en un puerto USB concreto.",
         "Temas claro y oscuro.",
-        "Puede iniciarse con Windows y aplicar la configuración adecuada en cuanto inicias sesión.",
+        "Puede iniciarse con Windows y aplicar el perfil adecuado en cuanto inicias sesión.",
         "En inglés, español, francés, alemán, chino simplificado, portugués de Brasil y japonés.",
         "Sin cuenta, sin anuncios, sin seguimiento."
       ],
@@ -72,10 +72,10 @@
       ],
       "screenshotCaptions": [
         "Pantallas, frecuencias y audio cambian en consecuencia.",
-        "Desde la bandeja: cambia entre tus configuraciones o pausa el cambio automático.",
-        "Una configuración: el hub que la activa, las pantallas, la principal y sus frecuencias, y los dispositivos de audio.",
+        "Desde la bandeja: cambia entre tus perfiles o pausa el cambio automático.",
+        "Un perfil: el hub que lo activa, las pantallas, la principal y sus frecuencias, y los dispositivos de audio.",
         "El aviso en pantalla mientras cambia a la tele.",
-        "Ajustes generales: iniciar con Windows, cambiar al iniciar, aviso, idioma y tema."
+        "Configuración general: iniciar con Windows, cambiar al iniciar, aviso, idioma y tema."
       ],
       "heroHeadline": "Conecta el hub del sofá. Tu PC cambia a la tele.",
       "heroSubline": "Pantallas, frecuencias y audio cambian en consecuencia."
@@ -156,7 +156,7 @@
         "Das Popup beim Wechsel zum Fernseher.",
         "Allgemeine Einstellungen: Start mit Windows, Umschalten beim Start, Popup, Sprache und Design."
       ],
-      "heroHeadline": "Hub am Sofa anschließen. Der PC wechselt zum Fernseher.",
+      "heroHeadline": "Hub am Sofa\nanschließen.\nDer PC wechselt\nzum Fernseher.",
       "heroSubline": "Bildschirme, Bildwiederholraten und Audio schalten passend um."
     },
     "zh-CN": {
@@ -200,19 +200,19 @@
     "pt-BR": {
       "title": "DisplaySwitchr",
       "shortDescription": "Conecte o hub do sofá e o PC muda para a TV, na taxa de atualização máxima e com o áudio da TV. Desconecte e você volta ao monitor e às caixas de som da mesa. Configure quantos hubs, telas e dispositivos de áudio quiser.",
-      "fullDescription": "O DisplaySwitchr muda a tela do seu PC quando você muda de lugar. Deixe o hub USB do teclado, mouse ou controle onde você joga ou assiste, e o aplicativo ajusta telas, taxas de atualização e áudio sempre que esse hub é conectado ou desconectado.\n\nConfigurações\nUma configuração descreve um jeito de usar o PC:\n• Quais telas ficam ligadas, qual é a principal e se elas são duplicadas. As outras telas são desligadas.\n• A taxa de atualização de cada tela: a mais alta suportada, uma que você escolher ou sem alteração.\n• O dispositivo de reprodução e o microfone padrão, ou deixar qualquer um deles sem alteração.\n• Quando vale: como padrão, com os dispositivos conectados direto no PC, ou quando um dos hubs USB dela está conectado.\n\nCom vários hubs conectados, vale o último conectado. Ao desconectá-lo, volta a configuração do hub anterior e, depois, a padrão.\n\nFeito para TVs\nO DisplaySwitchr espera a TV ligar e o áudio HDMI aparecer, e continua aplicando a taxa de atualização e o dispositivo de áudio até se firmarem. Chega de encontrar a TV de volta em 60 Hz.\n\nSempre à mão\n• Um pequeno aviso na tela mostra cada troca enquanto acontece e confirma quando tudo está pronto.\n• Clique no ícone da bandeja para mudar para qualquer configuração manualmente ou pausar a troca automática.\n• Clique com o botão direito para um menu rápido com suas configurações, Pausar, Configurações e Sair.\n• Detecte um hub desconectando-o: o aplicativo percebe qual dispositivo sumiu.\n• Pode iniciar com o Windows e aplicar a configuração certa assim que você entra.\n\nSeu idioma\nUse o DisplaySwitchr em inglês, espanhol, francês, alemão, chinês simplificado, português do Brasil ou japonês. Ele segue o idioma do Windows, ou escolha um nas configurações. Os nomes de dispositivos e configurações aparecem como são.\n\nBom saber\nA troca começa assim que você entra no Windows.\n\nPrivacidade\nSem conta, sem anúncios e sem rastreamento. Suas configurações e logs ficam no seu PC.\n\nRequer o Windows 10 (22H2) ou o Windows 11.",
+      "fullDescription": "O DisplaySwitchr muda a tela do seu PC quando você muda de lugar. Deixe o hub USB do teclado, mouse ou controle onde você joga ou assiste, e o aplicativo ajusta telas, taxas de atualização e áudio sempre que esse hub é conectado ou desconectado.\n\nPerfis\nUm perfil descreve um jeito de usar o PC:\n• Quais telas ficam ligadas, qual é a principal e se elas são duplicadas. As outras telas são desligadas.\n• A taxa de atualização de cada tela: a mais alta suportada, uma que você escolher ou sem alteração.\n• O dispositivo de reprodução e o microfone padrão, ou deixar qualquer um deles sem alteração.\n• Quando vale: como padrão, com os dispositivos conectados direto no PC, ou quando um dos hubs USB dele está conectado.\n\nCom vários hubs conectados, vale o último conectado. Ao desconectá-lo, volta o perfil do hub anterior e, depois, o padrão.\n\nFeito para TVs\nO DisplaySwitchr espera a TV ligar e o áudio HDMI aparecer, e continua aplicando a taxa de atualização e o dispositivo de áudio até se firmarem. Chega de encontrar a TV de volta em 60 Hz.\n\nSempre à mão\n• Um pequeno aviso na tela mostra cada troca enquanto acontece e confirma quando tudo está pronto.\n• Clique no ícone da bandeja para mudar para qualquer perfil manualmente ou pausar a troca automática.\n• Clique com o botão direito para um menu rápido com seus perfis, Pausar, Configurações e Sair.\n• Detecte um hub desconectando-o: o aplicativo percebe qual dispositivo sumiu.\n• Pode iniciar com o Windows e aplicar o perfil certo assim que você entra.\n\nSeu idioma\nUse o DisplaySwitchr em inglês, espanhol, francês, alemão, chinês simplificado, português do Brasil ou japonês. Ele segue o idioma do Windows, ou escolha um nas configurações. Os nomes de dispositivos e perfis aparecem como são.\n\nBom saber\nA troca começa assim que você entra no Windows.\n\nPrivacidade\nSem conta, sem anúncios e sem rastreamento. Suas configurações e logs ficam no seu PC.\n\nRequer o Windows 10 (22H2) ou o Windows 11.",
       "features": [
         "Troca telas, tela principal, taxas de atualização e áudio quando um hub USB é conectado ou desconectado.",
-        "Quantas configurações, telas e hubs você precisar, além de uma padrão para dispositivos conectados direto no PC.",
-        "Vale o último hub conectado; desconecte e a configuração anterior volta.",
+        "Quantos perfis, telas e hubs você precisar, além de um padrão para dispositivos conectados direto no PC.",
+        "Vale o último hub conectado; desconecte e o perfil anterior volta.",
         "Taxa por tela: a mais alta disponível, uma que você escolher ou sem alteração.",
         "Reprodução e microfone separados, cada um com a opção Não alterar.",
         "Espera a TV ligar e reaplica taxa e áudio até se firmarem.",
         "Um aviso na tela mostra cada troca e confirma quando termina.",
-        "Clique no ícone da bandeja para trocar de configuração manualmente ou pausar a troca automática.",
+        "Clique no ícone da bandeja para trocar de perfil manualmente ou pausar a troca automática.",
         "Detecte um hub desconectando-o ou reconheça-o só em uma porta USB específica.",
         "Temas claro e escuro.",
-        "Pode iniciar com o Windows e aplicar a configuração certa assim que você entra.",
+        "Pode iniciar com o Windows e aplicar o perfil certo assim que você entra.",
         "Em inglês, espanhol, francês, alemão, chinês simplificado, português do Brasil e japonês.",
         "Sem conta, sem anúncios, sem rastreamento."
       ],
@@ -227,8 +227,8 @@
       ],
       "screenshotCaptions": [
         "Telas, taxas de atualização e áudio mudam junto.",
-        "Pela bandeja: alterne entre suas configurações ou pause a troca automática.",
-        "Uma configuração: o hub que a ativa, as telas, a principal e as taxas, e os dispositivos de áudio.",
+        "Pela bandeja: alterne entre seus perfis ou pause a troca automática.",
+        "Um perfil: o hub que o ativa, as telas, a principal e as taxas, e os dispositivos de áudio.",
         "O aviso na tela durante a troca para a TV.",
         "Configurações gerais: iniciar com o Windows, trocar ao iniciar, aviso, idioma e tema."
       ],
