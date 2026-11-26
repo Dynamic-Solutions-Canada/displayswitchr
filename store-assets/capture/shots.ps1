@@ -402,10 +402,10 @@ switch ($Phase) {
         # The popup never activates by design (WS_EX_NOACTIVATE), so skip the helper's activation step.
         function Set-WindowActive($Window, [int]$Attempts = 5) { }
 
-        # A burst of frames while the switch runs (about two seconds); the best one is kept by hand.
+        # A burst of frames while the switch runs (about two seconds); the host keeps the best one.
         $n = 0
         $missing = 0
-        while ($n -lt 20 -and $missing -lt 8) {
+        while ($n -lt 30 -and $missing -lt 8) {
             $osd = Get-ShownPopup
             if (-not $osd) {
                 $missing++
@@ -420,7 +420,9 @@ switch ($Phase) {
             catch {
                 Note "f$n failed: $_"
             }
-            Start-Sleep -Milliseconds 250
+            # As many frames as the switch allows: the progress ring is an animated arc, and the host
+            # keeps the frame where it is drawn largest.
+            Start-Sleep -Milliseconds 50
         }
         Note "captured $n frames"
     }
