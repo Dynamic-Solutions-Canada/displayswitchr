@@ -105,13 +105,21 @@ Write the app's settings.json for this locale, as a user of that language would 
   is Windows' own description for it in the display language (windows-strings.ps1), since the VM's
   Windows keeps the English name it gave the device when it was installed in English.
 
-The app's language is set explicitly, so it does not depend on Windows' own preferences.
+The app's language is left at "Use system setting", which is what the Settings shot's alt text
+describes and what a new user has; Windows' display language must already be the locale's, and the
+script stops when it is not, so the app cannot silently fall back to another language.
 #>
 function Write-LocaleSettings {
     $utf8 = New-Object Text.UTF8Encoding $false
     $settings = [IO.File]::ReadAllText((Join-Path $here 'settings.base.json'), $utf8) | ConvertFrom-Json
     $fixture = [IO.File]::ReadAllText((Join-Path $here "fixtures\$Locale.json"), $utf8) | ConvertFrom-Json
-    $settings.Language = $fixture.language
+    $windowsLanguage = Get-DisplayLanguage
+    if ($windowsLanguage -ne $fixture.language) {
+        throw "Windows is in $windowsLanguage, not $($fixture.language); switch it first (app_test_language)"
+    }
+
+    # Empty is the app's "Use system setting", so the app follows Windows' language.
+    $settings.Language = ''
 
     # The setup names, from the fixture.
     foreach ($setup in $settings.Setups) {
@@ -452,6 +460,32 @@ switch ($Phase) {
             else { Send-Wheel -10 500 }
         }
         if (-not $playback) { throw 'the playback device never came into view' }
+
+        # Then line the hub trigger up with the approved English shot (66 px below the window's top),
+        # so every locale shows the same part of the page, as far as the playback device allows: a
+        # shorter translation scrolls on down to it, a longer one only as far back up as keeps the
+        # playback device inside the frame.
+        $hubTarget = $b.Y + (P 66)
+        for ($i = 0; $i -lt 40; $i++) {
+            $hubY = (Find-ById $win 'HubTrigger').Current.BoundingRectangle.Y
+            if ([double]::IsInfinity($hubY)) { $hubY = $b.Y }
+            if ($hubY -gt $hubTarget + (P 2)) {
+                Send-Wheel -10 400
+                continue
+            }
+            if ($hubY -lt $hubTarget - (P 2)) {
+                Send-Wheel 10 400
+                $playback = Get-PlaybackBox $win
+                if (-not $playback -or $playback.Current.BoundingRectangle.Bottom -gt $limit) {
+                    # One step too far for the playback device: take it back and stop here.
+                    Send-Wheel -10 400
+                    break
+                }
+                continue
+            }
+            break
+        }
+        $playback = Get-PlaybackBox $win
         $hubY = (Find-ById $win 'HubTrigger').Current.BoundingRectangle.Y
         Note "playback bottom $($playback.Current.BoundingRectangle.Bottom), limit $limit; hub trigger y $hubY, window y $($b.Y)"
         # The playback row comes first (the alt text names it); a long translation can push the hub
@@ -460,6 +494,9 @@ switch ($Phase) {
 
         Clear-Focus $win 'AudioHeader'
         Park-Pointer
+        # The scroll bar shows after any scroll or click inside the page and fades a few seconds
+        # later; wait it out so no locale's shot shows it.
+        Start-Sleep -Seconds 6
         Save-LocaleCapture '01-setup-dark' $win
     }
 }
