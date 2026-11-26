@@ -237,7 +237,16 @@ function Clear-Focus($Window, [string]$HeadingId) {
     $heading = Find-ById $Window $HeadingId
     if (-not $heading) { throw "no heading $HeadingId" }
     $r = $heading.Current.BoundingRectangle
-    [UiNative]::SetCursorPos([int]($r.X + $r.Width + (P 300)), [int]($r.Y + $r.Height / 2)) | Out-Null
+    if ($r.IsEmpty -or [double]::IsInfinity($r.X) -or [double]::IsNaN($r.X)) {
+        # Scrolled out of view (UI Automation gives it no rectangle): click blank space near the
+        # window's right edge, level with the top of the visible page, instead.
+        $w = $Window.Current.BoundingRectangle
+        Note "heading $HeadingId is out of view; clearing focus at the window's right edge"
+        [UiNative]::SetCursorPos([int]($w.Right - (P 40)), [int]($w.Y + (P 120))) | Out-Null
+    }
+    else {
+        [UiNative]::SetCursorPos([int]($r.X + $r.Width + (P 300)), [int]($r.Y + $r.Height / 2)) | Out-Null
+    }
     Start-Sleep -Milliseconds 200
     [UiNative]::mouse_event(2, 0, 0, 0, [UIntPtr]::Zero)
     [UiNative]::mouse_event(4, 0, 0, 0, [UIntPtr]::Zero)

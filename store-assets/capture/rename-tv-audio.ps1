@@ -6,12 +6,10 @@ in any display language.
 Nothing is found by its translated text: the Sound dialog and the device's Properties dialog are the
 #32770 dialogs of the rundll32 process this script starts (the first is the Sound dialog, the second
 the Properties dialog it owns), the device list and the name box by their window class, and the OK
-buttons by their control ID (IDOK, 1). The Properties dialog opens with a double-click on the list
-item, the list's default action in every language.
-
-Not yet run on the VM. Prove first: these Win32 dialogs' controls showed in the managed UI Automation
-client as plain panes, so the selected list item and the OK buttons by control ID may not be found
-that way; if they are not, fall back to keyboard focus (Tab order) rather than translated names.
+buttons by their control ID (IDOK, 1). The managed UI Automation client shows the list's items as
+plain panes with no selection state, so the second device is selected with Home, Down and its
+Properties opened from the list's context menu (Shift+F10, then Up to its last item, Properties, in
+every language). Checked on the VM at 200%, November 26, 2026.
 #>
 $ErrorActionPreference = 'Stop'
 . C:\apptest\ui-lib.ps1
@@ -88,7 +86,10 @@ Start-Sleep -Seconds 1
 # The Sound dialog, Playback tab.
 $proc = Start-Process rundll32.exe 'shell32.dll,Control_RunDLL mmsys.cpl,,0' -PassThru
 $sound = (Get-ProcessDialogs $proc.Id 1)[0]
+# Look the dialog up again once it has settled: found while it is still being created, it has no
+# title yet and could not be made the foreground window.
 Start-Sleep -Seconds 3
+$sound = (Get-ProcessDialogs $proc.Id 1)[0]
 Set-WindowActive $sound
 
 # Select the second device (Home, Down in the list), then open its Properties with a double-click.
@@ -100,15 +101,14 @@ Start-Sleep -Milliseconds 500
 Start-Sleep -Milliseconds 300
 [System.Windows.Forms.SendKeys]::SendWait('{DOWN}')
 Start-Sleep -Milliseconds 500
-$selected = $list.FindAll('Descendants', [System.Windows.Automation.Condition]::TrueCondition) |
-    Where-Object {
-        try { $_.GetCurrentPattern([System.Windows.Automation.SelectionItemPattern]::Pattern).Current.IsSelected } catch { $false }
-    } | Select-Object -First 1
-if (-not $selected) { throw 'no device selected' }
-Note "device: $($selected.Current.Name)"
-Invoke-Click $selected
-Start-Sleep -Milliseconds 100
-Invoke-Click $selected
+# The managed client shows the list's items as plain panes with no selection state, so open the
+# selected device's Properties from its context menu instead: Shift+F10, then Up wraps to the last
+# item, which is Properties in every language.
+[System.Windows.Forms.SendKeys]::SendWait('+{F10}')
+Start-Sleep -Milliseconds 800
+[System.Windows.Forms.SendKeys]::SendWait('{UP}')
+Start-Sleep -Milliseconds 300
+[System.Windows.Forms.SendKeys]::SendWait('{ENTER}')
 
 # The Properties dialog: the process's other dialog. Its General tab opens with the name box first.
 $dialogs = Get-ProcessDialogs $proc.Id 2

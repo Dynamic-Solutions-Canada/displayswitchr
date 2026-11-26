@@ -5,8 +5,8 @@ involved. Run in the desktop session (ASCII only). The change lasts for the thro
 session the captures run in.
 
 Windows expresses the scale relative to each display's recommended one, in steps of the list below;
-the minimum relative step is 100%. Not yet run on the VM at 200%: a display whose largest step is
-below 200% (too few pixels) is left at its largest step and reported in the log.
+the minimum relative step is 100%. A display whose largest step is below 200% (too few pixels) is left at its largest step and reported
+in the log.
 #>
 param(
     # The scale in percent: 200 for Store captures (3840 x 2160 for the 1920 x 1080 logical desktop).
@@ -52,13 +52,22 @@ $r = [Dpi]::QueryDisplayConfig(2, [ref]$np, $paths, [ref]$nm, $modes, [IntPtr]::
 if ($r -ne 0) { throw "QueryDisplayConfig $r" }
 
 Set-Content $log "scale $Percent% $(Get-Date -Format o)"
+
+<# A DisplayConfig request header of $Type and $Size for one path's source. #>
+function New-Header([int]$Type, [int]$Size, $Source) {
+    $h = New-Object Dpi+HEADER
+    $h.type = $Type
+    $h.size = $Size
+    $h.adapterId = $Source.adapterId
+    $h.id = $Source.id
+    $h
+}
 for ($i = 0; $i -lt $np; $i++) {
     # Read the display's range: minRel is 100%, so the recommended step is at index -minRel.
+    # PowerShell copies a nested struct on read, so $g.header.type = ... would change a copy and send
+    # an empty header (error 31): fill a header on its own, then assign it whole.
     $g = New-Object Dpi+GET
-    $g.header.type = -3   # DISPLAYCONFIG_DEVICE_INFO_GET_DPI_SCALE
-    $g.header.size = [Runtime.InteropServices.Marshal]::SizeOf([type][Dpi+GET])
-    $g.header.adapterId = $paths[$i].source.adapterId
-    $g.header.id = $paths[$i].source.id
+    $g.header = New-Header -3 ([Runtime.InteropServices.Marshal]::SizeOf([type][Dpi+GET])) $paths[$i].source   # DISPLAYCONFIG_DEVICE_INFO_GET_DPI_SCALE
     $r = [Dpi]::DisplayConfigGetDeviceInfo([ref]$g)
     Add-Content $log "source $($paths[$i].source.id): get $r min $($g.minRel) cur $($g.curRel) max $($g.maxRel)"
     if ($r -ne 0) { continue }
@@ -71,10 +80,7 @@ for ($i = 0; $i -lt $np; $i++) {
     if ($rel -eq $g.curRel) { continue }
 
     $s = New-Object Dpi+SET
-    $s.header.type = -4   # DISPLAYCONFIG_DEVICE_INFO_SET_DPI_SCALE
-    $s.header.size = [Runtime.InteropServices.Marshal]::SizeOf([type][Dpi+SET])
-    $s.header.adapterId = $paths[$i].source.adapterId
-    $s.header.id = $paths[$i].source.id
+    $s.header = New-Header -4 ([Runtime.InteropServices.Marshal]::SizeOf([type][Dpi+SET])) $paths[$i].source   # DISPLAYCONFIG_DEVICE_INFO_SET_DPI_SCALE
     $s.rel = $rel
     $r = [Dpi]::DisplayConfigSetDeviceInfo([ref]$s)
     Add-Content $log "source $($paths[$i].source.id): set rel $rel -> $r"
