@@ -87,7 +87,7 @@ Use the `release` skill. `<Version>` in `Directory.Build.props` is the only vers
 | A file, service or window added, moved or removed | The Architecture table above |
 | Arbitration, the switch sequence or another rule users can see | Behaviour above, `README.md` Features, the manual checks in `docs/development.md`, the policy tests |
 | A UI pattern, shared style or control | `.agents/guides/ui-conventions.md` |
-| An npm command | The Commands table above, `docs/development.md`, the `desktop` skill, `paseo.json`, and `.github/workflows/ci.yml` if `validate` or the Windows compile changes |
+| An npm command | The Commands table above, `docs/development.md`, the `desktop` skill, and `.github/workflows/ci.yml` if `validate` or the Windows compile changes |
 | App source, packaging or build configuration moved to a new top-level path | The Windows path filter in `.github/workflows/ci.yml` |
 | Where the app writes data, or a new kind of data | The data table in `docs/development.md` |
 | How settings load, save or migrate | `.agents/guides/settings.md`, `tests/HubDisplaySwitch.Settings.Tests/` |
